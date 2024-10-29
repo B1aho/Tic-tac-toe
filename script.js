@@ -9,8 +9,7 @@
 ]
 */
 const Cell = function() {
-    let value = 0
-    
+    let value = '*'
     const getValue = () => {
         return value;
     }
@@ -49,17 +48,17 @@ const GameField = (function() {
     }
 
     const makeMove = (rowNum, colNum, playerSym) => {
-        if (field[rowNum][colNum].getValue())
-            return 0;
+        if (field[rowNum][colNum].getValue() !== '*')
+            return false;
         field[rowNum][colNum].setValue(playerSym)
-        return 1;
+        return true;
     }
 
     const checkEnd = (row, col) => {
         const token = field[row][col].getValue()
 
         // Check win in a row
-        const oneRow = field[row].filter((el) => el.getValue === token)
+        const oneRow = field[row].filter((el) => el.getValue() === token)
         if (oneRow.length === 3) {
             return true;
         }
@@ -71,18 +70,18 @@ const GameField = (function() {
         }
 
         // Check win in a diagonals
-        const validDiagonal = [[0,0], [2,2], [0,2], [2,0], [1,1],]
-        const idx = validDiagonal.indexOf([row, col])
-        if (idx >= 0) {
-            const mainDiag = (field[0][0] === field[1][1] === field[2][2]) ? true : false
-            const secondaryDiag = (field[0][2] === field[1][1] === field[2][0])
-            if (idx < 2) {
-                return mainDiag;
-            } else if (idx < 4) {
-                return secondaryDiag;
-            } else {
-                return (mainDiag || secondaryDiag) ? true : false;
+        const validDiagonal = [[0,0], [2,2], [0,2], [2,0], [1,1]]
+        let found = false
+        for (let i = 0; i < validDiagonal.length; i++){
+            if (validDiagonal[i][0] === row && validDiagonal[i][1] === col) {
+               found = true 
+               break
             }
+        }
+        if (found) {
+            const mainDiag = field[0][0].getValue() === token && field[1][1].getValue() === token && field[2][2].getValue() === token
+            const secondaryDiag = field[0][2].getValue() === token && field[1][1].getValue() === token && field[2][0].getValue() === token
+            return (mainDiag || secondaryDiag) ? true : false;
         }
     }
 
@@ -119,12 +118,15 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
 
     const checkEnd = (row, col) => {
         if (movesCounter === 9) {
+            field.renderField()
             draw()
             resetGame()
         }
 
         const haveWinner = field.checkEnd(row, col)
         if (haveWinner) {
+            field.renderField()
+            turnMove()
             win(activeTurn.token)
             resetGame()
         }
@@ -132,15 +134,14 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
 
     const makeMove = () => {
         field.renderField()
-        const row = prompt('Enter row')
-        const col = prompt('Enter column')
+        const row = Number(prompt('Enter row'))
+        const col = Number(prompt('Enter column'))
 
         if (field.makeMove(row, col, activeTurn.token)) {
             turnMove()
-            field.renderField()
         }
 
-        if (movesCounter > 5) {
+        if (movesCounter >= 5) {
             checkEnd(row, col)
         }
     }
@@ -157,11 +158,11 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
         const nextGame = prompt('Would you like to restart? Y/N')
         if (nextGame.toUpperCase().charAt(0) === 'Y') {
             field.initField()
-            field = getField()
+            movesCounter = 0
             makeMove()
         }
 
     }
-
-    makeMove()
+    while (movesCounter <= 9)
+        makeMove()
 })() 
