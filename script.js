@@ -13,13 +13,14 @@ const GameField = (function() {
     const column = 3
     const field = []
 
-    for (let i = 0; i <= row; i++) {
-        field[i] = []
-        for (let j = 0; j <= column; j++) {
-            field[i].push(Cell())
+    const initField = () => {
+        for (let i = 0; i <= row; i++) {
+            field[i] = []
+            for (let j = 0; j <= column; j++) {
+                field[i].push(Cell())
+            }
         }
     }
-
     const getField = () => field
 
     const renderFiled = () => {
@@ -70,11 +71,14 @@ const GameField = (function() {
         }
     }
 
+    initField()
+
     return {
         getField,
         makeMove,
         checkEnd,
-        renderFiled
+        renderFiled,
+        initField,
     }
 })()
 
@@ -107,13 +111,26 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
         }
     ]
     const field = GameField.getField()
-
+    
     const activeTurn = players[0]
     const movesCounter = 0
 
     const turnMove = () => {
         activeTurn = activeTurn === players[0] ? players[1] : players[0]
         movesCounter++
+    }
+
+    const checkEnd = (row, col) => {
+        if (movesCounter === 9) {
+            draw()
+            resetGame()
+        }
+
+        const haveWinner = field.checkEnd(row, col)
+        if (haveWinner) {
+            win(activeTurn.token)
+            resetGame()
+        }
     }
 
     const makeMove = () => {
@@ -126,22 +143,27 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
         }
 
         if (movesCounter > 5) {
-            if (movesCounter === 9) {
-                draw()
-            }
-            const haveWinner = field.checkEnd(row, col)
-            if (haveWinner) {
-                win(activeTurn.token)
-            }
+            checkEnd(row, col)
         }
     }
 
     const draw = () => {
-
+        console.log('Draw. No winners or loser!')
     }
 
     const win = () => {
+        console.log('Player - ' + activeTurn.playerName + ' win the game!. Congratulation!')
+    }
+
+    const resetGame = () => {
+        const nextGame = prompt('Would you like to restart? Y/N')
+        if (nextGame.toUpperCase().charAt(0) === 'Y') {
+            field.initField()
+            field = getField()
+            makeMove()
+        }
 
     }
 
+    makeMove()
 })() 
