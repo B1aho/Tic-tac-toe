@@ -1,8 +1,4 @@
-/* 
-Подумай над началом игры, мб лучше по другому цикл устроить и 
-разберись с вводом и если не хотят продолжить до выйти из цикла
-короче игровой модуль отредактируй состояние
-*/
+// Cell fabric with private value
 const Cell = function() {
     let value = '*'
     const getValue = () => {
@@ -19,6 +15,7 @@ const Cell = function() {
     }
 }
 
+// Game field with the grid of cells. Object represent all logic about manipulations on the field and private field
 const GameField = (function() {
     const row = 2
     const column = 2
@@ -52,13 +49,13 @@ const GameField = (function() {
     const checkEnd = (row, col) => {
         const token = field[row][col].getValue()
 
-        // Check win in a row
+        // Check win in a single row
         const oneRow = field[row].filter((el) => el.getValue() === token)
         if (oneRow.length === 3) {
             return true;
         }
 
-        // Check win in a column
+        // Check win in a single column
         const oneColumn = field.filter((el) => el[col].getValue() === token)
         if (oneColumn.length === 3) {
             return true;
@@ -91,6 +88,7 @@ const GameField = (function() {
     }
 })()
 
+// Game module. All game loop logic here
 const GameControl = (function( playerOne = 'Player-One', playerTwo = 'Player-Two' ) {
     const players = [
         {
