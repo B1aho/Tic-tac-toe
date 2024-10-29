@@ -1,12 +1,7 @@
-/* Крестики-нолики: 
-игровое поле - метод отрисовки поля, метод возвращающий поле, метод делающий ход, метод проеряющий победу или отсутсвие ходов на поле
-клетка поля - метод получения значения клетки, метод изменения значения клетки
-состояние игры - метод перехода хода, два игрока, счетчик ходов, метод проверки конца игры - начиная с 5го хода (каждый ход)
-[
-    [0, 0, х],
-    [0, X, 0],
-    [х, 0, 0],
-]
+/* 
+Подумай над началом игры, мб лучше по другому цикл устроить и 
+разберись с вводом и если не хотят продолжить до выйти из цикла
+короче игровой модуль отредактируй состояние
 */
 const Cell = function() {
     let value = '*'
@@ -96,7 +91,7 @@ const GameField = (function() {
     }
 })()
 
-const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two' ) {
+const GameControl = (function( playerOne = 'Player-One', playerTwo = 'Player-Two' ) {
     const players = [
         {
             playerName: playerOne,
@@ -108,6 +103,7 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
         }
     ]
     const field = GameField
+    let gameState = 1;
     let activeTurn = players[0]
     let movesCounter = 0
 
@@ -151,7 +147,7 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
     }
 
     const win = () => {
-        console.log('Player - ' + activeTurn.playerName + ' win the game!. Congratulation!')
+        console.log(activeTurn.playerName + ' win the game!. Congratulation!')
     }
 
     const resetGame = () => {
@@ -160,9 +156,10 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
             field.initField()
             movesCounter = 0
             makeMove()
+        } else {
+            gameState = 0
         }
-
     }
-    while (movesCounter <= 9)
+    while (gameState)
         makeMove()
 })() 
