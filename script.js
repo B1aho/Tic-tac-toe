@@ -8,9 +8,26 @@
     [х, 0, 0],
 ]
 */
+const Cell = function() {
+    let value = 0
+    
+    const getValue = () => {
+        return value;
+    }
+
+    const setValue = (x) => {
+        value = x
+    }
+
+    return {
+        getValue,
+        setValue,
+    }
+}
+
 const GameField = (function() {
-    const row = 3
-    const column = 3
+    const row = 2
+    const column = 2
     const field = []
 
     const initField = () => {
@@ -23,14 +40,12 @@ const GameField = (function() {
     }
     const getField = () => field
 
-    const renderFiled = () => {
-        for (let i = 0; i <= row; i++) {
-            if (i > 0)
-                console.log( '\n' )
-            for (let j = 0; j <= column; j++) {
-                console.log('[' + field[i][j] + ']')
-            }
-        } 
+    const renderField = () => {
+        let resultStr = ""
+        for (let row of field) {
+            resultStr += '[' + row.map((el) => el.getValue()) + ']' + '\n'
+        }
+        console.log(resultStr)
     }
 
     const makeMove = (rowNum, colNum, playerSym) => {
@@ -44,14 +59,14 @@ const GameField = (function() {
         const token = field[row][col].getValue()
 
         // Check win in a row
-        const row = field[row].filter((el) => el.getValue === token)
-        if (row.length === 3) {
+        const oneRow = field[row].filter((el) => el.getValue === token)
+        if (oneRow.length === 3) {
             return true;
         }
 
         // Check win in a column
-        const column = field.filter((el) => el[col].getValue() === token)
-        if (column.length === 3) {
+        const oneColumn = field.filter((el) => el[col].getValue() === token)
+        if (oneColumn.length === 3) {
             return true;
         }
 
@@ -77,27 +92,10 @@ const GameField = (function() {
         getField,
         makeMove,
         checkEnd,
-        renderFiled,
+        renderField,
         initField,
     }
 })()
-
-const Cell = function() {
-    const value = 0
-    
-    const getValue = () => {
-        return value
-    }
-
-    const setValue = (x) => {
-        value = x
-    }
-
-    return {
-        getValue,
-        setValue,
-    }
-}
 
 const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two' ) {
     const players = [
@@ -110,10 +108,9 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
             token: 'O'
         }
     ]
-    const field = GameField.getField()
-    
-    const activeTurn = players[0]
-    const movesCounter = 0
+    const field = GameField
+    let activeTurn = players[0]
+    let movesCounter = 0
 
     const turnMove = () => {
         activeTurn = activeTurn === players[0] ? players[1] : players[0]
@@ -134,12 +131,13 @@ const GameControl = (function( playerOne = 'Player One', playerTwo = 'Player Two
     }
 
     const makeMove = () => {
+        field.renderField()
         const row = prompt('Enter row')
         const col = prompt('Enter column')
 
         if (field.makeMove(row, col, activeTurn.token)) {
             turnMove()
-            field.renderFiled()
+            field.renderField()
         }
 
         if (movesCounter > 5) {
