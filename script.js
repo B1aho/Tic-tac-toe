@@ -124,20 +124,6 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
     }
 
-    const makeMove = () => {
-        fieldControl.renderField()
-        const row = Number(prompt('Enter row'))
-        const col = Number(prompt('Enter column'))
-
-        if (fieldControl.makeMove(row, col, activeTurn.token)) {
-            turnMove()
-        }
-
-        if (movesCounter >= 5) {
-            checkEnd(row, col)
-        }
-    }
-
     const draw = () => {
         console.log('Draw. No winners or loser!')
         //resetGame()
