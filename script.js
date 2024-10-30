@@ -103,6 +103,8 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     let activeTurn = players[0]
     let movesCounter = 0
 
+    const getActiveTurn = () => activeTurn
+
     const turnMove = () => {
         activeTurn = activeTurn === players[0] ? players[1] : players[0]
         movesCounter++
@@ -162,6 +164,7 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
         checkEnd,
         resetGame,
         field: fieldControl.getField,
+        getActiveTurn,
     }
 }
 
@@ -174,7 +177,7 @@ const ScreenControl = function() {
     const col = 2
     const game = GameControl('Mike', 'Julia', row, col)
     const field = game.field()
-    // Функция рендерит поле, как грид
+    // Функция рендерит игровое поле, как грид
     const renderField = () => {
         let rows = 0
         field.forEach(el => {
@@ -194,7 +197,25 @@ const ScreenControl = function() {
         })
         fieldContainer.style.display = 'grid'
         fieldContainer.style.gridTemplateColumns = `repeat(${col + 1}, 1fr)`
+        fieldContainer.addEventListener('click', handleClick)
     }
+
+    const getToken = () => game.getActiveTurn().token
+
+    // Update data and render on click if have changes
+    const handleClick = (e) => {
+        const target = e.target
+        const token = getToken()
+        const coords = target.dataset
+        if (target.innerText !== '*')
+            return;
+        // update field data
+        field[coords.row][coords.column].setValue(token)
+        // update cell rendering
+        target.innerText = token
+        game.turnMove()
+    }
+ 
     renderField()
 }
 
