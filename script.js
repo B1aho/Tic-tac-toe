@@ -16,9 +16,7 @@ const Cell = function() {
 }
 
 // Game field with the grid of cells. Object represent all logic about manipulations on the field and private field
-const GameField = (function() {
-    const row = 2
-    const column = 2
+const GameField = function(row, column) {
     const field = []
 
     const initField = () => {
@@ -86,10 +84,10 @@ const GameField = (function() {
         renderField,
         initField,
     }
-})()
+}
 
 // Game module. All game loop logic here
-const GameControl = (function( playerOne = 'Player-One', playerTwo = 'Player-Two' ) {
+const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two', rows = 2, cols = 2 ) {
     const players = [
         {
             playerName: playerOne,
@@ -100,7 +98,7 @@ const GameControl = (function( playerOne = 'Player-One', playerTwo = 'Player-Two
             token: 'O'
         }
     ]
-    const field = GameField
+    const fieldControl = GameField(rows, cols)
     let gameState = 1;
     let activeTurn = players[0]
     let movesCounter = 0
@@ -112,14 +110,14 @@ const GameControl = (function( playerOne = 'Player-One', playerTwo = 'Player-Two
 
     const checkEnd = (row, col) => {
         if (movesCounter === 9) {
-            field.renderField()
+            fieldControl.renderField()
             draw()
             resetGame()
         }
 
-        const haveWinner = field.checkEnd(row, col)
+        const haveWinner = fieldControl.checkEnd(row, col)
         if (haveWinner) {
-            field.renderField()
+            fieldControl.renderField()
             turnMove()
             win(activeTurn.token)
             resetGame()
@@ -127,11 +125,11 @@ const GameControl = (function( playerOne = 'Player-One', playerTwo = 'Player-Two
     }
 
     const makeMove = () => {
-        field.renderField()
+        fieldControl.renderField()
         const row = Number(prompt('Enter row'))
         const col = Number(prompt('Enter column'))
 
-        if (field.makeMove(row, col, activeTurn.token)) {
+        if (fieldControl.makeMove(row, col, activeTurn.token)) {
             turnMove()
         }
 
@@ -151,13 +149,53 @@ const GameControl = (function( playerOne = 'Player-One', playerTwo = 'Player-Two
     const resetGame = () => {
         const nextGame = prompt('Would you like to restart? Y/N')
         if (nextGame.toUpperCase().charAt(0) === 'Y') {
-            field.initField()
+            fieldControl.initField()
             movesCounter = 0
             makeMove()
         } else {
             gameState = 0
         }
     }
-    while (gameState)
-        makeMove()
-})() 
+
+    return {
+        turnMove,
+        checkEnd,
+        resetGame,
+        field: fieldControl.getField,
+    }
+}
+
+const ScreenControl = function() {
+    const fieldContainer = document.querySelector('.field')
+    const playersContainer = document.querySelector('.playes')
+
+    // Будем брать имена из формы
+    const row = 2
+    const col = 2
+    const game = GameControl('Mike', 'Julia', row, col)
+    const field = game.field()
+    // Функция рендерит поле, как грид
+    const renderField = () => {
+        let rows = 0
+        field.forEach(el => {
+            let columns = 0
+            for (let cell of el) {
+                const btn = document.createElement('div')
+                btn.innerText = cell.getValue()
+                btn.role = 'button'
+                btn.className = 'btn'
+                btn.dataset.column = columns++
+                btn.dataset.row = rows
+                if (columns === col + 1) 
+                    columns = 0
+                fieldContainer.append(btn)
+            }
+            rows++
+        })
+        fieldContainer.style.display = 'grid'
+        fieldContainer.style.gridTemplateColumns = `repeat(${col + 1}, 1fr)`
+    }
+    renderField()
+}
+
+ScreenControl()
