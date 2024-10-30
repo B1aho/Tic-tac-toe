@@ -22,14 +22,19 @@ const Cell = function() {
 const GameField = function(row, column) {
     const field = []
 
-    const initField = () => {
+    const initField = (() => {
         for (let i = 0; i <= row; i++) {
             field[i] = []
             for (let j = 0; j <= column; j++) {
                 field[i].push(Cell())
             }
         }
+    })()
+
+    const resetField = () => {
+        field.forEach(el => el.forEach(cell => cell.setValue(defaultSymbol)))
     }
+
     const getField = () => field
 
     const renderField = () => {
@@ -38,13 +43,6 @@ const GameField = function(row, column) {
             resultStr += '[' + row.map((el) => el.getValue()) + ']' + '\n'
         }
         console.log(resultStr)
-    }
-
-    const makeMove = (rowNum, colNum, playerSym) => {
-        if (field[rowNum][colNum].getValue() !== defaultSymbol)
-            return false;
-        field[rowNum][colNum].setValue(playerSym)
-        return true;
     }
 
     const checkEnd = (row, col) => {
@@ -78,14 +76,12 @@ const GameField = function(row, column) {
         }
     }
 
-    initField()
 
     return {
         getField,
-        makeMove,
         checkEnd,
         renderField,
-        initField,
+        resetField,
     }
 }
 
@@ -128,27 +124,24 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
 
     const draw = () => {
         console.log('Draw. No winners or loser!')
-        //resetGame()
     }
 
     const win = () => {
         console.log(activeTurn.playerName + ' win the game!. Congratulation!')
-        //resetGame()
     }
 
     const resetGame = () => {
-        const nextGame = prompt('Would you like to restart? Y/N')
-        if (nextGame.toUpperCase().charAt(0) === 'Y') {
-            fieldControl.initField()
-            movesCounter = 0
-        } else {
-
-        }
+        let field = fieldControl.getField()
+        console.table(field.map(el => el.map(cell => cell.getValue())))
+        fieldControl.resetField()
+        console.table(field.map(el => el.map(cell => cell.getValue())))
+        movesCounter = 0
     }
 
     return {
         turnMove,
         checkEnd,
+        resetGame,
         field: fieldControl.getField,
         getActiveTurn,
     }
@@ -156,6 +149,7 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
 
 const ScreenControl = function() {
     const fieldContainer = document.querySelector('.field')
+    const playScreen = document.querySelector('.play-screen')
     const playersContainer = document.querySelector('.playes')
     // Будем брать имена и размер из формы
     const row = 2
@@ -172,7 +166,7 @@ const ScreenControl = function() {
                 const btn = document.createElement('div')
                 btn.innerText = cell.getValue()
                 btn.role = 'button'
-                btn.className = 'btn'
+                btn.className = 'cell'
                 btn.dataset.column = columns++
                 btn.dataset.row = rows
                 if (columns === col + 1) 
@@ -201,10 +195,27 @@ const ScreenControl = function() {
         field[row][col].setValue(token)
         // update cell rendering
         target.innerText = token
+
         game.checkEnd(row, col)
         game.turnMove()
     }
+
+    const updateField = () => {
+        const cells = document.querySelectorAll('.cell')
+        cells.forEach((cell) => cell.innerText = defaultSymbol)
+    }
+
+    const handleReset = () => {
+        game.resetGame()
+        updateField()
+    }
+
     renderField()
+    const resetBtn = document.createElement('button')
+    resetBtn.addEventListener('click', handleReset)
+    resetBtn.innerText = 'RESET'
+    playScreen.append(resetBtn)
+
 }
 
 ScreenControl()
