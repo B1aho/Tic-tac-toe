@@ -1,6 +1,7 @@
 // Cell fabric with private value
+const defaultSymbol = '*'
 const Cell = function() {
-    let value = '*'
+    let value = defaultSymbol
     const getValue = () => {
         return value;
     }
@@ -38,7 +39,7 @@ const GameField = function(row, column) {
     }
 
     const makeMove = (rowNum, colNum, playerSym) => {
-        if (field[rowNum][colNum].getValue() !== '*')
+        if (field[rowNum][colNum].getValue() !== defaultSymbol)
             return false;
         field[rowNum][colNum].setValue(playerSym)
         return true;
@@ -207,7 +208,7 @@ const ScreenControl = function() {
         const target = e.target
         const token = getToken()
         const coords = target.dataset
-        if (target.innerText !== '*')
+        if (target.innerText !== defaultSymbol)
             return;
         // update field data
         field[coords.row][coords.column].setValue(token)
