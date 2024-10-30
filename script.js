@@ -140,12 +140,12 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
 
     const draw = () => {
         console.log('Draw. No winners or loser!')
-        resetGame()
+        //resetGame()
     }
 
     const win = () => {
         console.log(activeTurn.playerName + ' win the game!. Congratulation!')
-        resetGame()
+        //resetGame()
     }
 
     const resetGame = () => {
