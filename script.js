@@ -100,10 +100,11 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
     ]
     const fieldControl = GameField(rows, cols)
-    let gameState = 1;
     let activeTurn = players[0]
     let movesCounter = 0
-
+    // рассчитываем по row и col
+    let minMovesToCheck = 4
+    let maxMoves = 8
     const getActiveTurn = () => activeTurn
 
     const turnMove = () => {
@@ -112,18 +113,14 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 
     const checkEnd = (row, col) => {
-        if (movesCounter === 9) {
-            fieldControl.renderField()
+        if (movesCounter === maxMoves) {
             draw()
-            resetGame()
-        }
-
-        const haveWinner = fieldControl.checkEnd(row, col)
-        if (haveWinner) {
-            fieldControl.renderField()
-            turnMove()
-            win(activeTurn.token)
-            resetGame()
+        } else if (movesCounter >= minMovesToCheck) {
+            const haveWinner = fieldControl.checkEnd(Number(row), Number(col))
+            if (haveWinner) {
+                fieldControl.renderField()
+                win(activeTurn.token)
+            }
         }
     }
 
@@ -143,10 +140,12 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
 
     const draw = () => {
         console.log('Draw. No winners or loser!')
+        resetGame()
     }
 
     const win = () => {
         console.log(activeTurn.playerName + ' win the game!. Congratulation!')
+        resetGame()
     }
 
     const resetGame = () => {
@@ -154,16 +153,14 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
         if (nextGame.toUpperCase().charAt(0) === 'Y') {
             fieldControl.initField()
             movesCounter = 0
-            makeMove()
         } else {
-            gameState = 0
+
         }
     }
 
     return {
         turnMove,
         checkEnd,
-        resetGame,
         field: fieldControl.getField,
         getActiveTurn,
     }
@@ -172,10 +169,10 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
 const ScreenControl = function() {
     const fieldContainer = document.querySelector('.field')
     const playersContainer = document.querySelector('.playes')
-
-    // Будем брать имена из формы
+    // Будем брать имена и размер из формы
     const row = 2
     const col = 2
+    
     const game = GameControl('Mike', 'Julia', row, col)
     const field = game.field()
     // Функция рендерит игровое поле, как грид
@@ -208,15 +205,17 @@ const ScreenControl = function() {
         const target = e.target
         const token = getToken()
         const coords = target.dataset
+        const row = coords.row
+        const col = coords.column
         if (target.innerText !== defaultSymbol)
             return;
         // update field data
-        field[coords.row][coords.column].setValue(token)
+        field[row][col].setValue(token)
         // update cell rendering
         target.innerText = token
+        game.checkEnd(row, col)
         game.turnMove()
     }
- 
     renderField()
 }
 
