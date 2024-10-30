@@ -1,3 +1,5 @@
+// Добавить векторную графику и ИИ
+
 // Cell fabric with private value
 const defaultSymbol = '*'
 const Cell = function() {
