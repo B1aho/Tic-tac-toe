@@ -112,23 +112,11 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 
     const checkEnd = (row, col) => {
-        if (movesCounter === maxMoves) {
-            draw()
-        } else if (movesCounter >= minMovesToCheck) {
-            const haveWinner = fieldControl.checkEnd(Number(row), Number(col))
-            if (haveWinner) {
-                fieldControl.renderField()
-                win(activeTurn.token)
-            }
+       if (movesCounter >= minMovesToCheck && fieldControl.checkEnd(Number(row), Number(col))) {
+            return "win"
+        } else if (movesCounter === maxMoves) {
+            return 'draw';
         }
-    }
-
-    const draw = () => {
-        console.log('Draw. No winners or loser!')
-    }
-
-    const win = () => {
-        console.log(activeTurn.playerName + ' win the game!. Congratulation!')
     }
 
     const resetGame = () => {
@@ -152,6 +140,7 @@ const ScreenControl = function() {
     const fieldContainer = document.querySelector('.field')
     const playScreen = document.querySelector('.play-screen')
     const playersContainer = document.querySelector('.players')
+    const moveDescription = document.querySelector('#move')
     // Будем брать имена и размер из формы
     const row = 2
     const col = 2
@@ -197,8 +186,9 @@ const ScreenControl = function() {
         // update cell rendering
         target.innerText = token
 
-        game.checkEnd(row, col)
+        let result = game.checkEnd(row, col)
         game.turnMove()
+        changeMoveDescription(result)
     }
 
     const resetField = () => {
@@ -211,7 +201,19 @@ const ScreenControl = function() {
         resetField()
     }
 
+    const changeMoveDescription = (isEnd) => { 
+        if (isEnd === 'win') {
+            game.turnMove()
+            moveDescription.textContent = `${game.getActiveTurn().playerName} is the winner. Congratulation!` 
+        } else if (isEnd === 'draw') {
+            moveDescription.textContent = `Draw. No one lose..`
+        } else {
+            moveDescription.textContent = `It is now ${game.getActiveTurn().playerName}'s turn!` 
+        }
+    }
+
     renderField()
+    changeMoveDescription(false)
     const resetBtn = document.createElement('button')
     resetBtn.addEventListener('click', handleReset)
     resetBtn.innerText = 'RESET'
