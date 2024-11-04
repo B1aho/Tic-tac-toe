@@ -38,14 +38,6 @@ const GameField = function(row, column) {
 
     const getField = () => field
 
-    const renderField = () => {
-        let resultStr = ""
-        for (let row of field) {
-            resultStr += '[' + row.map((el) => el.getValue()) + ']' + '\n'
-        }
-        console.log(resultStr)
-    }
-
     const checkEnd = (row, col) => {
         const token = field[row][col].getValue()
 
@@ -81,7 +73,6 @@ const GameField = function(row, column) {
     return {
         getField,
         checkEnd,
-        renderField,
         resetField,
     }
 }
