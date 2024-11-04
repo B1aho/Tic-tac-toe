@@ -128,16 +128,17 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 }
 
-const ScreenControl = function() {
+const ScreenControl = function(firstPlayerName, secondPlayerName) {
     const fieldContainer = document.querySelector('.field')
     const playScreen = document.querySelector('.play-screen')
-    const playersContainer = document.querySelector('.players')
+    const playerOneDiv = document.querySelector('#player-1')
+    const playerTwoDiv = document.querySelector('#player-2')
     const moveDescription = document.querySelector('#move')
     // Будем брать имена и размер из формы
     const row = 2
     const col = 2
-    
-    const game = GameControl('Mike', 'Julia', row, col)
+
+    const game = GameControl(firstPlayerName, secondPlayerName, row, col)
     const field = game.field()
     // Функция рендерит игровое поле, как грид
     const renderField = () => {
@@ -182,6 +183,17 @@ const ScreenControl = function() {
         game.turnMove()
         changeMoveDescription(result)
     }
+    // Change player's name into Cross player;s name and noliki player's name
+    const renderPlayers = () => {
+        nameDivOne = document.createElement("div")
+        nameDivOne.innerText = `First player's name: ${firstPlayerName}`
+
+        nameDivTwo = document.createElement("div")
+        nameDivTwo.innerText = `Second player's name: ${secondPlayerName}`
+
+        playerOneDiv.prepend(nameDivOne)
+        playerTwoDiv.prepend(nameDivTwo)
+    }
 
     const resetField = () => {
         const cells = document.querySelectorAll('.cell')
@@ -194,17 +206,18 @@ const ScreenControl = function() {
         changeMoveDescription(false)
     }
 
+    // Сделать просто changeMove, и добавлять аттрибут актив терн, чтобы подсвечивать рамку
     const changeMoveDescription = (isEnd) => { 
         if (isEnd === 'win') {
             game.turnMove()
-            moveDescription.textContent = `${game.getActiveTurn().playerName} is the winner. Congratulation!` 
+            moveDescription.innerText = `${game.getActiveTurn().playerName} is the winner. Congratulation!` 
         } else if (isEnd === 'draw') {
-            moveDescription.textContent = `Draw. No one lose..`
+            moveDescription.innerText = `Draw. No one lose..`
         } else {
-            moveDescription.textContent = `It is now ${game.getActiveTurn().playerName}'s turn!` 
+            moveDescription.innerText = `It is now ${game.getActiveTurn().playerName}'s turn!` 
         }
     }
-
+    renderPlayers()
     renderField()
     changeMoveDescription(false)
     const resetBtn = document.createElement('button')
@@ -214,4 +227,4 @@ const ScreenControl = function() {
 
 }
 
-ScreenControl()
+ScreenControl("Viktor", "Milana")
