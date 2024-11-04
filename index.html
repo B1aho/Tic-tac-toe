@@ -14,7 +14,44 @@
     <header>
     </header>
     <main>
-        <div class="option-screen"></div>
+        <div class="option-screen">
+            <div class="options">
+                <div class="game-options">
+                    <div class="game-field-size">
+                        <fieldset>
+                            <input type="radio" id="3x3" value="3" name="field">
+                            <label for="3x3">3X3</label>
+                            <input type="radio" id="4x4" value="4" name="field">
+                            <label for="4x4">4X4</label>
+                            <input type="radio" id="5x5" value="5" name="field">
+                            <label for="5x5">5X5</label>
+                            <input type="radio" id="6x6" value="6" name="field">
+                            <label for="6x6">6X6</label>
+                        </fieldset>
+                    </div>
+                    <div class="players-number">
+                        <label for="one-player">1 Player</label>
+                        <input id="one-player" type="radio" value="1" name="players-number">
+                        <label for="two-players">2 Players</label>
+                        <input id="two-players" type="radio" value="2"name="players-number">
+                    </div>
+                </div>
+                <div class="player-options">
+                    <div class="player-input">
+                        <label for="player-x-input"></label>
+                        <input id="player-x-input" type="text" placeholder="Player 1" maxlength="15">
+                    </div>
+                    <div class="player-input">
+                        <label for="player-o-input"></label>
+                        <input id="player-o-input" type="text" placeholder="Player 2" maxlength="15">
+                    </div>
+                    <div class="computer-input"></div>
+                </div>
+            </div>
+            <div class="play-btn">
+                <button>PLAY</button>
+            </div>
+        </div>
         <div class="play-screen">
             <div class="players">
                 <div id="player-1">

@@ -3,3 +3,7 @@
     outline: 1px solid black;
     text-align: center;
 }
+
+.play-screen, .computer-input {
+    display: none;
+}

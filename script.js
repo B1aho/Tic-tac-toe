@@ -128,7 +128,7 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 }
 
-const ScreenControl = function(firstPlayerName, secondPlayerName) {
+const PlayScreenControl = function(firstPlayerName, secondPlayerName) {
     const fieldContainer = document.querySelector('.field')
     const playScreen = document.querySelector('.play-screen')
     const playerOneDiv = document.querySelector('#player-1')
@@ -222,6 +222,7 @@ const ScreenControl = function(firstPlayerName, secondPlayerName) {
             moveDescription.innerText = `It is now ${game.getActiveTurn().playerName}'s turn!` 
         }
     }
+    playScreen.style.display = 'block'
     renderPlayers()
     renderField()
     controlMove(false)
@@ -232,4 +233,6 @@ const ScreenControl = function(firstPlayerName, secondPlayerName) {
 
 }
 
-ScreenControl("Viktor", "Milana")
+OptionScreenControl = function() {
+    PlayScreenControl("Viktor", "Milana")
+}
