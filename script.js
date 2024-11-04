@@ -128,15 +128,15 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 }
 
-const PlayScreenControl = function(firstPlayerName, secondPlayerName) {
+const PlayScreenControl = function(firstPlayerName, secondPlayerName, rows) {
     const fieldContainer = document.querySelector('.field')
     const playScreen = document.querySelector('.play-screen')
     const playerOneDiv = document.querySelector('#player-1')
     const playerTwoDiv = document.querySelector('#player-2')
     const moveDescription = document.querySelector('#move')
     // Будем брать имена и размер из формы
-    const row = 2
-    const col = 2
+    const row = rows
+    const col = rows
 
     const game = GameControl(firstPlayerName, secondPlayerName, row, col)
     const field = game.field()
@@ -234,5 +234,30 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName) {
 }
 
 OptionScreenControl = function() {
-    PlayScreenControl("Viktor", "Milana")
+    const playBtn = document.querySelector(".play-btn")
+    const xInput = document.querySelector("#player-x-input")
+    const oInput = document.querySelector("#player-o-input")
+    const optionScreen = document.querySelector(".option-screen")
+    const handlePlay = () => {
+        const row = document.querySelector('input[name="field"]:checked').value
+        const players = document.querySelector('input[name="players-number"]:checked').value
+        if (haveNames(Number(players))) {
+            console.log('have names')
+            optionScreen.style.display = "none"
+            PlayScreenControl("Viktor", "Milana", 2)
+        } else {
+            console.log('don have names')
+            // Подсветить красным инпуты
+        }
+    }
+    const haveNames = (playersNum) => {
+        if (playersNum === 1) {
+            return xInput.value !== "" ? true : false
+        } else if (playersNum === 2) {
+            return xInput !== "" && oInput.value !== "" ? true : false
+        }
+    }
+    playBtn.addEventListener('click', handlePlay)
 }
+
+OptionScreenControl()

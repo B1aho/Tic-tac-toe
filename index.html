@@ -19,7 +19,7 @@
                 <div class="game-options">
                     <div class="game-field-size">
                         <fieldset>
-                            <input type="radio" id="3x3" value="3" name="field">
+                            <input type="radio" id="3x3" value="3" name="field" checked>
                             <label for="3x3">3X3</label>
                             <input type="radio" id="4x4" value="4" name="field">
                             <label for="4x4">4X4</label>
@@ -33,7 +33,7 @@
                         <label for="one-player">1 Player</label>
                         <input id="one-player" type="radio" value="1" name="players-number">
                         <label for="two-players">2 Players</label>
-                        <input id="two-players" type="radio" value="2"name="players-number">
+                        <input id="two-players" type="radio" value="2"name="players-number" checked>
                     </div>
                 </div>
                 <div class="player-options">
@@ -45,7 +45,9 @@
                         <label for="player-o-input"></label>
                         <input id="player-o-input" type="text" placeholder="Player 2" maxlength="15">
                     </div>
-                    <div class="computer-input"></div>
+                    <div class="computer-input">
+                        Устроено на основе алгоритма минимакс. Уровень пк зависит от уровней рассмотрения глубины ходов
+                    </div>
                 </div>
             </div>
             <div class="play-btn">
