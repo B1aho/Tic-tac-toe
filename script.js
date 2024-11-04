@@ -1,7 +1,8 @@
 // Добавить векторную графику и ИИ
-// Добавить экран 
+// Убирай колонки, нам хватает передать строки везде это же квадратное поле
+// 
 
-// Cell fabric with private value
+// Cell module with private value
 const defaultSymbol = '*'
 const Cell = function() {
     let value = defaultSymbol
@@ -20,13 +21,13 @@ const Cell = function() {
 }
 
 // Game field with the grid of cells. Object represent all logic about manipulations on the field and private field
-const GameField = function(row, column) {
+const GameField = function(row) {
     const field = []
 
     const initField = (() => {
         for (let i = 0; i <= row; i++) {
             field[i] = []
-            for (let j = 0; j <= column; j++) {
+            for (let j = 0; j <= row; j++) {
                 field[i].push(Cell())
             }
         }
@@ -69,7 +70,6 @@ const GameField = function(row, column) {
         }
     }
 
-
     return {
         getField,
         checkEnd,
@@ -78,7 +78,7 @@ const GameField = function(row, column) {
 }
 
 // Game module. All game loop logic here
-const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two', rows = 2, cols = 2 ) {
+const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two', rows) {
     const players = [
         {
             playerName: playerOne,
@@ -89,12 +89,12 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
             token: 'O'
         }
     ]
-    const fieldControl = GameField(rows, cols)
+    const fieldControl = GameField(rows)
     let activeTurn = players[0]
     let movesCounter = 0
-    // рассчитываем по row и col
+    // рассчитываем по row
     let minMovesToCheck = 4
-    let maxMoves = 8
+    let maxMoves = (rows + 1) * (rows + 1) - 1
     const getActiveTurn = () => activeTurn
 
     const turnMove = () => {
@@ -128,19 +128,17 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 }
 
-const PlayScreenControl = function(firstPlayerName, secondPlayerName, rows) {
+const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     const fieldContainer = document.querySelector('.field')
     const playScreen = document.querySelector('.play-screen')
     const playerOneDiv = document.querySelector('#player-1')
     const playerTwoDiv = document.querySelector('#player-2')
     const moveDescription = document.querySelector('#move')
-    // Будем брать имена и размер из формы
-    const row = rows
-    const col = rows
 
-    const game = GameControl(firstPlayerName, secondPlayerName, row, col)
+    const game = GameControl(firstPlayerName, secondPlayerName, row)
     const field = game.field()
     // Функция рендерит игровое поле, как грид
+    let cols = row
     const renderField = () => {
         let rows = 0
         field.forEach(el => {
@@ -152,14 +150,14 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, rows) {
                 btn.className = 'cell'
                 btn.dataset.column = columns++
                 btn.dataset.row = rows
-                if (columns === col + 1) 
+                if (columns === cols + 1) 
                     columns = 0
                 fieldContainer.append(btn)
             }
             rows++
         })
         fieldContainer.style.display = 'grid'
-        fieldContainer.style.gridTemplateColumns = `repeat(${col + 1}, 1fr)`
+        fieldContainer.style.gridTemplateColumns = `repeat(${cols + 1}, 1fr)`
         fieldContainer.addEventListener('click', handleClick)
     }
     let gameActiveState = true
