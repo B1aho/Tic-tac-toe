@@ -125,6 +125,7 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
         fieldControl.resetField()
         console.table(field.map(el => el.map(cell => cell.getValue())))
         movesCounter = 0
+        activeTurn = players[0]
     }
 
     return {
@@ -199,6 +200,7 @@ const ScreenControl = function() {
     const handleReset = () => {
         game.resetGame()
         resetField()
+        changeMoveDescription(false)
     }
 
     const changeMoveDescription = (isEnd) => { 
