@@ -244,7 +244,7 @@ OptionScreenControl = function() {
         if (haveNames(Number(players))) {
             console.log('have names')
             optionScreen.style.display = "none"
-            PlayScreenControl("Viktor", "Milana", 2)
+            PlayScreenControl(xInput.value, oInput.value, Number(row) - 1)
         } else {
             console.log('don have names')
             // Подсветить красным инпуты
