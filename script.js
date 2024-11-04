@@ -1,4 +1,5 @@
 // Добавить векторную графику и ИИ
+// Добавить экран 
 
 // Cell fabric with private value
 const defaultSymbol = '*'
@@ -150,7 +151,7 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
 const ScreenControl = function() {
     const fieldContainer = document.querySelector('.field')
     const playScreen = document.querySelector('.play-screen')
-    const playersContainer = document.querySelector('.playes')
+    const playersContainer = document.querySelector('.players')
     // Будем брать имена и размер из формы
     const row = 2
     const col = 2
@@ -200,14 +201,14 @@ const ScreenControl = function() {
         game.turnMove()
     }
 
-    const updateField = () => {
+    const resetField = () => {
         const cells = document.querySelectorAll('.cell')
         cells.forEach((cell) => cell.innerText = defaultSymbol)
     }
 
     const handleReset = () => {
         game.resetGame()
-        updateField()
+        resetField()
     }
 
     renderField()
