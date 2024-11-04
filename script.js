@@ -162,26 +162,28 @@ const ScreenControl = function(firstPlayerName, secondPlayerName) {
         fieldContainer.style.gridTemplateColumns = `repeat(${col + 1}, 1fr)`
         fieldContainer.addEventListener('click', handleClick)
     }
-
+    let gameActiveState = true
     const getToken = () => game.getActiveTurn().token
 
     // Update data and render on click if have changes
     const handleClick = (e) => {
-        const target = e.target
-        const token = getToken()
-        const coords = target.dataset
-        const row = coords.row
-        const col = coords.column
-        if (target.innerText !== defaultSymbol)
-            return;
-        // update field data
-        field[row][col].setValue(token)
-        // update cell rendering
-        target.innerText = token
+        if (gameActiveState) {
+            const target = e.target
+            const token = getToken()
+            const coords = target.dataset
+            const row = coords.row
+            const col = coords.column
+            if (target.innerText !== defaultSymbol)
+                return;
+            // update field data
+            field[row][col].setValue(token)
+            // update cell rendering
+            target.innerText = token
 
-        let result = game.checkEnd(row, col)
-        game.turnMove()
-        changeMoveDescription(result)
+            let result = game.checkEnd(row, col)
+            game.turnMove()
+            controlMove(result)
+        }
     }
     // Change player's name into Cross player;s name and noliki player's name
     const renderPlayers = () => {
@@ -203,23 +205,26 @@ const ScreenControl = function(firstPlayerName, secondPlayerName) {
     const handleReset = () => {
         game.resetGame()
         resetField()
-        changeMoveDescription(false)
+        controlMove(false)
+        gameActiveState = true
     }
 
     // Сделать просто changeMove, и добавлять аттрибут актив терн, чтобы подсвечивать рамку
-    const changeMoveDescription = (isEnd) => { 
+    const controlMove = (isEnd) => { 
         if (isEnd === 'win') {
             game.turnMove()
             moveDescription.innerText = `${game.getActiveTurn().playerName} is the winner. Congratulation!` 
+            gameActiveState = false
         } else if (isEnd === 'draw') {
             moveDescription.innerText = `Draw. No one lose..`
+            gameActiveState = false
         } else {
             moveDescription.innerText = `It is now ${game.getActiveTurn().playerName}'s turn!` 
         }
     }
     renderPlayers()
     renderField()
-    changeMoveDescription(false)
+    controlMove(false)
     const resetBtn = document.createElement('button')
     resetBtn.addEventListener('click', handleReset)
     resetBtn.innerText = 'RESET'
