@@ -30,10 +30,12 @@
                         </fieldset>
                     </div>
                     <div class="players-number">
-                        <label for="one-player">1 Player</label>
-                        <input id="one-player" type="radio" value="1" name="players-number">
-                        <label for="two-players">2 Players</label>
-                        <input id="two-players" type="radio" value="2"name="players-number" checked>
+                        <fieldset>
+                            <label for="one-player">1 Player</label>
+                            <input id="one-player" type="radio" value="1" name="players-number">
+                            <label for="two-players">2 Players</label>
+                            <input id="two-players" type="radio" value="2"name="players-number" checked>
+                        </fieldset>
                     </div>
                 </div>
                 <div class="player-options">
@@ -66,6 +68,10 @@
             <h1>Tic Tac Toe</h1>
             <div class="field"></div>
             <div id="move"></div>
+            <div class="control-btns">
+                <button id="reset">RESET</button>
+                <button id="back">GO BACK</button>
+            </div>
         </div>
         <div class="decription-screen">
         </div>

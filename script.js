@@ -134,12 +134,17 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     const playerOneDiv = document.querySelector('#player-1')
     const playerTwoDiv = document.querySelector('#player-2')
     const moveDescription = document.querySelector('#move')
+    const resetBtn = document.querySelector('#reset')
+    const backBtn = document.querySelector('#back')
 
     const game = GameControl(firstPlayerName, secondPlayerName, row)
     const field = game.field()
     // Функция рендерит игровое поле, как грид
     let cols = row
     const renderField = () => {
+        const fieldWrap = document.createElement("div")
+        fieldWrap.id = "field-wrapper"
+        fieldContainer.append(fieldWrap)
         let rows = 0
         field.forEach(el => {
             let columns = 0
@@ -152,13 +157,13 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
                 btn.dataset.row = rows
                 if (columns === cols + 1) 
                     columns = 0
-                fieldContainer.append(btn)
+                fieldWrap.append(btn)
             }
             rows++
         })
-        fieldContainer.style.display = 'grid'
-        fieldContainer.style.gridTemplateColumns = `repeat(${cols + 1}, 1fr)`
-        fieldContainer.addEventListener('click', handleClick)
+        fieldWrap.style.display = 'grid'
+        fieldWrap.style.gridTemplateColumns = `repeat(${cols + 1}, 1fr)`
+        fieldWrap.addEventListener('click', handleClick)
     }
     let gameActiveState = true
     const getToken = () => game.getActiveTurn().token
@@ -186,9 +191,11 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     // Change player's name into Cross player;s name and noliki player's name
     const renderPlayers = () => {
         nameDivOne = document.createElement("div")
+        nameDivOne.id = "player-name-div-1"
         nameDivOne.innerText = `First player's name: ${firstPlayerName}`
 
         nameDivTwo = document.createElement("div")
+        nameDivTwo.id = "player-name-div-2"
         nameDivTwo.innerText = `Second player's name: ${secondPlayerName}`
 
         playerOneDiv.prepend(nameDivOne)
@@ -205,6 +212,23 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
         resetField()
         controlMove(false)
         gameActiveState = true
+    }
+
+    // Нужно удалить всё что тут было нарисовано и отключить слушатели
+    // плей сркин рисовать придется каждый раз заново, так как разнын настройки
+    const handleBack = () => {
+        fieldContainer.removeEventListener('click', handleClick)
+        resetBtn.removeEventListener('click', handleReset)
+        backBtn.removeEventListener('click', handleBack)
+        fieldWrap = document.querySelector("#field-wrapper")
+        nameDivOne = document.querySelector("#player-name-div-1")
+        nameDivTwo = document.querySelector("#player-name-div-2")
+        optionScreen = document.querySelector(".option-screen")
+        fieldWrap.remove()
+        nameDivOne.remove()
+        nameDivTwo.remove()
+        playScreen.style.display = "none"
+        optionScreen.style.display = "block"
     }
 
     // Сделать просто changeMove, и добавлять аттрибут актив терн, чтобы подсвечивать рамку
@@ -224,11 +248,8 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     renderPlayers()
     renderField()
     controlMove(false)
-    const resetBtn = document.createElement('button')
     resetBtn.addEventListener('click', handleReset)
-    resetBtn.innerText = 'RESET'
-    playScreen.append(resetBtn)
-
+    backBtn.addEventListener('click', handleBack)
 }
 
 OptionScreenControl = function() {
