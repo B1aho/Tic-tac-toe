@@ -1,6 +1,6 @@
+// Переделай алгоритм выигрыша для разных сценариев: как будто три должно оставаться, но само подвтерждение 
+// теперь другое. А для диагоналей вообще не подходит. Нужно что-то более универсальное
 // Добавить векторную графику и ИИ
-// Убирай колонки, нам хватает передать строки везде это же квадратное поле
-// 
 
 // Cell module with private value
 const defaultSymbol = '*'
@@ -39,18 +39,41 @@ const GameField = function(row) {
 
     const getField = () => field
 
-    const checkEnd = (row, col) => {
-        const token = field[row][col].getValue()
-
+    // Наверное разумнее чтобы он просто от клетки где был ход пошел поочереди во все стороны
+    // Можно сделать так, что три зачеркивания нужно для поля 3х3 и 4х4, для остальный полей 4 зачеркивания
+    const checkEnd = (rw, cl) => {
+        const token = field[rw][cl].getValue()
+        const winLine = row > 3 ? 4 : 3
         // Check win in a single row
-        const oneRow = field[row].filter((el) => el.getValue() === token)
-        if (oneRow.length === 3) {
+        // Проверить, что в строке есть 3 подряд токена
+        // Использую every, чтобы можно было прервать цикл
+        // Работает - также прееписать для столбцов и подумать над диагонлями 
+        // плюч задаватть >= 3/4 программно
+        let oneRow = 0
+        for (el of field[rw]) {
+            if (el.getValue() === token) {
+                oneRow++
+                if (oneRow >= winLine)
+                    break
+            } else {
+                oneRow = 0
+            }
+        }
+        if (oneRow >= winLine) {
             return true;
         }
-
         // Check win in a single column
-        const oneColumn = field.filter((el) => el[col].getValue() === token)
-        if (oneColumn.length === 3) {
+        let oneColumn = 0
+        for (el of field) {
+            if (el[cl].getValue() === token) {
+                oneColumn++
+                if (oneColumn >= winLine)
+                    break
+            } else {
+                oneColumn = 0
+            }
+        }
+        if (oneColumn >= winLine) {
             return true;
         }
 
@@ -58,7 +81,7 @@ const GameField = function(row) {
         const validDiagonal = [[0,0], [2,2], [0,2], [2,0], [1,1]]
         let found = false
         for (let i = 0; i < validDiagonal.length; i++){
-            if (validDiagonal[i][0] === row && validDiagonal[i][1] === col) {
+            if (validDiagonal[i][0] === rw && validDiagonal[i][1] === cl) {
                found = true 
                break
             }
