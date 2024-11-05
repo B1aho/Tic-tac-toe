@@ -1,5 +1,4 @@
-// Переделай алгоритм выигрыша для разных сценариев: как будто три должно оставаться, но само подвтерждение 
-// теперь другое. А для диагоналей вообще не подходит. Нужно что-то более универсальное
+// Разбей всё по модулям, после того как доделаешь игру, чекни как правильно рефакторить такой код
 // Добавить векторную графику и ИИ
 
 // Cell module with private value
@@ -288,14 +287,17 @@ OptionScreenControl = function() {
     const playBtn = document.querySelector(".play-btn")
     const xInput = document.querySelector("#player-x-input")
     const oInput = document.querySelector("#player-o-input")
+    const choosePlayers = document.querySelector(".players-radio")
     const optionScreen = document.querySelector(".option-screen")
     const handlePlay = () => {
         const row = document.querySelector('input[name="field"]:checked').value
-        const players = document.querySelector('input[name="players-number"]:checked').value
-        if (haveNames(Number(players))) {
+        const players = Number(document.querySelector('input[name="players-number"]:checked').value)
+        if (haveNames(players)) {
             console.log('have names')
             optionScreen.style.display = "none"
-            PlayScreenControl(xInput.value, oInput.value, Number(row) - 1)
+            players === 2 ? PlayScreenControl(xInput.value, oInput.value, Number(row) - 1) : PlayScreenControl(xInput.value, "AI", Number(row) - 1)
+            document.querySelector("#two-players").checked = true
+            resetInputs()
         } else {
             console.log('don have names')
             // Подсветить красным инпуты
@@ -303,12 +305,47 @@ OptionScreenControl = function() {
     }
     const haveNames = (playersNum) => {
         if (playersNum === 1) {
-            return xInput.value !== "" ? true : false
+            return xInput !== "" || oInput.value !== "" ? true : false
         } else if (playersNum === 2) {
             return xInput !== "" && oInput.value !== "" ? true : false
         }
     }
-    playBtn.addEventListener('click', handlePlay)
+
+    // If input value have non-empty string, other input block. If input value empty then all inputs avaliable
+    const handleInputBlock = (e) => {
+        if (e.target === xInput) {
+            if (xInput.value !== "") {
+                oInput.disabled = true
+            } else {
+                oInput.disabled = false
+            }
+        } else if (e.target === oInput) {
+            if (oInput.value !== "") {
+                xInput.disabled = true
+            } else {
+                xInput.disabled = false
+            }
+        }
+    }
+
+    const resetInputs = () => {
+        xInput.removeEventListener("input", handleInputBlock)
+        oInput.removeEventListener("input", handleInputBlock)
+        oInput.disabled = false
+        xInput.disabled = false
+        xInput.value = oInput.value = ""
+    }
+
+    // If one player was choses then only on input should be available for name writing
+    const handleInputs = (e) => {
+        resetInputs()
+        if (e.target.checked === true && e.target.value === "1") {
+            xInput.addEventListener("input", handleInputBlock)
+            oInput.addEventListener("input", handleInputBlock)
+        }
+    }
+    playBtn.addEventListener("click", handlePlay)
+    choosePlayers.addEventListener("change", handleInputs)
 }
 
 OptionScreenControl()
