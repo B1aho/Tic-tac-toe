@@ -150,12 +150,27 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
         activeTurn = players[0]
     }
 
+    // Будет получать номер 0 или 1 соответсвующий за кого аи играет
+    const moveAi = (idx) => {
+        const field = fieldControl.getField()
+        for (let i = 0; i <= rows; i++) {
+            for (let j = 0; j <= rows; j++) {
+                if (field[i][j].getValue() === defaultSymbol) {
+                    // делаем ход
+                    field[i][j].setValue(players[idx].token)
+                    return [i , j];
+                }
+            }
+        }
+    }
+
     return {
         turnMove,
         checkEnd,
         resetGame,
         field: fieldControl.getField,
         getActiveTurn,
+        moveAi,
     }
 }
 
@@ -167,12 +182,12 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     const moveDescription = document.querySelector('#move')
     const resetBtn = document.querySelector('#reset')
     const backBtn = document.querySelector('#back')
-
-    firstPlayerName = firstPlayerName === "" ? "AI" : firstPlayerName
-    secondPlayerName = secondPlayerName === "" ? "AI" : secondPlayerName
-
+    let gameActiveState = true
     const game = GameControl(firstPlayerName, secondPlayerName, row)
     const field = game.field()
+
+    const getToken = () => game.getActiveTurn().token
+
     // Функция рендерит игровое поле, как грид
     let cols = row
     const renderField = () => {
@@ -199,8 +214,6 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
         fieldWrap.style.gridTemplateColumns = `repeat(${cols + 1}, 1fr)`
         fieldWrap.addEventListener('click', handleClick)
     }
-    let gameActiveState = true
-    const getToken = () => game.getActiveTurn().token
 
     // Update data and render on click if have changes
     const handleClick = (e) => {
@@ -216,12 +229,18 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
             field[row][col].setValue(token)
             // update cell rendering
             target.innerText = token
-
+            // Check end
             let result = game.checkEnd(row, col)
             game.turnMove()
             controlMove(result)
+            // Блокируем клик, если один игрок
+            // Не работает правильно + в отдельную функцию выделить
+            if (typeof aiStrategy !== "undefined" && typeof result === "undefined") {
+                makeAiMove()
+            }
         }
     }
+
     // Change player's name into Cross player;s name and noliki player's name
     const renderPlayers = () => {
         nameDivOne = document.createElement("div")
@@ -246,6 +265,9 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
         resetField()
         controlMove(false)
         gameActiveState = true
+        if (game.getActiveTurn().playerName === "AI") {
+            makeAiMove()
+        }
     }
 
     // Нужно удалить всё что тут было нарисовано и отключить слушатели
@@ -278,12 +300,40 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
             moveDescription.innerText = `It is now ${game.getActiveTurn().playerName}'s turn!` 
         }
     }
+
+    const renderAiMove = (coords) => {
+        const col = coords[1]
+        const row = coords[0]
+        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = getToken()
+    }
+
+    // Выбираем стратегию для компьютера в алгоритме minmax, а также блокируем клик на первый ход, если компьютер крестик
+    const makeAiMove = () => {
+        gameActiveState = false
+        const aiCoords = game.moveAi(aiIdx)
+        renderAiMove(aiCoords)
+        result = game.checkEnd(aiCoords[0], aiCoords[1])
+        game.turnMove()
+        controlMove(result)
+        gameActiveState = result === "win" || result === "draw" ? false : true
+    }
+
     playScreen.style.display = 'block'
     renderPlayers()
     renderField()
     controlMove(false)
     resetBtn.addEventListener('click', handleReset)
     backBtn.addEventListener('click', handleBack)
+
+    let aiStrategy
+    let aiIdx
+    if (firstPlayerName === "AI" || secondPlayerName === "AI") {
+        aiStrategy = firstPlayerName === "AI" ? "max" : "min"
+        aiIdx = aiStrategy === "max" ? 0 : 1
+        if (aiStrategy === "max") {
+            makeAiMove()
+        }
+    }
 }
 
 OptionScreenControl = function() {
@@ -298,6 +348,8 @@ OptionScreenControl = function() {
         if (haveNames(players)) {
             console.log('have names')
             optionScreen.style.display = "none"
+            xInput.value = xInput.value === "" ? "AI" : xInput.value
+            oInput.value = oInput.value === "" ? "AI" : oInput.value
             PlayScreenControl(xInput.value, oInput.value, Number(row) - 1)
             document.querySelector("#two-players").checked = true
             resetInputs()
