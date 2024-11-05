@@ -168,6 +168,9 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     const resetBtn = document.querySelector('#reset')
     const backBtn = document.querySelector('#back')
 
+    firstPlayerName = firstPlayerName === "" ? "AI" : firstPlayerName
+    secondPlayerName = secondPlayerName === "" ? "AI" : secondPlayerName
+
     const game = GameControl(firstPlayerName, secondPlayerName, row)
     const field = game.field()
     // Функция рендерит игровое поле, как грид
@@ -295,7 +298,7 @@ OptionScreenControl = function() {
         if (haveNames(players)) {
             console.log('have names')
             optionScreen.style.display = "none"
-            players === 2 ? PlayScreenControl(xInput.value, oInput.value, Number(row) - 1) : PlayScreenControl(xInput.value, "AI", Number(row) - 1)
+            PlayScreenControl(xInput.value, oInput.value, Number(row) - 1)
             document.querySelector("#two-players").checked = true
             resetInputs()
         } else {
@@ -305,9 +308,9 @@ OptionScreenControl = function() {
     }
     const haveNames = (playersNum) => {
         if (playersNum === 1) {
-            return xInput !== "" || oInput.value !== "" ? true : false
+            return xInput.value !== "" || oInput.value !== "" ? true : false
         } else if (playersNum === 2) {
-            return xInput !== "" && oInput.value !== "" ? true : false
+            return xInput.value !== "" && oInput.value !== "" ? true : false
         }
     }
 
