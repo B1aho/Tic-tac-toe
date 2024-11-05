@@ -44,52 +44,61 @@ const GameField = function(row) {
     const checkEnd = (rw, cl) => {
         const token = field[rw][cl].getValue()
         const winLine = row > 3 ? 4 : 3
-        // Check win in a single row
-        // Проверить, что в строке есть 3 подряд токена
-        // Использую every, чтобы можно было прервать цикл
-        // Работает - также прееписать для столбцов и подумать над диагонлями 
-        // плюч задаватть >= 3/4 программно
+        // Check win in a row 
         let oneRow = 0
         for (el of field[rw]) {
             if (el.getValue() === token) {
                 oneRow++
                 if (oneRow >= winLine)
-                    break
+                    return true
             } else {
                 oneRow = 0
             }
         }
-        if (oneRow >= winLine) {
-            return true;
-        }
-        // Check win in a single column
+        // Check win in a column
         let oneColumn = 0
         for (el of field) {
             if (el[cl].getValue() === token) {
                 oneColumn++
                 if (oneColumn >= winLine)
-                    break
+                    return true
             } else {
                 oneColumn = 0
             }
         }
-        if (oneColumn >= winLine) {
-            return true;
-        }
-
         // Check win in a diagonals
-        const validDiagonal = [[0,0], [2,2], [0,2], [2,0], [1,1]]
-        let found = false
-        for (let i = 0; i < validDiagonal.length; i++){
-            if (validDiagonal[i][0] === rw && validDiagonal[i][1] === cl) {
-               found = true 
-               break
+        let mainX = rw
+        let mainY = cl
+        let mainDiag = 0
+        while (mainX > 0 && mainY > 0) {
+            mainX--
+            mainY--
+        }
+        for (let i  = mainX, j = mainY; i <= row && j <= row; i++, j++) {
+            if (field[i][j].getValue() === token) {
+                mainDiag++
+                if (mainDiag >= winLine)
+                    return true
+            } else {
+                mainDiag = 0
             }
         }
-        if (found) {
-            const mainDiag = field[0][0].getValue() === token && field[1][1].getValue() === token && field[2][2].getValue() === token
-            const secondaryDiag = field[0][2].getValue() === token && field[1][1].getValue() === token && field[2][0].getValue() === token
-            return (mainDiag || secondaryDiag) ? true : false;
+  
+        let secondX = rw
+        let secondY = cl
+        let secondDiag = 0
+        while (secondX < row && secondY > 0) {
+            secondX++
+            secondY--
+        }
+        for (let i  = secondX, j = secondY; i >= 0 && j <= row; i--, j++) {
+            if (field[i][j].getValue() === token) {
+                secondDiag++
+                if (secondDiag >= winLine)
+                    return true
+            } else {
+                secondDiag = 0
+            }
         }
     }
 
