@@ -1,5 +1,5 @@
 // Разбей всё по модулям, после того как доделаешь игру, чекни как правильно рефакторить такой код
-// Добавить векторную графику и ИИ
+// Добавить векторную графику (canvas) и ИИ
 
 // Cell module with private value
 const defaultSymbol = '*'
@@ -153,7 +153,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     // Будет получать номер 0 или 1 соответсвующий за кого аи играет
     // isMax можно не передавать, достаточно idx чтобы определить
     const moveAi = (idx, isMax) => {
-        let bestScore = -Infinity
+        let bestScore = isMax ? -Infinity : Infinity
+        const better = (a, b) => {
+            if (isMax) {
+                return a > b
+            } else 
+                return a < b
+        }
         let bestMove
         const saveMovesCounter = movesCounter 
         for (let i = 0; i <= rows; i++) {
@@ -164,7 +170,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     let score = minimax(0, !isMax, i, j)
                     field[i][j].setValue(defaultSymbol)
                     movesCounter--
-                    if (score > bestScore) {
+                    if (better(score, bestScore)) {
                         bestScore = score
                         bestMove = [i, j]
                     }
@@ -176,7 +182,6 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         return bestMove
     }
 
-    // Нужно как-то понимать, что проиграл
     const scores = {
         win: 10,
         lose: -10,
@@ -187,9 +192,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         let result = checkEnd(rw, cl)
         if (result === "win" || result === "draw") {
             if (result === "win") {
-                result = field[rw][cl] === getActiveTurn().token ? "win" : "lose"
+                result =  !isMax ? "win" : "lose" 
             }
-            return scores[result]
+            return scores[result] - depth
         }
         if (isMax) {
             let bestScore = -Infinity
@@ -198,7 +203,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     if (field[i][j].getValue() === defaultSymbol) {
                         field[i][j].setValue(players[0].token)
                         movesCounter++
-                        let score = minimax(depth + 1, false, i, j)
+                        let score = minimax(depth + 1, false, i, j) 
                         field[i][j].setValue(defaultSymbol)
                         movesCounter--
                         bestScore = Math.max(score, bestScore)
