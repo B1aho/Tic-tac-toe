@@ -167,7 +167,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 if (field[i][j].getValue() === defaultSymbol) {
                     field[i][j].setValue(players[idx].token)
                     movesCounter++
-                    let score = minimax(0, !isMax, i, j)
+                    let score = minimax(0, !isMax, i, j, -Infinity, Infinity)
                     field[i][j].setValue(defaultSymbol)
                     movesCounter--
                     if (better(score, bestScore)) {
@@ -188,7 +188,10 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         draw: 0,
     }
 
-    const minimax = (depth, isMax, rw, cl) => {
+    /*
+    https://www.youtube.com/watch?v=l-hh51ncgDI
+    */
+    const minimax = (depth, isMax, rw, cl, alpha, beta) => {
         let result = checkEnd(rw, cl)
         if (result === "win" || result === "draw") {
             if (result === "win") {
@@ -203,10 +206,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     if (field[i][j].getValue() === defaultSymbol) {
                         field[i][j].setValue(players[0].token)
                         movesCounter++
-                        let score = minimax(depth + 1, false, i, j) 
+                        let score = minimax(depth + 1, false, i, j, alpha, beta) 
                         field[i][j].setValue(defaultSymbol)
                         movesCounter--
                         bestScore = Math.max(score, bestScore)
+                        alpha = Math.max(alpha, score)
+                        if (beta <= alpha)
+                            return 0;
                     }
                 }
             }
@@ -218,10 +224,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     if (field[i][j].getValue() === defaultSymbol) {
                         field[i][j].setValue(players[1].token)
                         movesCounter++
-                        let score = minimax(depth + 1, true, i, j)
+                        let score = minimax(depth + 1, true, i, j, alpha, beta)
                         field[i][j].setValue(defaultSymbol)
                         movesCounter--
                         bestScore = Math.min(score, bestScore)
+                        beta = Math.min(score, beta)
+                        if (beta <= alpha)
+                            return 0;
                     }
                 }
             }
