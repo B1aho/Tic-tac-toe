@@ -7,3 +7,9 @@
 .play-screen, .computer-input {
     display: none;
 }
+
+#field-wrapper > * {
+    outline: 1px solid black;
+    min-height: 50px;
+    text-align: center;
+}
