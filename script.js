@@ -3,7 +3,7 @@
 
 // Cell module with private value
 const defaultSymbol = '*'
-const Cell = function() {
+const Cell = function () {
     let value = defaultSymbol
     const getValue = () => {
         return value;
@@ -20,7 +20,7 @@ const Cell = function() {
 }
 
 // Game field with the grid of cells. Object represent all logic about manipulations on the field and private field
-const GameField = function(row) {
+const GameField = function (row) {
     const field = []
 
     const initField = (() => {
@@ -73,7 +73,7 @@ const GameField = function(row) {
             mainX--
             mainY--
         }
-        for (let i  = mainX, j = mainY; i <= row && j <= row; i++, j++) {
+        for (let i = mainX, j = mainY; i <= row && j <= row; i++, j++) {
             if (field[i][j].getValue() === token) {
                 mainDiag++
                 if (mainDiag >= winLine)
@@ -82,7 +82,7 @@ const GameField = function(row) {
                 mainDiag = 0
             }
         }
-  
+
         let secondX = rw
         let secondY = cl
         let secondDiag = 0
@@ -90,7 +90,7 @@ const GameField = function(row) {
             secondX++
             secondY--
         }
-        for (let i  = secondX, j = secondY; i >= 0 && j <= row; i--, j++) {
+        for (let i = secondX, j = secondY; i >= 0 && j <= row; i--, j++) {
             if (field[i][j].getValue() === token) {
                 secondDiag++
                 if (secondDiag >= winLine)
@@ -109,7 +109,7 @@ const GameField = function(row) {
 }
 
 // Game module. All game loop logic here
-const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two', rows) {
+const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two', rows) {
     const players = [
         {
             playerName: playerOne,
@@ -121,6 +121,7 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
     ]
     const fieldControl = GameField(rows)
+    const field = fieldControl.getField()
     let activeTurn = players[0]
     let movesCounter = 0
     // рассчитываем по row
@@ -134,7 +135,7 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 
     const checkEnd = (row, col) => {
-       if (movesCounter >= minMovesToCheck && fieldControl.checkEnd(Number(row), Number(col))) {
+        if (movesCounter >= minMovesToCheck && fieldControl.checkEnd(Number(row), Number(col))) {
             return "win"
         } else if (movesCounter === maxMoves) {
             return 'draw';
@@ -142,7 +143,6 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 
     const resetGame = () => {
-        let field = fieldControl.getField()
         console.table(field.map(el => el.map(cell => cell.getValue())))
         fieldControl.resetField()
         console.table(field.map(el => el.map(cell => cell.getValue())))
@@ -151,16 +151,76 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 
     // Будет получать номер 0 или 1 соответсвующий за кого аи играет
-    const moveAi = (idx) => {
-        const field = fieldControl.getField()
+    // isMax можно не передавать, достаточно idx чтобы определить
+    const moveAi = (idx, isMax) => {
+        let bestScore = -Infinity
+        let bestMove
+        const saveMovesCounter = movesCounter 
         for (let i = 0; i <= rows; i++) {
             for (let j = 0; j <= rows; j++) {
                 if (field[i][j].getValue() === defaultSymbol) {
-                    // делаем ход
                     field[i][j].setValue(players[idx].token)
-                    return [i , j];
+                    movesCounter++
+                    let score = minimax(0, !isMax, i, j)
+                    field[i][j].setValue(defaultSymbol)
+                    movesCounter--
+                    if (score > bestScore) {
+                        bestScore = score
+                        bestMove = [i, j]
+                    }
                 }
             }
+        }
+        field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
+        movesCounter = saveMovesCounter
+        return bestMove
+    }
+
+    // Нужно как-то понимать, что проиграл
+    const scores = {
+        win: 10,
+        lose: -10,
+        draw: 0,
+    }
+
+    const minimax = (depth, isMax, rw, cl) => {
+        let result = checkEnd(rw, cl)
+        if (result === "win" || result === "draw") {
+            if (result === "win") {
+                result = field[rw][cl] === getActiveTurn().token ? "win" : "lose"
+            }
+            return scores[result]
+        }
+        if (isMax) {
+            let bestScore = -Infinity
+            for (let i = 0; i <= rows; i++) {
+                for (let j = 0; j <= rows; j++) {
+                    if (field[i][j].getValue() === defaultSymbol) {
+                        field[i][j].setValue(players[0].token)
+                        movesCounter++
+                        let score = minimax(depth + 1, false, i, j)
+                        field[i][j].setValue(defaultSymbol)
+                        movesCounter--
+                        bestScore = Math.max(score, bestScore)
+                    }
+                }
+            }
+            return bestScore
+        } else {
+            let bestScore = Infinity
+            for (let i = 0; i <= rows; i++) {
+                for (let j = 0; j <= rows; j++) {
+                    if (field[i][j].getValue() === defaultSymbol) {
+                        field[i][j].setValue(players[1].token)
+                        movesCounter++
+                        let score = minimax(depth + 1, true, i, j)
+                        field[i][j].setValue(defaultSymbol)
+                        movesCounter--
+                        bestScore = Math.min(score, bestScore)
+                    }
+                }
+            }
+            return bestScore
         }
     }
 
@@ -168,13 +228,13 @@ const GameControl = function( playerOne = 'Player-One', playerTwo = 'Player-Two'
         turnMove,
         checkEnd,
         resetGame,
-        field: fieldControl.getField,
+        field,
         getActiveTurn,
         moveAi,
     }
 }
 
-const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
+const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
     const fieldContainer = document.querySelector('.field')
     const playScreen = document.querySelector('.play-screen')
     const playerOneDiv = document.querySelector('#player-1')
@@ -184,7 +244,7 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     const backBtn = document.querySelector('#back')
     let gameActiveState = true
     const game = GameControl(firstPlayerName, secondPlayerName, row)
-    const field = game.field()
+    const field = game.field
 
     const getToken = () => game.getActiveTurn().token
 
@@ -204,7 +264,7 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
                 btn.className = 'cell'
                 btn.dataset.column = columns++
                 btn.dataset.row = rows
-                if (columns === cols + 1) 
+                if (columns === cols + 1)
                     columns = 0
                 fieldWrap.append(btn)
             }
@@ -234,7 +294,6 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
             game.turnMove()
             controlMove(result)
             // Блокируем клик, если один игрок
-            // Не работает правильно + в отдельную функцию выделить
             if (typeof aiStrategy !== "undefined" && typeof result === "undefined") {
                 makeAiMove()
             }
@@ -288,16 +347,16 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     }
 
     // Сделать просто changeMove, и добавлять аттрибут актив терн, чтобы подсвечивать рамку
-    const controlMove = (isEnd) => { 
+    const controlMove = (isEnd) => {
         if (isEnd === 'win') {
             game.turnMove()
-            moveDescription.innerText = `${game.getActiveTurn().playerName} is the winner. Congratulation!` 
+            moveDescription.innerText = `${game.getActiveTurn().playerName} is the winner. Congratulation!`
             gameActiveState = false
         } else if (isEnd === 'draw') {
             moveDescription.innerText = `Draw. No one lose..`
             gameActiveState = false
         } else {
-            moveDescription.innerText = `It is now ${game.getActiveTurn().playerName}'s turn!` 
+            moveDescription.innerText = `It is now ${game.getActiveTurn().playerName}'s turn!`
         }
     }
 
@@ -308,9 +367,12 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     }
 
     // Выбираем стратегию для компьютера в алгоритме minmax, а также блокируем клик на первый ход, если компьютер крестик
+    let aiStrategy
+    let aiIdx
+
     const makeAiMove = () => {
         gameActiveState = false
-        const aiCoords = game.moveAi(aiIdx)
+        const aiCoords = game.moveAi(aiIdx, aiStrategy === "max" ? true : false)
         renderAiMove(aiCoords)
         result = game.checkEnd(aiCoords[0], aiCoords[1])
         game.turnMove()
@@ -325,8 +387,6 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     resetBtn.addEventListener('click', handleReset)
     backBtn.addEventListener('click', handleBack)
 
-    let aiStrategy
-    let aiIdx
     if (firstPlayerName === "AI" || secondPlayerName === "AI") {
         aiStrategy = firstPlayerName === "AI" ? "max" : "min"
         aiIdx = aiStrategy === "max" ? 0 : 1
@@ -336,7 +396,7 @@ const PlayScreenControl = function(firstPlayerName, secondPlayerName, row) {
     }
 }
 
-OptionScreenControl = function() {
+OptionScreenControl = function () {
     const playBtn = document.querySelector(".play-btn")
     const xInput = document.querySelector("#player-x-input")
     const oInput = document.querySelector("#player-o-input")
