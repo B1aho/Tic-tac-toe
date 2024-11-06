@@ -184,17 +184,64 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         return bestMove
     }
 
-    const scores = {
-        win: 10,
-        lose: -10,
-        draw: 0,
+    const heuristic = (player) => {
+        const opponent = player === 'X' ? 'O' : 'X';
+        let score = 0;
+    
+        // Оценка строк
+        for (let row = 0; row < 3; row++) {
+            score += evaluateLine([field[row][0], field[row][1], field[row][2]], player, opponent);
+        }
+    
+        // Оценка столбцов
+        for (let col = 0; col < 3; col++) {
+            score += evaluateLine([field[0][col], field[1][col], field[2][col]], player, opponent);
+        }
+    
+        // Оценка диагоналей
+        score += evaluateLine([field[0][0], field[1][1], field[2][2]], player, opponent);
+        score += evaluateLine([field[1][1], field[2][2], field[3][3]], player, opponent);
+        score += evaluateLine([field[0][3], field[1][2], field[2][1]], player, opponent);
+        score += evaluateLine([field[1][2], field[2][1], field[3][0]], player, opponent);
+    
+        return score;
+    }
+    
+    const evaluateLine = (line, player, opponent) => {
+        if (line.filter(cell => cell.getValue() === player).length === 3) {
+            return 100; // Выигрышная линия для игрока
+        } else if (line.filter(cell => cell.getValue() === player).length === 2 && line.includes(defaultSymbol)) {
+            return 10; // Два символа игрока и один пробел
+        } else if (line.filter(cell => cell.getValue() === player).length === 1 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
+            return 1; // Один символ игрока и два пробела
+        } else if (line.filter(cell => cell.getValue() === opponent).length === 3) {
+            return -100; // Выигрышная линия для соперника
+        } else if (line.filter(cell => cell.getValue() === opponent).length === 2 && line.includes(defaultSymbol)) {
+            return -10; // Два символа соперника и один пробел
+        } else if (line.filter(cell => cell.getValue() === opponent).length === 1 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
+            return -1; // Один символ соперника и два пробела
+        }
+        return 0; // Нейтральная линия
     }
 
+    const scores = {
+        win: 100,
+        lose: -100,
+        draw: 0,
+    }
+    const depthMax = rows > 2 ? 5 : 10
     /*
     https://www.youtube.com/watch?v=l-hh51ncgDI
+    Осталось ограничить вычисления какой-то глубиной дальше которой минимакс не будет анализировать ходы до победы,
+    а будет анализировать их статично, по каким-то другим условиям, чтобы не падала производительность
+    https://stackoverflow.com/questions/51427156/how-to-solve-tic-tac-toe-4x4-game-using-minimax-algorithm-and-alpha-beta-pruning
     */
     const minimax = (depth, isMax, rw, cl, alpha, beta) => {
         let result = checkEnd(rw, cl)
+        // Закончить игру оценив доску статическим методов
+        if (depth >= depthMax) {
+            return heuristic(isMax ? 'X' : 'O')
+        }
         if (result === "win" || result === "draw") {
             if (result === "win") {
                 result =  !isMax ? "win" : "lose" 
