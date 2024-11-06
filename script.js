@@ -167,7 +167,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 if (field[i][j].getValue() === defaultSymbol) {
                     field[i][j].setValue(players[idx].token)
                     movesCounter++
+                    console.time("Minimax")
                     let score = minimax(0, !isMax, i, j, -Infinity, Infinity)
+                    console.timeEnd("Minimax")
                     field[i][j].setValue(defaultSymbol)
                     movesCounter--
                     if (better(score, bestScore)) {
@@ -201,6 +203,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
         if (isMax) {
             let bestScore = -Infinity
+            let breakCheck = false
             for (let i = 0; i <= rows; i++) {
                 for (let j = 0; j <= rows; j++) {
                     if (field[i][j].getValue() === defaultSymbol) {
@@ -211,14 +214,20 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                         movesCounter--
                         bestScore = Math.max(score, bestScore)
                         alpha = Math.max(alpha, score)
-                        if (beta <= alpha)
-                            return 0;
+                        if (beta <= alpha){ 
+                            breakCheck = true
+                            break
+                        }
                     }
+                }
+                if (breakCheck){
+                    break
                 }
             }
             return bestScore
         } else {
             let bestScore = Infinity
+            let breakCheck = false
             for (let i = 0; i <= rows; i++) {
                 for (let j = 0; j <= rows; j++) {
                     if (field[i][j].getValue() === defaultSymbol) {
@@ -229,9 +238,14 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                         movesCounter--
                         bestScore = Math.min(score, bestScore)
                         beta = Math.min(score, beta)
-                        if (beta <= alpha)
-                            return 0;
+                        if (beta <= alpha){ 
+                            breakCheck = true
+                            break
+                        }
                     }
+                }
+                if (breakCheck){
+                    break
                 }
             }
             return bestScore
