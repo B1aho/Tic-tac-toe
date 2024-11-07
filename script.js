@@ -158,26 +158,73 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         activeTurn = players[0]
     }
 
+    function getPossibleMoves() {
+        const moves = [];
+        for (let row = 0; row <= size; row++) {
+            for (let col = 0; col <= size; col++) {
+                if (field[row][col].getValue() === defaultSymbol) moves.push([row, col]);
+            }
+        }
+        return moves;
+    }
+
+    // Оценить и отсортировать ходы по их выгодности
+    function sortMovesByHeuristic(moves, player) {
+        return moves.sort((a, b) => {
+            field[a[0]][a[1]].setValue(player)
+            const scoreA = heuristic(player)
+            field[a[0]][a[1]].setValue(defaultSymbol)
+
+            field[b[0]][b[1]].setValue(player)
+            const scoreB = heuristic(player)
+            field[b[0]][b[1]].setValue(defaultSymbol)
+
+            return scoreB - scoreA; // Сортировка по убыванию
+        });
+    }
+
+    const better = (a, b, isMax) => {
+        if (isMax) {
+            return a > b
+        } else
+            return a < b
+    }
     // Будет получать номер 0 или 1 соответсвующий за кого аи играет
     // isMax можно не передавать, достаточно idx чтобы определить
     const moveAi = (idx, isMax) => {
-        if (size >= 3 && movesCounter > 4) {
+        if (size >= 3 && movesCounter > 5) {
             depthMax += 1
         }
         let bestScore = isMax ? -Infinity : Infinity
-        const better = (a, b) => {
-            if (isMax) {
-                return a > b
-            } else
-                return a < b
-        }
         let bestMove
         const saveMovesCounter = movesCounter
-        if (movesCounter === 0 && size === 4) {
-            bestMove = bestAiMoves.firstIn5
-            field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
-            return bestMove
+        /*  if (movesCounter === 0 && size === 4) {
+              bestMove = bestAiMoves.firstIn5
+              field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
+              return bestMove
+          }*/
+
+        // Генерация и сортировка возможных ходов
+        let possibleMoves = getPossibleMoves();
+        possibleMoves = sortMovesByHeuristic(possibleMoves, players[idx].token);
+
+        for (const move of possibleMoves) {
+            // Выполнить ход
+            field[move[0]][move[1]].setValue(players[idx].token) 
+            console.time("Minimax")
+            // Рекурсивный вызов минимакса
+            const score = minimax(1, !isMax, move[0], move[1], -Infinity, Infinity)
+            console.timeEnd("Minimax")
+            // Откатить ход
+            field[move[0]][move[1]].setValue(defaultSymbol)
+    
+            // Обновить лучший счёт
+            if (better(score, bestScore, isMax)) {
+                bestScore = score
+                bestMove = [move[0], move[1]]
+            }
         }
+/*
         for (let i = 0; i <= size; i++) {
             for (let j = 0; j <= size; j++) {
                 if (field[i][j].getValue() === defaultSymbol) {
@@ -194,9 +241,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     }
                 }
             }
-        }
+        }*/
         field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
-        movesCounter = saveMovesCounter
+      //  movesCounter = saveMovesCounter
         return bestMove
     }
 
@@ -292,6 +339,35 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         let bestScore = isMax ? -Infinity : Infinity
         let breakCheck = false
         let token = isMax ? players[0].token : players[1].token
+        // Генерация и сортировка возможных ходов
+        let possibleMoves = getPossibleMoves();
+        possibleMoves = sortMovesByHeuristic(possibleMoves, token);
+
+        for (const move of possibleMoves) {
+            // Выполнить ход
+            field[move[0]][move[1]].setValue(token)
+            movesCounter++
+            // Рекурсивный вызов минимакса
+            const score = minimax(depth + 1, !isMax, move[0], move[1], -Infinity, Infinity);
+    
+            // Откатить ход
+            field[move[0]][move[1]].setValue(defaultSymbol)
+            movesCounter--
+
+            // Обновить лучший счёт
+            if (isMax) {
+                bestScore = Math.max(bestScore, score);
+                alpha = Math.max(alpha, score);
+            } else {
+                bestScore = Math.min(bestScore, score);
+                beta = Math.min(beta, score);
+            }
+    
+            // Альфа-бета обрезка
+            if (beta <= alpha) break;
+        }
+
+/*
         for (let i = 0; i <= size; i++) {
             for (let j = 0; j <= size; j++) {
                 if (field[i][j].getValue() === defaultSymbol) {
@@ -315,6 +391,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 break
             }
         }
+            */
         return bestScore
     }
 
