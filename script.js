@@ -147,7 +147,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
     }
 
-    let depthMax = size > 2 ? 5 : 100
+    let depthMax = size >= 3 ? 5 : 100
 
     const resetGame = () => {
         console.table(field.map(el => el.map(cell => cell.getValue())))
@@ -159,10 +159,17 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 
     function getPossibleMoves() {
+        const centerRow = Math.floor(size / 2);
+        const centerCol = Math.floor(size / 2);
         const moves = [];
         for (let row = 0; row <= size; row++) {
             for (let col = 0; col <= size; col++) {
-                if (field[row][col].getValue() === defaultSymbol) moves.push([row, col]);
+                if (field[row][col].getValue() === defaultSymbol) {
+                    //const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol)
+                    const distanceFromCenter = Math.sqrt(Math.pow(row - centerRow, 2) + Math.pow(col - centerCol, 2))
+                    const centerWeight = 5 - distanceFromCenter // Чем ближе к центру, тем выше значение
+                    moves.push([row, col, centerWeight])
+                }
             }
         }
         return moves;
@@ -170,6 +177,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
     // Оценить и отсортировать ходы по их выгодности
     function sortMovesByHeuristic(moves, player) {
+        return moves.sort((a, b) => b[2] - a[2]);
+        /*
         return moves.sort((a, b) => {
             field[a[0]][a[1]].setValue(player)
             const scoreA = heuristic(player)
@@ -180,7 +189,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             field[b[0]][b[1]].setValue(defaultSymbol)
 
             return scoreB - scoreA; // Сортировка по убыванию
-        });
+        });*/
     }
 
     const better = (a, b, isMax) => {
@@ -197,7 +206,6 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
         let bestScore = isMax ? -Infinity : Infinity
         let bestMove
-        const saveMovesCounter = movesCounter
         /*  if (movesCounter === 0 && size === 4) {
               bestMove = bestAiMoves.firstIn5
               field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
@@ -206,79 +214,102 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves();
-        possibleMoves = sortMovesByHeuristic(possibleMoves, players[idx].token);
+        if (size > 3) {
+            possibleMoves = sortMovesByHeuristic(possibleMoves, players[idx].token);
+        }
 
         for (const move of possibleMoves) {
             // Выполнить ход
-            field[move[0]][move[1]].setValue(players[idx].token) 
+            field[move[0]][move[1]].setValue(players[idx].token)
             console.time("Minimax")
             // Рекурсивный вызов минимакса
             const score = minimax(1, !isMax, move[0], move[1], -Infinity, Infinity)
             console.timeEnd("Minimax")
             // Откатить ход
             field[move[0]][move[1]].setValue(defaultSymbol)
-    
+
             // Обновить лучший счёт
             if (better(score, bestScore, isMax)) {
                 bestScore = score
                 bestMove = [move[0], move[1]]
             }
         }
-/*
-        for (let i = 0; i <= size; i++) {
-            for (let j = 0; j <= size; j++) {
-                if (field[i][j].getValue() === defaultSymbol) {
-                    field[i][j].setValue(players[idx].token)
-                    //movesCounter++
-                    console.time("Minimax")
-                    let score = minimax(0, !isMax, i, j, -Infinity, Infinity)
-                    console.timeEnd("Minimax")
-                    field[i][j].setValue(defaultSymbol)
-                    //movesCounter--
-                    if (better(score, bestScore)) {
-                        bestScore = score
-                        bestMove = [i, j]
+        /*
+                for (let i = 0; i <= size; i++) {
+                    for (let j = 0; j <= size; j++) {
+                        if (field[i][j].getValue() === defaultSymbol) {
+                            field[i][j].setValue(players[idx].token)
+                            //movesCounter++
+                            console.time("Minimax")
+                            let score = minimax(0, !isMax, i, j, -Infinity, Infinity)
+                            console.timeEnd("Minimax")
+                            field[i][j].setValue(defaultSymbol)
+                            //movesCounter--
+                            if (better(score, bestScore)) {
+                                bestScore = score
+                                bestMove = [i, j]
+                            }
+                        }
                     }
-                }
-            }
-        }*/
+                }*/
         field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
-      //  movesCounter = saveMovesCounter
+        //  movesCounter = saveMovesCounter
         return bestMove
     }
 
     const heuristic = (player) => {
         const opponent = player === 'X' ? 'O' : 'X';
         let score = 0;
-
+        const centerRow = Math.floor(size / 2);
+        const centerCol = Math.floor(size / 2);
         // Оценка строк
         for (let row = 0; row < size; row++) {
-            for (let col = 0; col <= size - 4; col++) {
+            for (let col = 0; col <= size - 3; col++) {
                 score += evaluateLine([field[row][col], field[row][col + 1], field[row][col + 2], field[row][col + 3]], player, opponent);
             }
         }
 
         // Оценка столбцов
         for (let col = 0; col < size; col++) {
-            for (let row = 0; row <= size - 4; row++) {
+            for (let row = 0; row <= size - 3; row++) {
                 score += evaluateLine([field[row][col], field[row + 1][col], field[row + 2][col], field[row + 3][col]], player, opponent);
             }
         }
 
         // Проверяем диагонали (слева-направо)
-        for (let row = 0; row <= size - 4; row++) {
-            for (let col = 0; col <= size - 4; col++) {
+        for (let row = 0; row <= size - 3; row++) {
+            for (let col = 0; col <= size - 3; col++) {
                 score += evaluateLine([field[row][col], field[row + 1][col + 1], field[row + 2][col + 2], field[row + 3][col + 3]], player, opponent);
             }
         }
 
         // Проверяем диагонали (справа-налево)
-        for (let row = 0; row <= size - 4; row++) {
+        for (let row = 0; row <= size - 3; row++) {
             for (let col = 3; col < size; col++) {
-                score += evaluateLine([field[row][col], field[row + 1][col - 1], field[row + 2][col - 2], field[row + 3][col - 3]], player, opponent);
+                let res = evaluateLine([field[row][col], field[row + 1][col - 1], field[row + 2][col - 2], field[row + 3][col - 3]], player, opponent)
+                if (res > 0)
+                    score += res + 4
+                else if (res < 0)
+                    score += res - 4
+                else 
+                    score += res
             }
         }
-
+        
+       /* if (size >= 3) {
+            // Добавляем поправку на центр
+            for (let row = 0; row < size; row++) {
+                for (let col = 0; col < size; col++) {
+                    if (field[row][col] === player) {
+                        const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
+                        score += (10 - distanceFromCenter); // Чем ближе к центру, тем выше бонус
+                    } else if (field[row][col] === opponent) {
+                        const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
+                        score -= (10 - distanceFromCenter); // Наказываем за центр соперника
+                    }
+                }
+            }
+        }*/
         return score;
     }
 
@@ -337,11 +368,12 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             return returnVal
         }
         let bestScore = isMax ? -Infinity : Infinity
-        let breakCheck = false
         let token = isMax ? players[0].token : players[1].token
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves();
-        possibleMoves = sortMovesByHeuristic(possibleMoves, token);
+        if (size > 3) {
+            possibleMoves = sortMovesByHeuristic(possibleMoves, token);
+        }
 
         for (const move of possibleMoves) {
             // Выполнить ход
@@ -349,7 +381,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             movesCounter++
             // Рекурсивный вызов минимакса
             const score = minimax(depth + 1, !isMax, move[0], move[1], -Infinity, Infinity);
-    
+
             // Откатить ход
             field[move[0]][move[1]].setValue(defaultSymbol)
             movesCounter--
@@ -362,36 +394,36 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 bestScore = Math.min(bestScore, score);
                 beta = Math.min(beta, score);
             }
-    
+
             // Альфа-бета обрезка
             if (beta <= alpha) break;
         }
 
-/*
-        for (let i = 0; i <= size; i++) {
-            for (let j = 0; j <= size; j++) {
-                if (field[i][j].getValue() === defaultSymbol) {
-                    field[i][j].setValue(token)
-                    movesCounter++
-                    let score = minimax(depth + 1, !isMax, i, j, alpha, beta)
-                    field[i][j].setValue(defaultSymbol)
-                    movesCounter--
-                    bestScore = isMax ? Math.max(score, bestScore) : Math.min(score, bestScore)
-                    if (isMax)
-                        alpha = Math.max(alpha, score)
-                    else
-                        beta = Math.min(score, beta)
-                    if (beta <= alpha) {
-                        breakCheck = true
+        /*
+                for (let i = 0; i <= size; i++) {
+                    for (let j = 0; j <= size; j++) {
+                        if (field[i][j].getValue() === defaultSymbol) {
+                            field[i][j].setValue(token)
+                            movesCounter++
+                            let score = minimax(depth + 1, !isMax, i, j, alpha, beta)
+                            field[i][j].setValue(defaultSymbol)
+                            movesCounter--
+                            bestScore = isMax ? Math.max(score, bestScore) : Math.min(score, bestScore)
+                            if (isMax)
+                                alpha = Math.max(alpha, score)
+                            else
+                                beta = Math.min(score, beta)
+                            if (beta <= alpha) {
+                                breakCheck = true
+                                break
+                            }
+                        }
+                    }
+                    if (breakCheck) {
                         break
                     }
                 }
-            }
-            if (breakCheck) {
-                break
-            }
-        }
-            */
+                    */
         return bestScore
     }
 
