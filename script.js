@@ -1,8 +1,4 @@
 /*
-    1. Оптимизируй функцию поиска победы, аналогично эвристической функции, (захардкодить дигонали для каждого поле, мб так быстрее)
-    2. Для игры 4x4 сделай 4 зачеркивания до победы
-    3. Проверь еще раз эвристическую функцию на работоспособность
-    4. Возможно исключим поле 6x6 из игры для одного игрока
     5. Захардкодить первые лучшие ходы для аи, и мб некоторые комбинации
     6. Изменять глубину когда применяется эвристическая функция, в зависимости от кол-ва сделанных ходов
 */
@@ -150,18 +146,24 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             return 'draw';
         }
     }
+    
+    let depthMax = size > 2 ? 5 : 100
 
     const resetGame = () => {
         console.table(field.map(el => el.map(cell => cell.getValue())))
         fieldControl.resetField()
         console.table(field.map(el => el.map(cell => cell.getValue())))
         movesCounter = 0
+        depthMax = size > 2 ? 5 : 100
         activeTurn = players[0]
     }
 
     // Будет получать номер 0 или 1 соответсвующий за кого аи играет
     // isMax можно не передавать, достаточно idx чтобы определить
     const moveAi = (idx, isMax) => {
+        if (size >= 3 && movesCounter > 4) {
+            depthMax += 1
+        }
         let bestScore = isMax ? -Infinity : Infinity
         const better = (a, b) => {
             if (isMax) {
@@ -171,6 +173,11 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
         let bestMove
         const saveMovesCounter = movesCounter
+        if (movesCounter === 0 && size === 4) {
+            bestMove = bestAiMoves.firstIn5
+            field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
+            return bestMove
+        }
         for (let i = 0; i <= size; i++) {
             for (let j = 0; j <= size; j++) {
                 if (field[i][j].getValue() === defaultSymbol) {
@@ -231,27 +238,33 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     const evaluateLine = (line, player, opponent) => {
         const winLine = 4
         if (line.filter(cell => cell.getValue() === player).length === winLine) {
-            return 100; // Выигрышная линия для игрока
+            return 10000; // Выигрышная линия для игрока
         } else if (line.filter(cell => cell.getValue() === player).length === winLine - 1 && line.includes(defaultSymbol)) {
-            return 15; // Два символа игрока и один пробел
+            return 500; // Два символа игрока и один пробел
         } else if (line.filter(cell => cell.getValue() === player).length === winLine - 2 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
-            return 5; // Один символ игрока и два пробела
+            return 50; // Один символ игрока и два пробела
         } else if (line.filter(cell => cell.getValue() === opponent).length === winLine) {
-            return -100; // Выигрышная линия для соперника
+            return -10000; // Выигрышная линия для соперника
         } else if (line.filter(cell => cell.getValue() === opponent).length === winLine - 1 && line.includes(defaultSymbol)) {
-            return -15; // Два символа соперника и один пробел
+            return -500; // Два символа соперника и один пробел
         } else if (line.filter(cell => cell.getValue() === opponent).length === winLine - 2 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
-            return -5; // Один символ соперника и два пробела
+            return -50; // Один символ соперника и два пробела
         }
         return 0; // Нейтральная линия
     }
 
     const scores = {
-        win: 100,
-        lose: -100,
+        win: 10000,
+        lose: -10000,
         draw: 0,
     }
-    const depthMax = size > 2 ? 5 : 100
+
+    // Захардкодить лучшие ходы для разных ситуаций, лучше объект, где свойства своим именем поисывают ситуацию для хода
+    const bestAiMoves = {
+        firstIn3: [],
+        firstIn4: [],
+        firstIn5: [0, 0],
+    }
     /*
     https://www.youtube.com/watch?v=l-hh51ncgDI
     Осталось ограничить вычисления какой-то глубиной дальше которой минимакс не будет анализировать ходы до победы,
@@ -259,11 +272,11 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     https://stackoverflow.com/questions/51427156/how-to-solve-tic-tac-toe-4x4-game-using-minimax-algorithm-and-alpha-beta-pruning
     */
     const minimax = (depth, isMax, rw, cl, alpha, beta) => {
-        let result = checkEnd(rw, cl)
         // Закончить игру оценив доску статическим методов
         if (depth >= depthMax) {
             return heuristic(isMax ? 'X' : 'O')
         }
+        let result = checkEnd(rw, cl)
         if (result === "win" || result === "draw") {
             if (result === "win") {
                 result = !isMax ? "win" : "lose"
@@ -273,7 +286,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             } else if (result === "lose") {
                 returnVal = scores[result] + depth
             } else
-                returnVal = scores[result] + depth
+                returnVal = scores[result] 
             return returnVal
         }
         if (isMax) {
