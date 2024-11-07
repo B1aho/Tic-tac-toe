@@ -350,30 +350,14 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         firstIn5: [0, 0],
     }
 
-    const getHash = () => {
-        const board = []
-        for (let i = 0; i <= size; i++) {
-            board[i] = []
-            for (let j = 0; j <= size; j++) {
-                board[i][j] = field[i][j].getValue()
-            }
-        }
-        return board.map(row => row.join('')).join(',')
-    }
     /*
     https://www.youtube.com/watch?v=l-hh51ncgDI
     Осталось ограничить вычисления какой-то глубиной дальше которой минимакс не будет анализировать ходы до победы,
     а будет анализировать их статично, по каким-то другим условиям, чтобы не падала производительность
     https://stackoverflow.com/questions/51427156/how-to-solve-tic-tac-toe-4x4-game-using-minimax-algorithm-and-alpha-beta-pruning
     */
-    const minimax = (depth, isMax, rw, cl, alpha, beta) => {
-        // Хеширование не работает по причине того, что мне надо преобразовать доску к массиву значениц, а не объектов
-        
-        const fieldHash = getHash()
-        if (memo[fieldHash]) {
-            return memo[fieldHash];
-        }
-          // Закончить игру оценив доску статическим методов
+    const minimax = (depth, isMax, rw, cl, alpha, beta) => {        
+        // Закончить игру оценив доску статическим методов
         if (depth >= depthMax) {
             return heuristic(isMax ? 'X' : 'O')
         }
@@ -448,7 +432,6 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     }
                 }
                     */
-        memo[fieldHash] = bestScore;
         return bestScore
     }
 
