@@ -1,5 +1,14 @@
+/*
+    1. Оптимизируй функцию поиска победы, аналогично эвристической функции, (захардкодить дигонали для каждого поле, мб так быстрее)
+    2. Для игры 4x4 сделай 4 зачеркивания до победы
+    3. Проверь еще раз эвристическую функцию на работоспособность
+    4. Возможно исключим поле 6x6 из игры для одного игрока
+    5. Захардкодить первые лучшие ходы для аи, и мб некоторые комбинации
+    6. Изменять глубину когда применяется эвристическая функция, в зависимости от кол-ва сделанных ходов
+*/
+// Добавь уровни сложности для ии как тот чел, от рандомных ходов, половина рандомные, а половина минимакс, минимакс с опред. глубиной
 // Разбей всё по модулям, после того как доделаешь игру, чекни как правильно рефакторить такой код
-// Добавить векторную графику (canvas) и ИИ
+// Добавить векторную графику (canvas) 
 
 // Cell module with private value
 const defaultSymbol = '*'
@@ -42,7 +51,7 @@ const GameField = function (row) {
     // Можно сделать так, что три зачеркивания нужно для поля 3х3 и 4х4, для остальный полей 4 зачеркивания
     const checkEnd = (rw, cl) => {
         const token = field[rw][cl].getValue()
-        const winLine = row > 3 ? 4 : 3
+        const winLine = row > 2 ? 4 : 3
         // Check win in a row 
         let oneRow = 0
         for (el of field[rw]) {
@@ -166,12 +175,12 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             for (let j = 0; j <= rows; j++) {
                 if (field[i][j].getValue() === defaultSymbol) {
                     field[i][j].setValue(players[idx].token)
-                    movesCounter++
+                    //movesCounter++
                     console.time("Minimax")
                     let score = minimax(0, !isMax, i, j, -Infinity, Infinity)
                     console.timeEnd("Minimax")
                     field[i][j].setValue(defaultSymbol)
-                    movesCounter--
+                    //movesCounter--
                     if (better(score, bestScore)) {
                         bestScore = score
                         bestMove = [i, j]
@@ -229,7 +238,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         lose: -100,
         draw: 0,
     }
-    const depthMax = rows > 2 ? 5 : 10
+    const depthMax = rows > 2 ? 5 : 100
     /*
     https://www.youtube.com/watch?v=l-hh51ncgDI
     Осталось ограничить вычисления какой-то глубиной дальше которой минимакс не будет анализировать ходы до победы,
@@ -246,7 +255,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             if (result === "win") {
                 result =  !isMax ? "win" : "lose" 
             }
-            return scores[result] - depth
+            if (result === "win") {
+                returnVal = scores[result] - depth
+            } else if (result === "lose"){
+                returnVal = scores[result] + depth
+            } else 
+                returnVal = scores[result] + depth
+            return returnVal
         }
         if (isMax) {
             let bestScore = -Infinity
