@@ -1,3 +1,4 @@
+let BenchCount = 0
 /*
     5. Захардкодить первые лучшие ходы для аи, и мб некоторые комбинации
     6. Изменять глубину когда применяется эвристическая функция, в зависимости от кол-ва сделанных ходов
@@ -125,6 +126,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             token: 'O'
         }
     ]
+    const memo = {}; // Кэширование
+
     const fieldControl = GameField(size)
     const field = fieldControl.getField()
     let activeTurn = players[0]
@@ -147,7 +150,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
     }
 
-    let depthMax = size >= 3 ? 5 : 100
+    let depthMax = size >= 3 ? 6 : 100
 
     const resetGame = () => {
         console.table(field.map(el => el.map(cell => cell.getValue())))
@@ -206,6 +209,10 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
         let bestScore = isMax ? -Infinity : Infinity
         let bestMove
+       // const fieldHash = field.map(row => row.join('')).join(',')
+        //if (memo[fieldHash]) {
+       //     return memo[fieldHash];
+      //  }
         /*  if (movesCounter === 0 && size === 4) {
               bestMove = bestAiMoves.firstIn5
               field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
@@ -221,10 +228,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         for (const move of possibleMoves) {
             // Выполнить ход
             field[move[0]][move[1]].setValue(players[idx].token)
-            console.time("Minimax")
+    
             // Рекурсивный вызов минимакса
             const score = minimax(1, !isMax, move[0], move[1], -Infinity, Infinity)
-            console.timeEnd("Minimax")
             // Откатить ход
             field[move[0]][move[1]].setValue(defaultSymbol)
 
@@ -260,8 +266,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     const heuristic = (player) => {
         const opponent = player === 'X' ? 'O' : 'X';
         let score = 0;
-        const centerRow = Math.floor(size / 2);
-        const centerCol = Math.floor(size / 2);
+      //  const centerRow = Math.floor(size / 2);
+      //  const centerCol = Math.floor(size / 2);
         // Оценка строк
         for (let row = 0; row < size; row++) {
             for (let col = 0; col <= size - 3; col++) {
@@ -286,26 +292,26 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         // Проверяем диагонали (справа-налево)
         for (let row = 0; row <= size - 3; row++) {
             for (let col = 3; col < size; col++) {
-                let res = evaluateLine([field[row][col], field[row + 1][col - 1], field[row + 2][col - 2], field[row + 3][col - 3]], player, opponent)
-                if (res > 0)
+                score += evaluateLine([field[row][col], field[row + 1][col - 1], field[row + 2][col - 2], field[row + 3][col - 3]], player, opponent)
+               /* if (res > 0)
                     score += res + 4
                 else if (res < 0)
                     score += res - 4
                 else 
-                    score += res
+                    score += res*/
             }
         }
-        
-       /* if (size >= 3) {
+        /*
+        if (size >= 3) {
             // Добавляем поправку на центр
             for (let row = 0; row < size; row++) {
                 for (let col = 0; col < size; col++) {
                     if (field[row][col] === player) {
                         const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
-                        score += (10 - distanceFromCenter); // Чем ближе к центру, тем выше бонус
+                        score += (4 - distanceFromCenter); // Чем ближе к центру, тем выше бонус
                     } else if (field[row][col] === opponent) {
                         const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
-                        score -= (10 - distanceFromCenter); // Наказываем за центр соперника
+                        score -= (4 - distanceFromCenter); // Наказываем за центр соперника
                     }
                 }
             }
@@ -343,6 +349,17 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         firstIn4: [],
         firstIn5: [0, 0],
     }
+
+    const getHash = () => {
+        const board = []
+        for (let i = 0; i <= size; i++) {
+            board[i] = []
+            for (let j = 0; j <= size; j++) {
+                board[i][j] = field[i][j].getValue()
+            }
+        }
+        return board.map(row => row.join('')).join(',')
+    }
     /*
     https://www.youtube.com/watch?v=l-hh51ncgDI
     Осталось ограничить вычисления какой-то глубиной дальше которой минимакс не будет анализировать ходы до победы,
@@ -350,7 +367,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     https://stackoverflow.com/questions/51427156/how-to-solve-tic-tac-toe-4x4-game-using-minimax-algorithm-and-alpha-beta-pruning
     */
     const minimax = (depth, isMax, rw, cl, alpha, beta) => {
-        // Закончить игру оценив доску статическим методов
+        // Хеширование не работает по причине того, что мне надо преобразовать доску к массиву значениц, а не объектов
+        
+        const fieldHash = getHash()
+        if (memo[fieldHash]) {
+            return memo[fieldHash];
+        }
+          // Закончить игру оценив доску статическим методов
         if (depth >= depthMax) {
             return heuristic(isMax ? 'X' : 'O')
         }
@@ -374,13 +397,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         if (size > 3) {
             possibleMoves = sortMovesByHeuristic(possibleMoves, token);
         }
-
         for (const move of possibleMoves) {
+            BenchCount++
             // Выполнить ход
             field[move[0]][move[1]].setValue(token)
             movesCounter++
             // Рекурсивный вызов минимакса
-            const score = minimax(depth + 1, !isMax, move[0], move[1], -Infinity, Infinity);
+            const score = minimax(depth + 1, !isMax, move[0], move[1], alpha, beta);
 
             // Откатить ход
             field[move[0]][move[1]].setValue(defaultSymbol)
@@ -396,7 +419,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             }
 
             // Альфа-бета обрезка
-            if (beta <= alpha) break;
+            if (beta <= alpha) 
+                break;
         }
 
         /*
@@ -424,6 +448,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     }
                 }
                     */
+        memo[fieldHash] = bestScore;
         return bestScore
     }
 
@@ -530,6 +555,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
         if (game.getActiveTurn().playerName === "AI") {
             makeAiMove()
         }
+        BenchCount = 0
     }
 
     // Нужно удалить всё что тут было нарисовано и отключить слушатели
@@ -575,8 +601,11 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
 
     const makeAiMove = () => {
         gameActiveState = false
+        console.time("Ai move")
         const aiCoords = game.moveAi(aiIdx, aiStrategy === "max" ? true : false)
+        console.timeEnd("Ai move")
         renderAiMove(aiCoords)
+        console.log(BenchCount)
         result = game.checkEnd(aiCoords[0], aiCoords[1])
         game.turnMove()
         controlMove(result)
