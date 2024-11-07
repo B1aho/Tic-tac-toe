@@ -118,7 +118,7 @@ const GameField = function (row) {
 }
 
 // Game module. All game loop logic here
-const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two', rows) {
+const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two', size) {
     const players = [
         {
             playerName: playerOne,
@@ -129,13 +129,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             token: 'O'
         }
     ]
-    const fieldControl = GameField(rows)
+    const fieldControl = GameField(size)
     const field = fieldControl.getField()
     let activeTurn = players[0]
     let movesCounter = 0
     // рассчитываем по row
     let minMovesToCheck = 4
-    let maxMoves = (rows + 1) * (rows + 1) - 1
+    let maxMoves = (size + 1) * (size + 1) - 1
     const getActiveTurn = () => activeTurn
 
     const turnMove = () => {
@@ -166,13 +166,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         const better = (a, b) => {
             if (isMax) {
                 return a > b
-            } else 
+            } else
                 return a < b
         }
         let bestMove
-        const saveMovesCounter = movesCounter 
-        for (let i = 0; i <= rows; i++) {
-            for (let j = 0; j <= rows; j++) {
+        const saveMovesCounter = movesCounter
+        for (let i = 0; i <= size; i++) {
+            for (let j = 0; j <= size; j++) {
                 if (field[i][j].getValue() === defaultSymbol) {
                     field[i][j].setValue(players[idx].token)
                     //movesCounter++
@@ -196,39 +196,52 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     const heuristic = (player) => {
         const opponent = player === 'X' ? 'O' : 'X';
         let score = 0;
-    
+
         // Оценка строк
-        for (let row = 0; row < 3; row++) {
-            score += evaluateLine([field[row][0], field[row][1], field[row][2]], player, opponent);
+        for (let row = 0; row < size; row++) {
+            for (let col = 0; col <= size - 4; col++) {
+                score += evaluateLine([field[row][col], field[row][col + 1], field[row][col + 2], field[row][col + 3]], player, opponent);
+            }
         }
-    
+
         // Оценка столбцов
-        for (let col = 0; col < 3; col++) {
-            score += evaluateLine([field[0][col], field[1][col], field[2][col]], player, opponent);
+        for (let col = 0; col < size; col++) {
+            for (let row = 0; row <= size - 4; row++) {
+                score += evaluateLine([field[row][col], field[row + 1][col], field[row + 2][col], field[row + 3][col]], player, opponent);
+            }
         }
-    
-        // Оценка диагоналей
-        score += evaluateLine([field[0][0], field[1][1], field[2][2]], player, opponent);
-        score += evaluateLine([field[1][1], field[2][2], field[3][3]], player, opponent);
-        score += evaluateLine([field[0][3], field[1][2], field[2][1]], player, opponent);
-        score += evaluateLine([field[1][2], field[2][1], field[3][0]], player, opponent);
-    
+
+        // Проверяем диагонали (слева-направо)
+        for (let row = 0; row <= size - 4; row++) {
+            for (let col = 0; col <= size - 4; col++) {
+                score += evaluateLine([field[row][col], field[row + 1][col + 1], field[row + 2][col + 2], field[row + 3][col + 3]], player, opponent);
+            }
+        }
+
+        // Проверяем диагонали (справа-налево)
+        for (let row = 0; row <= size - 4; row++) {
+            for (let col = 3; col < size; col++) {
+                score += evaluateLine([field[row][col], field[row + 1][col - 1], field[row + 2][col - 2], field[row + 3][col - 3]], player, opponent);
+            }
+        }
+
         return score;
     }
-    
+
     const evaluateLine = (line, player, opponent) => {
-        if (line.filter(cell => cell.getValue() === player).length === 3) {
+        const winLine = 4
+        if (line.filter(cell => cell.getValue() === player).length === winLine) {
             return 100; // Выигрышная линия для игрока
-        } else if (line.filter(cell => cell.getValue() === player).length === 2 && line.includes(defaultSymbol)) {
-            return 10; // Два символа игрока и один пробел
-        } else if (line.filter(cell => cell.getValue() === player).length === 1 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
-            return 1; // Один символ игрока и два пробела
-        } else if (line.filter(cell => cell.getValue() === opponent).length === 3) {
+        } else if (line.filter(cell => cell.getValue() === player).length === winLine - 1 && line.includes(defaultSymbol)) {
+            return 15; // Два символа игрока и один пробел
+        } else if (line.filter(cell => cell.getValue() === player).length === winLine - 2 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
+            return 5; // Один символ игрока и два пробела
+        } else if (line.filter(cell => cell.getValue() === opponent).length === winLine) {
             return -100; // Выигрышная линия для соперника
-        } else if (line.filter(cell => cell.getValue() === opponent).length === 2 && line.includes(defaultSymbol)) {
-            return -10; // Два символа соперника и один пробел
-        } else if (line.filter(cell => cell.getValue() === opponent).length === 1 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
-            return -1; // Один символ соперника и два пробела
+        } else if (line.filter(cell => cell.getValue() === opponent).length === winLine - 1 && line.includes(defaultSymbol)) {
+            return -15; // Два символа соперника и один пробел
+        } else if (line.filter(cell => cell.getValue() === opponent).length === winLine - 2 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
+            return -5; // Один символ соперника и два пробела
         }
         return 0; // Нейтральная линия
     }
@@ -238,7 +251,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         lose: -100,
         draw: 0,
     }
-    const depthMax = rows > 2 ? 5 : 100
+    const depthMax = size > 2 ? 5 : 100
     /*
     https://www.youtube.com/watch?v=l-hh51ncgDI
     Осталось ограничить вычисления какой-то глубиной дальше которой минимакс не будет анализировать ходы до победы,
@@ -253,36 +266,36 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
         if (result === "win" || result === "draw") {
             if (result === "win") {
-                result =  !isMax ? "win" : "lose" 
+                result = !isMax ? "win" : "lose"
             }
             if (result === "win") {
                 returnVal = scores[result] - depth
-            } else if (result === "lose"){
+            } else if (result === "lose") {
                 returnVal = scores[result] + depth
-            } else 
+            } else
                 returnVal = scores[result] + depth
             return returnVal
         }
         if (isMax) {
             let bestScore = -Infinity
             let breakCheck = false
-            for (let i = 0; i <= rows; i++) {
-                for (let j = 0; j <= rows; j++) {
+            for (let i = 0; i <= size; i++) {
+                for (let j = 0; j <= size; j++) {
                     if (field[i][j].getValue() === defaultSymbol) {
                         field[i][j].setValue(players[0].token)
                         movesCounter++
-                        let score = minimax(depth + 1, false, i, j, alpha, beta) 
+                        let score = minimax(depth + 1, false, i, j, alpha, beta)
                         field[i][j].setValue(defaultSymbol)
                         movesCounter--
                         bestScore = Math.max(score, bestScore)
                         alpha = Math.max(alpha, score)
-                        if (beta <= alpha){ 
+                        if (beta <= alpha) {
                             breakCheck = true
                             break
                         }
                     }
                 }
-                if (breakCheck){
+                if (breakCheck) {
                     break
                 }
             }
@@ -290,8 +303,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         } else {
             let bestScore = Infinity
             let breakCheck = false
-            for (let i = 0; i <= rows; i++) {
-                for (let j = 0; j <= rows; j++) {
+            for (let i = 0; i <= size; i++) {
+                for (let j = 0; j <= size; j++) {
                     if (field[i][j].getValue() === defaultSymbol) {
                         field[i][j].setValue(players[1].token)
                         movesCounter++
@@ -300,13 +313,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                         movesCounter--
                         bestScore = Math.min(score, bestScore)
                         beta = Math.min(score, beta)
-                        if (beta <= alpha){ 
+                        if (beta <= alpha) {
                             breakCheck = true
                             break
                         }
                     }
                 }
-                if (breakCheck){
+                if (breakCheck) {
                     break
                 }
             }
