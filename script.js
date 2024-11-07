@@ -146,7 +146,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             return 'draw';
         }
     }
-    
+
     let depthMax = size > 2 ? 5 : 100
 
     const resetGame = () => {
@@ -286,58 +286,36 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             } else if (result === "lose") {
                 returnVal = scores[result] + depth
             } else
-                returnVal = scores[result] 
+                returnVal = scores[result]
             return returnVal
         }
-        if (isMax) {
-            let bestScore = -Infinity
-            let breakCheck = false
-            for (let i = 0; i <= size; i++) {
-                for (let j = 0; j <= size; j++) {
-                    if (field[i][j].getValue() === defaultSymbol) {
-                        field[i][j].setValue(players[0].token)
-                        movesCounter++
-                        let score = minimax(depth + 1, false, i, j, alpha, beta)
-                        field[i][j].setValue(defaultSymbol)
-                        movesCounter--
-                        bestScore = Math.max(score, bestScore)
+        let bestScore = isMax ? -Infinity : Infinity
+        let breakCheck = false
+        let token = isMax ? players[0].token : players[1].token
+        for (let i = 0; i <= size; i++) {
+            for (let j = 0; j <= size; j++) {
+                if (field[i][j].getValue() === defaultSymbol) {
+                    field[i][j].setValue(token)
+                    movesCounter++
+                    let score = minimax(depth + 1, !isMax, i, j, alpha, beta)
+                    field[i][j].setValue(defaultSymbol)
+                    movesCounter--
+                    bestScore = isMax ? Math.max(score, bestScore) : Math.min(score, bestScore)
+                    if (isMax)
                         alpha = Math.max(alpha, score)
-                        if (beta <= alpha) {
-                            breakCheck = true
-                            break
-                        }
-                    }
-                }
-                if (breakCheck) {
-                    break
-                }
-            }
-            return bestScore
-        } else {
-            let bestScore = Infinity
-            let breakCheck = false
-            for (let i = 0; i <= size; i++) {
-                for (let j = 0; j <= size; j++) {
-                    if (field[i][j].getValue() === defaultSymbol) {
-                        field[i][j].setValue(players[1].token)
-                        movesCounter++
-                        let score = minimax(depth + 1, true, i, j, alpha, beta)
-                        field[i][j].setValue(defaultSymbol)
-                        movesCounter--
-                        bestScore = Math.min(score, bestScore)
+                    else
                         beta = Math.min(score, beta)
-                        if (beta <= alpha) {
-                            breakCheck = true
-                            break
-                        }
+                    if (beta <= alpha) {
+                        breakCheck = true
+                        break
                     }
                 }
-                if (breakCheck) {
-                    break
-                }
             }
-            return bestScore
+            if (breakCheck) {
+                break
+            }
         }
+        return bestScore
     }
 
     return {
