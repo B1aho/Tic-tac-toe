@@ -168,13 +168,17 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     const transpositionTable = new Map();
 
     //@type value can be exact, upperBound or lowerBound for correct working with alpha-beta puring
-    const storeTransposition = (hash, depth, bestScore, type, isMax) => {
+    const storeTransposition = (hash, depth, bestScore, type, isMax, inUse) => {
         const val = transpositionTable.get(hash)
         // Всё работает, если сохраняем глубокие от 5
-        if (typeof val === "undefined" && depth >= 5) {
-            transpositionTable.set(hash, { depth, bestScore, type, isMax })
-        } else if (typeof val !== "undefined" && depth >= 5) {
-            transpositionTable.set(hash + 1, { depth, bestScore, type, isMax })
+        if (typeof val === "undefined" && depth >= depthMax - 1) {
+            transpositionTable.set(hash, { depth, bestScore, type, isMax, inUse })
+        } else if (typeof val !== "undefined" && depth >= depthMax - 1 && isMax !== val.isMax) {
+            transpositionTable.set(hash + 1, { depth, bestScore, type, isMax, inUse })
+        } else if (typeof val !== "undefined" && depth >= depthMax - 1 && isMax === val.isMax) {
+            if (val.inUse !== true) {
+                transpositionTable.set(hash, { depth, bestScore, type, isMax, inUse })
+            }
         }
     }
 
@@ -202,14 +206,14 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
     }
 
-    let depthMax = size >= 3 ? 7 : 100
+    let depthMax = size >= 3 ? 6 : 100
 
     const resetGame = () => {
         console.table(field.map(el => el.map(cell => cell.getValue())))
         fieldControl.resetField()
         console.table(field.map(el => el.map(cell => cell.getValue())))
         movesCounter = 0
-        depthMax = size >= 3 ? 7 : 100
+        depthMax = size >= 3 ? 6 : 100
         activeTurn = players[0]
         initialHash = initHash()
         console.log(initialHash)
@@ -233,20 +237,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 
     // Оценить и отсортировать ходы по их выгодности
-    function sortMovesByHeuristic(moves, player) {
+    function sortMovesByHeuristic(moves) {
         return moves.sort((a, b) => b[2] - a[2]);
-        /*
-        return moves.sort((a, b) => {
-            field[a[0]][a[1]].setValue(player)
-            const scoreA = heuristic(player)
-            field[a[0]][a[1]].setValue(defaultSymbol)
-
-            field[b[0]][b[1]].setValue(player)
-            const scoreB = heuristic(player)
-            field[b[0]][b[1]].setValue(defaultSymbol)
-
-            return scoreB - scoreA; // Сортировка по убыванию
-        });*/
     }
 
     const better = (a, b, isMax) => {
@@ -258,6 +250,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     // Будет получать номер 0 или 1 соответсвующий за кого аи играет
     // isMax можно не передавать, достаточно idx чтобы определить
     const moveAi = (idx, isMax) => {
+        if (movesCounter > 3 && size < 5) {
+            depthMax = 7
+        }
         if (size === 4) {
             if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
                 let move = bestAiMoves.firstIn5
@@ -278,7 +273,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves();
         if (size >= 3) {
-            possibleMoves = sortMovesByHeuristic(possibleMoves, players[idx].token);
+            possibleMoves = sortMovesByHeuristic(possibleMoves);
         }
 
         for (const move of possibleMoves) {
@@ -401,6 +396,7 @@ const evaluateLine = (line, player, opponent) => {
             cached = getTransposition(hash + 1)
         }
         if (cached) {
+            cached.inUse = true
             if (cached.type === "exact") {
                 return cached.bestScore
             } else if (cached.type === "lowerBound" && cached.bestScore > alpha) {
@@ -436,7 +432,7 @@ const evaluateLine = (line, player, opponent) => {
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves();
         if (size > 3) {
-            possibleMoves = sortMovesByHeuristic(possibleMoves, token);
+            possibleMoves = sortMovesByHeuristic(possibleMoves);
         }
         for (const move of possibleMoves) {
             BenchCount++
@@ -460,7 +456,7 @@ const evaluateLine = (line, player, opponent) => {
                 beta = Math.min(beta, score);
             }
 
-            // Альфа-бета обрезка
+            // Альфа-бета отсечение
             if (beta <= alpha) {
                 // Определяем тип записи для текущей позиции перед её сохранением
                 if (score <= alpha) entryType = "upperBound";
@@ -473,7 +469,7 @@ const evaluateLine = (line, player, opponent) => {
         }
 
         // Сохраняем в транспозиционную таблицу
-        storeTransposition(initialHash, depth, bestScore, entryType, isMax);
+        storeTransposition(initialHash, depth, bestScore, entryType, isMax, false);
         if (breakFlag) initialHash ^= zobristTable[undoHashMove[0]][undoHashMove[1]][token]
 
         return bestScore
