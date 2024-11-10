@@ -304,11 +304,10 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         return bestMove
     }
 
-    const heuristic = (player) => {
-        const opponent = player === 'X' ? 'O' : 'X';
+    
+   const heuristic = (player) => {
+    const opponent = player === 'X' ? 'O' : 'X';
         let score = 0;
-        //  const centerRow = Math.floor(size / 2);
-        //  const centerCol = Math.floor(size / 2);
         // Оценка строк
         if (size === 4) {
             for (let row = 0; row < size; row++) {
@@ -347,51 +346,32 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 score += evaluateLine([field[row][col], field[row + 1][col - 1], field[row + 2][col - 2], field[row + 3][col - 3]], player, opponent)
             }
         }
-        /*
-        if (size >= 3) {
-            // Добавляем поправку на центр
-            for (let row = 0; row < size; row++) {
-                for (let col = 0; col < size; col++) {
-                    if (field[row][col] === player) {
-                        const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
-                        score += (4 - distanceFromCenter); // Чем ближе к центру, тем выше бонус
-                    } else if (field[row][col] === opponent) {
-                        const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
-                        score -= (4 - distanceFromCenter); // Наказываем за центр соперника
-                    }
-                }
-            }
-        }*/
+
         return score;
+};
+
+const evaluateLine = (line, player, opponent) => {
+    let playerCount = 0;
+    let opponentExists = false;
+
+    for (const cell of line) {
+        const cellValue = cell.getValue();
+        if (cellValue === player) {
+            playerCount++;
+        } else if (cellValue === opponent) {
+            opponentExists = true;
+            break;
+        }
     }
 
-    const evaluateLine = (line, player, opponent) => {
-        const winLine = 4
-        if (line.filter(cell => cell.getValue() === player).length === winLine) {
-            return 10000; // Выигрышная линия для игрока
-        } else if (line.filter(cell => cell.getValue() === player).length === winLine - 1 && line.includes(defaultSymbol)) {
-            return 1000; // Два символа игрока и один пробел
-        } else if (line.filter(cell => cell.getValue() === player).length === winLine - 2 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
-            return 100; // Один символ игрока и два пробела
-        } else if (
-            line.length >= 5 &&
-            line[0].getValue() === defaultSymbol &&
-            line[1].getValue() === opponent &&
-            line[2].getValue() === defaultSymbol &&
-            line[3].getValue() === opponent &&
-            line[4].getValue() === defaultSymbol
-        ) {
-            return -10000; // Необходима блокировка угрозы
-        }
-        else if (line.filter(cell => cell.getValue() === opponent).length === winLine) {
-            return -10000; // Выигрышная линия для соперника
-        } else if (line.filter(cell => cell.getValue() === opponent).length === winLine - 1 && line.includes(defaultSymbol)) {
-            return -1000; // Два символа соперника и один пробел
-        } else if (line.filter(cell => cell.getValue() === opponent).length === winLine - 2 && line.includes(defaultSymbol) && line.filter(cell => cell.getValue() === defaultSymbol).length === 2) {
-            return -100; // Один символ соперника и два пробела
-        }  // Новое условие: два символа соперника с пробелом между ними и пробелами по бокам
-        return 0; // Нейтральная линия
+    // Если в линии есть метка оппонента, возвращаем 0
+    if (opponentExists) {
+        return 0;
     }
+
+    // Возвращаем квадрат количества меток игрока
+    return playerCount ** 2;
+};
 
     const scores = {
         win: 15000,
@@ -415,9 +395,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     */
     const minimax = (depth, isMax, rw, cl, alpha, beta, hash) => {
         // Проверка транспозиционной таблицы
-        // Не работает с кешированием
         let cached = getTransposition(hash);
-        // Хуже стало как будто
+
         if (cached && cached.isMax !== isMax) {
             cached = getTransposition(hash + 1)
         }
