@@ -260,6 +260,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
     // Будет получать номер 0 или 1 соответсвующий за кого аи играет
     // isMax можно не передавать, достаточно idx чтобы определить
+    let MAX_TIME = 8000
     const moveAi = (idx, isMax) => {
         if (movesCounter > 4 && size < 5) {
             depthMax = 7
@@ -277,7 +278,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 return move
 
             }
-        } else if (size === 5) {
+        }/* else if (size === 5) {
             if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
                 let move = bestAiMoves.firstIn6
                 field[move[0]][move[1]].setValue(players[idx].token)
@@ -290,33 +291,41 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 return move
 
             }
-        }
-        let bestScore = isMax ? -Infinity : Infinity
-        let bestMove
+        }*/
 
+        let bestScore = isMax ? -Infinity : Infinity
+        let bestMove = null
+        let startTime = Date.now()
+        let breakFlag = false
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves();
         if (size >= 3) {
             possibleMoves = sortMovesByHeuristic(possibleMoves);
         }
-
-        for (const move of possibleMoves) {
-            // Выполнить ход
-            field[move[0]][move[1]].setValue(players[idx].token)
-            //   initialHash = updateHash(initialHash, move[0], move[1], prevToken, players[idx].token)
-            initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
-            // Рекурсивный вызов минимакса
-            const score = minimax(1, !isMax, move[0], move[1], -Infinity, Infinity, initialHash)
-            // Откатить ход
-            field[move[0]][move[1]].setValue(defaultSymbol)
-            initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
-            // Обновить лучший счёт
-            if (better(score, bestScore, isMax)) {
-                bestScore = score
-                bestMove = [move[0], move[1]]
+        for (let currDepth = 0; currDepth < depthMax; currDepth++) {
+            for (const move of possibleMoves) {
+                // Выполнить ход
+                field[move[0]][move[1]].setValue(players[idx].token)
+                //   initialHash = updateHash(initialHash, move[0], move[1], prevToken, players[idx].token)
+                initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
+                // Рекурсивный вызов минимакса
+                const score = minimax(0, !isMax, move[0], move[1], -Infinity, Infinity, initialHash, currDepth)
+                // Откатить ход
+                field[move[0]][move[1]].setValue(defaultSymbol)
+                initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
+                // Обновить лучший счёт
+                if (better(score, bestScore, isMax)) {
+                    bestScore = score
+                    bestMove = [move[0], move[1]]
+                }
+                if (Date.now() - startTime > MAX_TIME) {
+                    breakFlag = true
+                    break;
+                }
             }
+            if (breakFlag)
+                break
         }
-
         field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
         initialHash ^= zobristTable[bestMove[0]][bestMove[1]][players[idx].token]
         //  movesCounter = saveMovesCounter
@@ -327,9 +336,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         const first = heuristic(player)
         const second = heuristic(opponent)
         return first - second
-    } 
-   const heuristic = (player) => {
-    const opponent = player === 'X' ? 'O' : 'X';
+    }
+    const heuristic = (player) => {
+        const opponent = player === 'X' ? 'O' : 'X';
         let score = 0;
         // Оценка строк
         if (size === 4) {
@@ -355,6 +364,16 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     score += evaluateLine([field[row][col], field[row + 1][col], field[row + 2][col], field[row + 3][col]], player, opponent);
                 }
             }
+        } else if (size === 5) {
+            for (let row = 0; row < size; row++) {
+                score += evaluateLine([field[row][0], field[row][1], field[row][2], field[row][3], field[row][4], field[row][5]], player, opponent);
+
+            }
+
+            // Оценка столбцов
+            for (let col = 0; col < size; col++) {
+                score += evaluateLine([field[0][col], field[1][col], field[2][col], field[3][col], field[4][col], field[5][col]], player, opponent);
+            }
         }
         // Проверяем диагонали (слева-направо)
         for (let row = 0; row <= size - 3; row++) {
@@ -371,30 +390,30 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
 
         return score;
-};
+    };
 
-const evaluateLine = (line, player, opponent) => {
-    let playerCount = 0;
-    let opponentExists = false;
+    const evaluateLine = (line, player, opponent) => {
+        let playerCount = 0;
+        let opponentExists = false;
 
-    for (const cell of line) {
-        const cellValue = cell.getValue();
-        if (cellValue === player) {
-            playerCount++;
-        } else if (cellValue === opponent) {
-            opponentExists = true;
-            break;
+        for (const cell of line) {
+            const cellValue = cell.getValue();
+            if (cellValue === player) {
+                playerCount++;
+            } else if (cellValue === opponent) {
+                opponentExists = true;
+                break;
+            }
         }
-    }
 
-    // Если в линии есть метка оппонента, возвращаем 0
-    if (opponentExists) {
-        return 0;
-    }
+        // Если в линии есть метка оппонента, возвращаем 0
+        if (opponentExists) {
+            return 0;
+        }
 
-    // Возвращаем квадрат количества меток игрока
-    return playerCount ** 2;
-};
+        // Возвращаем квадрат количества меток игрока
+        return playerCount ** 2;
+    };
 
     const scores = {
         win: 15000,
@@ -416,14 +435,35 @@ const evaluateLine = (line, player, opponent) => {
     а будет анализировать их статично, по каким-то другим условиям, чтобы не падала производительность
     https://stackoverflow.com/questions/51427156/how-to-solve-tic-tac-toe-4x4-game-using-minimax-algorithm-and-alpha-beta-pruning
     */
-    const minimax = (depth, isMax, rw, cl, alpha, beta, hash) => {
+    const minimax = (depth, isMax, rw, cl, alpha, beta, hash, maxDepth) => {
+        let terminalState = checkEnd(rw, cl)
+        if (terminalState === "win" || terminalState === "draw") {
+            if (terminalState === "win") {
+                terminalState = !isMax ? "win" : "lose"
+            }
+            if (terminalState === "win") {
+                returnVal = scores[terminalState] - depth
+            } else if (terminalState === "lose") {
+                returnVal = scores[terminalState] + depth
+            } else
+                returnVal = scores[terminalState]
+            storeTransposition(initialHash, depth, returnVal, "exact", isMax, false)
+            return returnVal
+        }
+
+        // Закончить игру оценив доску статическим методов
+        if (depth >= maxDepth) {
+            const result = finalHeuristic(isMax ? 'X' : 'O')
+            storeTransposition(initialHash, depth, result, "exact", isMax, false)
+            return result
+        }
         // Проверка транспозиционной таблицы
         let cached = getTransposition(hash);
 
         if (cached && cached.isMax !== isMax) {
             cached = getTransposition(hash + 1)
         }
-        if (cached) {
+        if (cached && cached.depth >= depth) {
             cached.inUse = true
             if (cached.type === "exact") {
                 return cached.bestScore
@@ -436,23 +476,7 @@ const evaluateLine = (line, player, opponent) => {
         }
         let breakFlag = false
         let result = checkEnd(rw, cl)
-        if (result === "win" || result === "draw") {
-            if (result === "win") {
-                result = !isMax ? "win" : "lose"
-            }
-            if (result === "win") {
-                returnVal = scores[result] - depth
-            } else if (result === "lose") {
-                returnVal = scores[result] + depth
-            } else
-                returnVal = scores[result]
-            return returnVal
-        }
-
-        // Закончить игру оценив доску статическим методов
-        if (depth >= depthMax) {
-            return finalHeuristic(isMax ? 'X' : 'O')
-        }
+        
         let undoHashMove = []
         let bestScore = isMax ? -Infinity : Infinity
         let token = isMax ? players[0].token : players[1].token
@@ -470,7 +494,7 @@ const evaluateLine = (line, player, opponent) => {
             movesCounter++
 
             // Рекурсивный вызов минимакса
-            const score = minimax(depth + 1, !isMax, move[0], move[1], alpha, beta, initialHash);
+            const score = minimax(depth + 1, !isMax, move[0], move[1], alpha, beta, initialHash, maxDepth);
 
             // Откатить ход
             field[move[0]][move[1]].setValue(defaultSymbol) // prevToken
