@@ -250,7 +250,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     // Будет получать номер 0 или 1 соответсвующий за кого аи играет
     // isMax можно не передавать, достаточно idx чтобы определить
     const moveAi = (idx, isMax) => {
-        if (movesCounter > 3 && size < 5) {
+        if (movesCounter > 4 && size < 5) {
             depthMax = 7
         }
         if (size === 4) {
@@ -298,8 +298,12 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         //  movesCounter = saveMovesCounter
         return bestMove
     }
-
-    
+    const finalHeuristic = (player) => {
+        const opponent = player === 'X' ? 'O' : 'X';
+        const first = heuristic(player)
+        const second = heuristic(opponent)
+        return first - second
+    } 
    const heuristic = (player) => {
     const opponent = player === 'X' ? 'O' : 'X';
         let score = 0;
@@ -423,7 +427,7 @@ const evaluateLine = (line, player, opponent) => {
 
         // Закончить игру оценив доску статическим методов
         if (depth >= depthMax) {
-            return heuristic(isMax ? 'X' : 'O')
+            return finalHeuristic(isMax ? 'X' : 'O')
         }
         let undoHashMove = []
         let bestScore = isMax ? -Infinity : Infinity
@@ -483,7 +487,6 @@ const evaluateLine = (line, player, opponent) => {
         getActiveTurn,
         moveAi,
         initialHash,
-        //   updateHash,
         zobristTable,
     }
 }
