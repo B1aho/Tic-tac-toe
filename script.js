@@ -169,13 +169,14 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
     //@type value can be exact, upperBound or lowerBound for correct working with alpha-beta puring
     const storeTransposition = (hash, depth, bestScore, type, isMax, inUse) => {
+        const minusDepth = depthMax === 5 ? 0 : 1
         const val = transpositionTable.get(hash)
         // Всё работает, если сохраняем глубокие от 5
-        if (typeof val === "undefined" && depth >= depthMax - 1) {
+        if (typeof val === "undefined" && depth >= depthMax - minusDepth) {
             transpositionTable.set(hash, { depth, bestScore, type, isMax, inUse })
-        } else if (typeof val !== "undefined" && depth >= depthMax - 1 && isMax !== val.isMax) {
+        } else if (typeof val !== "undefined" && depth >= depthMax - minusDepth && isMax !== val.isMax) {
             transpositionTable.set(hash + 1, { depth, bestScore, type, isMax, inUse })
-        } else if (typeof val !== "undefined" && depth >= depthMax - 1 && isMax === val.isMax) {
+        } else if (typeof val !== "undefined" && depth >= depthMax - minusDepth && isMax === val.isMax) {
             if (val.inUse !== true) {
                 transpositionTable.set(hash, { depth, bestScore, type, isMax, inUse })
             }
@@ -206,14 +207,24 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
     }
 
-    let depthMax = size >= 3 ? 6 : 100
+    const evluateDepthMax = () => {
+        if (size >= 3 && size < 5) {
+            return 6
+        } else if (size >= 5) {
+            return 6
+        } else
+            return 100
+    }
+
+    let depthMax = evluateDepthMax()
+    console.log("Max depth = " + depthMax)
 
     const resetGame = () => {
         console.table(field.map(el => el.map(cell => cell.getValue())))
         fieldControl.resetField()
         console.table(field.map(el => el.map(cell => cell.getValue())))
         movesCounter = 0
-        depthMax = size >= 3 ? 6 : 100
+        depthMax = evluateDepthMax()
         activeTurn = players[0]
         initialHash = initHash()
         console.log(initialHash)
@@ -261,6 +272,19 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 return move
             } else if (movesCounter === 1) {
                 let move = bestAiMoves.secondIn5
+                field[move[0]][move[1]].setValue(players[idx].token)
+                initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
+                return move
+
+            }
+        } else if (size === 5) {
+            if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
+                let move = bestAiMoves.firstIn6
+                field[move[0]][move[1]].setValue(players[idx].token)
+                initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
+                return move
+            } else if (movesCounter === 1) {
+                let move = bestAiMoves.secondIn6
                 field[move[0]][move[1]].setValue(players[idx].token)
                 initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
                 return move
@@ -380,10 +404,10 @@ const evaluateLine = (line, player, opponent) => {
 
     // Захардкодить лучшие ходы для разных ситуаций, лучше объект, где свойства своим именем поисывают ситуацию для хода
     const bestAiMoves = {
-        firstIn3: [],
-        firstIn4: [1, 1],
         firstIn5: [2, 2],
-        secondIn5: [1, 1]
+        secondIn5: [1, 1],
+        firstIn6: [2, 2],
+        secondIn6: [2, 3],
     }
 
     /*
