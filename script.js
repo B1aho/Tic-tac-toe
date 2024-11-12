@@ -291,6 +291,12 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
     // Будет получать номер 0 или 1 соответсвующий за кого аи играет
     // isMax можно не передавать, достаточно idx чтобы определить
+    const remainingMoves = () => {
+        let count = 0
+        field.map(row => row.map(cell => {if (cell.getValue() === defaultSymbol) count++} ))
+        return count
+    }
+
     let MAX_TIME = 8000
     const moveAi = (idx, isMax) => {
         if (movesCounter > 4 && size < 5) {
@@ -333,7 +339,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         if (size >= 3) {
             possibleMoves = sortMovesByHeuristic(possibleMoves);
         }
-        for (let currDepth = 1; currDepth <= 9; currDepth++) { // Чем больше условие ставлю, тем больше итераций делает - проблема
+        const MAX_DEPTH_ITER = Math.min(remainingMoves(), depthMax);
+        // Вместо remaining moves использовать просто длину possiblemoves ??
+        for (let currDepth = 1; currDepth <= MAX_DEPTH_ITER; currDepth++) { // Чем больше условие ставлю, тем больше итераций делает - проблема
             possibleMoves = sortMoves(possibleMoves, players[idx].token, currDepth - 1)
             for (const move of possibleMoves) {
                 // Выполнить ход
@@ -393,7 +401,6 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         // Проверяем диагонали (слева-направо)
         score += evaluateLine([field[0][0], field[1][1], field[2][2]], player, opponent)
           
-
         // Проверяем диагонали (справа-налево)
       score += evaluateLine([field[0][2], field[1][1], field[2][0]], player, opponent)
             
