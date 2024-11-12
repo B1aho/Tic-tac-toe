@@ -1,4 +1,5 @@
 let BenchCount = 0
+let MAX_DEPTH_ITER = 2 // Пока глобально поставлю, потом в модуле, это для настройки оптимальной
 /*
     5. Захардкодить первые лучшие ходы для аи, и мб некоторые комбинации
     6. Изменять глубину когда применяется эвристическая функция, в зависимости от кол-ва сделанных ходов
@@ -169,17 +170,23 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
     //@type value can be exact, upperBound or lowerBound for correct working with alpha-beta puring
     const storeTransposition = (hash, depth, bestScore, type, isMax, inUse) => {
-        //   const minusDepth = depthMax === 5 ? 0 : 1
-        const val = transpositionTable.get(hash)
-        // Всё работает, если сохраняем глубокие от 5
-        if (typeof val === "undefined") {
+        const previousValue = transpositionTable.get(hash)
+        if (typeof previousValue === "undefined") {
+            // Если ранее не было сохранено, сохраняем новое состояние
             transpositionTable.set(hash, { depth, bestScore, type, isMax, inUse })
-        } else if (typeof val !== "undefined" && isMax !== val.isMax) {
-            if (val.inUse !== true)
-                transpositionTable.set(hash + 1, { depth, bestScore, type, isMax, inUse })
-        } else if (typeof val !== "undefined" && isMax === val.isMax) {
-            if (val.inUse !== true) {
+        } else {
+            // Обновляем, если это более глубокая позиция для текущего состояния
+            if (previousValue.isMax === isMax && previousValue.depth < depth) {
                 transpositionTable.set(hash, { depth, bestScore, type, isMax, inUse })
+            }
+            // Если isMax отличается, нужно использовать другой хэш
+            else if (previousValue.isMax !== isMax) {
+                // Используем "другой хеш" для противоположного состояния
+                const oppositeHash = `${hash}:${isMax ? 'min' : 'max'}` // создаём уникальный ключ для противоположных состояний
+                const otherPreviousValue = transpositionTable.get(oppositeHash)
+                if (!otherPreviousValue || otherPreviousValue.depth < depth) {
+                    transpositionTable.set(oppositeHash, { depth, bestScore, type, isMax, inUse })
+                }
             }
         }
     }
@@ -230,6 +237,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         initialHash = initHash()
         console.log(initialHash)
         transpositionTable.clear()
+        MAX_DEPTH_ITER = 3
     }
 
     function getPossibleMoves() {
@@ -296,12 +304,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         field.map(row => row.map(cell => { if (cell.getValue() === defaultSymbol) count++ }))
         return count
     }
-
-    let MAX_TIME = 8000
+    // MAX_DEPTH_ITER Сильно повышает перфоманс ограничение глубины на ранних этапах. Math.min(remainingMoves(), depthMax)
+    let MAX_TIME = 9000
     const moveAi = (idx, isMax) => {
-        if (movesCounter > 4 && size < 5) {
-            depthMax = 7
-        }
         if (size === 4) {
             if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
                 let move = bestAiMoves.firstIn5
@@ -337,9 +342,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves();
         if (size >= 3) {
-            possibleMoves = sortMovesByHeuristic(possibleMoves);
+            possibleMoves = sortMovesByHeuristic(possibleMoves)
         }
-        const MAX_DEPTH_ITER = Math.min(remainingMoves(), depthMax);
+        //MAX_DEPTH_ITER = movesCounter > 4 ? 6 : 4 // Сильно повышает перфоманс ограничение глубины на ранних этапах. Math.min(remainingMoves(), depthMax)
         // Вместо remaining moves использовать просто длину possiblemoves ??
         for (let currDepth = 1; currDepth <= MAX_DEPTH_ITER; currDepth++) { // Чем больше условие ставлю, тем больше итераций делает - проблема
             possibleMoves = sortMoves(possibleMoves, players[idx].token, currDepth - 1)
@@ -358,11 +363,11 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     bestScore = score
                     bestMove = [move[0], move[1]]
                 }
-                /*     if (Date.now() - startTime > MAX_TIME) {
-                         console.log("Last move: " + move + ". On depth = " + currDepth)
-                         breakFlag = true
-                         break;
-                     }*/
+                if (Date.now() - startTime > MAX_TIME) {
+                    console.log("Last move: " + move + ". On depth = " + currDepth)
+                    breakFlag = true
+                    break;
+                }
             }
             if (breakFlag)
                 break
@@ -405,14 +410,18 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             score += evaluateLine([field[0][2], field[1][1], field[2][0]], player, opponent)
 
         } else if (size === 4) {
-            for (let row = 0; row < size; row++) {
-                score += evaluateLine([field[row][0], field[row][1], field[row][2], field[row][3], field[row][4]], player, opponent);
-
+            // Должны быть не строки, а подстроки 
+            for (let col = 0; col < 2; col++) {
+                for (let row = 0; row <= size; row++) {
+                    score += evaluateLine([field[row][0 + col], field[row][1 + col], field[row][2 + col], field[row][3 + col]], player, opponent)
+                }
             }
 
             // Оценка столбцов
-            for (let col = 0; col < size; col++) {
-                score += evaluateLine([field[0][col], field[1][col], field[2][col], field[3][col], field[4][col]], player, opponent);
+            for (let row = 0; row < 2; row++) {
+                for (let col = 0; col <= size; col++) {
+                    score += evaluateLine([field[0 + row][col], field[1 + row][col], field[2 + row][col], field[3 + row][col]], player, opponent)
+                }
             }
             // Проверяем диагонали (слева-направо)
             for (let row = 0; row <= size - 3; row++) {
@@ -469,8 +478,11 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             if (cellValue === player) {
                 playerCount++;
             } else if (cellValue === opponent) {
-                opponentExists = true;
-                break;
+                if (player === 'O') playerCount--
+                else {
+                    opponentExists = true;
+                    break;
+                }
             }
         }
 
@@ -509,15 +521,16 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         let cached = getTransposition(hash);
         if (cached && cached.depth >= maxDepth - depth) {
             if (cached.isMax !== isMax) {
-                cached = getTransposition(hash + 1)
+                const oppositeHash = `${hash}:${isMax ? 'min' : 'max'}`
+                cached = getTransposition(oppositeHash)
             }
             if (cached) {
                 cached.inUse = true
                 if (cached.type === "exact") {
                     return cached.bestScore
-                } else if (cached.type === "lowerBound" && cached.bestScore > alpha) {
+                } else if (cached.type === "lowerBound" && cached.bestScore >= alpha) {// Равно попробуй поубирать потом
                     alpha = cached.bestScore
-                } else if (cached.type === "upperBound" && cached.bestScore < beta) {
+                } else if (cached.type === "upperBound" && cached.bestScore <= beta) {
                     beta = cached.bestScore
                 }
                 if (alpha >= beta) return cached.bestScore
@@ -535,7 +548,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 returnVal = scores[terminalState] + depth
             } else
                 returnVal = scores[terminalState]
-            storeTransposition(initialHash, maxDepth - depth, returnVal, "exact", isMax, false)
+            //storeTransposition(initialHash, maxDepth - depth, returnVal, "exact", isMax, false)
             return returnVal
         }
 
@@ -555,9 +568,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         let entryType = "exact"
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves();
-        if (size > 3) {
-            possibleMoves = sortMovesByHeuristic(possibleMoves);
-        }
+        possibleMoves = sortMoves(possibleMoves, token, maxDepth)
         for (const move of possibleMoves) {
             // Выполнить ход
             initialHash ^= zobristTable[move[0]][move[1]][token]
@@ -669,6 +680,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
             field[row][col].setValue(token)
             // update cell rendering
             target.innerText = token
+            MAX_DEPTH_ITER++
             // update zobrist transposotion table
             //game.initialHash = game.updateHash(game.initialHash, row, col, defaultSymbol ,token)
             game.initialHash ^= game.zobristTable[row][col][token]
@@ -679,6 +691,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
             // Блокируем клик, если один игрок
             if (typeof aiStrategy !== "undefined" && typeof result === "undefined") {
                 makeAiMove()
+                if (MAX_DEPTH_ITER !== 5) MAX_DEPTH_ITER++
             }
         }
     }
@@ -729,6 +742,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
         BenchCount = 0
         playScreen.style.display = "none"
         optionScreen.style.display = "block"
+        MAX_DEPTH_ITER = 3
     }
 
     // Сделать просто changeMove, и добавлять аттрибут актив терн, чтобы подсвечивать рамку
@@ -762,6 +776,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
         console.timeEnd("Ai move")
         renderAiMove(aiCoords)
         console.log(BenchCount)
+        BenchCount = 0
         result = game.checkEnd(aiCoords[0], aiCoords[1])
         game.turnMove()
         controlMove(result)
