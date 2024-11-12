@@ -504,7 +504,26 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     https://stackoverflow.com/questions/51427156/how-to-solve-tic-tac-toe-4x4-game-using-minimax-algorithm-and-alpha-beta-pruning
     */
     const minimax = (depth, isMax, rw, cl, alpha, beta, hash, maxDepth) => {
-        
+        BenchCount++
+        // Проверка транспозиционной таблицы
+        let cached = getTransposition(hash);
+        if (cached && cached.depth >= maxDepth - depth) {
+            if (cached.isMax !== isMax) {
+                cached = getTransposition(hash + 1)
+            }
+            if (cached) {
+                cached.inUse = true
+                if (cached.type === "exact") {
+                    return cached.bestScore
+                } else if (cached.type === "lowerBound" && cached.bestScore > alpha) {
+                    alpha = cached.bestScore
+                } else if (cached.type === "upperBound" && cached.bestScore < beta) {
+                    beta = cached.bestScore
+                }
+                if (alpha >= beta) return cached.bestScore
+            }
+        }
+
         let terminalState = checkEnd(rw, cl)
         if (terminalState === "win" || terminalState === "draw") {
             if (terminalState === "win") {
@@ -528,26 +547,6 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             return result
         }
 
-// Проверка транспозиционной таблицы
-let cached = getTransposition(hash);
-if (cached && cached.depth >= maxDepth - depth) {
-    if (cached.isMax !== isMax) {
-        cached = getTransposition(hash + 1)
-    }
-
-    if (cached && cached.depth >= depth) {
-        cached.inUse = true
-        if (cached.type === "exact") {
-            return cached.bestScore
-        } else if (cached.type === "lowerBound" && cached.bestScore > alpha) {
-            alpha = cached.bestScore
-        } else if (cached.type === "upperBound" && cached.bestScore < beta) {
-            beta = cached.bestScore
-        }
-        if (alpha >= beta) return cached.bestScore
-    }
-}
-
         let breakFlag = false
         let undoHashMove = null
         let lastMove = null
@@ -560,7 +559,6 @@ if (cached && cached.depth >= maxDepth - depth) {
             possibleMoves = sortMovesByHeuristic(possibleMoves);
         }
         for (const move of possibleMoves) {
-            BenchCount++
             // Выполнить ход
             initialHash ^= zobristTable[move[0]][move[1]][token]
             field[move[0]][move[1]].setValue(token)
