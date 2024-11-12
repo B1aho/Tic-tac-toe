@@ -169,14 +169,15 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
     //@type value can be exact, upperBound or lowerBound for correct working with alpha-beta puring
     const storeTransposition = (hash, depth, bestScore, type, isMax, inUse) => {
-        const minusDepth = depthMax === 5 ? 0 : 1
+        //   const minusDepth = depthMax === 5 ? 0 : 1
         const val = transpositionTable.get(hash)
         // Всё работает, если сохраняем глубокие от 5
-        if (typeof val === "undefined" && depth >= depthMax - minusDepth) {
+        if (typeof val === "undefined") {
             transpositionTable.set(hash, { depth, bestScore, type, isMax, inUse })
-        } else if (typeof val !== "undefined" && depth >= depthMax - minusDepth && isMax !== val.isMax) {
-            transpositionTable.set(hash + 1, { depth, bestScore, type, isMax, inUse })
-        } else if (typeof val !== "undefined" && depth >= depthMax - minusDepth && isMax === val.isMax) {
+        } else if (typeof val !== "undefined" && isMax !== val.isMax) {
+            if (val.inUse !== true)
+                transpositionTable.set(hash + 1, { depth, bestScore, type, isMax, inUse })
+        } else if (typeof val !== "undefined" && isMax === val.isMax) {
             if (val.inUse !== true) {
                 transpositionTable.set(hash, { depth, bestScore, type, isMax, inUse })
             }
@@ -302,7 +303,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         if (size >= 3) {
             possibleMoves = sortMovesByHeuristic(possibleMoves);
         }
-        for (let currDepth = 0; currDepth < depthMax; currDepth++) {
+        for (let currDepth = 1; currDepth <= 2; currDepth++) {// временно поставил
             for (const move of possibleMoves) {
                 // Выполнить ход
                 field[move[0]][move[1]].setValue(players[idx].token)
@@ -318,10 +319,11 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                     bestScore = score
                     bestMove = [move[0], move[1]]
                 }
-                if (Date.now() - startTime > MAX_TIME) {
-                    breakFlag = true
-                    break;
-                }
+                /*     if (Date.now() - startTime > MAX_TIME) {
+                         console.log("Last move: " + move + ". On depth = " + currDepth)
+                         breakFlag = true
+                         break;
+                     }*/
             }
             if (breakFlag)
                 break
@@ -447,37 +449,42 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 returnVal = scores[terminalState] + depth
             } else
                 returnVal = scores[terminalState]
-            storeTransposition(initialHash, depth, returnVal, "exact", isMax, false)
+            storeTransposition(initialHash, maxDepth - depth, returnVal, "exact", isMax, false)
             return returnVal
+        }
+
+        // Проверка транспозиционной таблицы
+        let cached = getTransposition(hash);
+        if (cached && cached.depth >= maxDepth - depth) {
+            if (cached.isMax !== isMax) {
+                cached = getTransposition(hash + 1)
+            }
+
+            if (cached && cached.depth >= depth) {
+                cached.inUse = true
+                if (cached.type === "exact") {
+                    return cached.bestScore
+                } else if (cached.type === "lowerBound" && cached.bestScore > alpha) {
+                    alpha = cached.bestScore
+                } else if (cached.type === "upperBound" && cached.bestScore < beta) {
+                    beta = cached.bestScore
+                }
+                if (alpha >= beta) return cached.bestScore
+            }
         }
 
         // Закончить игру оценив доску статическим методов
         if (depth >= maxDepth) {
             const result = finalHeuristic(isMax ? 'X' : 'O')
-            storeTransposition(initialHash, depth, result, "exact", isMax, false)
+            storeTransposition(initialHash, maxDepth - depth, result, "exact", isMax, false)
             return result
         }
-        // Проверка транспозиционной таблицы
-        let cached = getTransposition(hash);
 
-        if (cached && cached.isMax !== isMax) {
-            cached = getTransposition(hash + 1)
-        }
-        if (cached && cached.depth >= depth) {
-            cached.inUse = true
-            if (cached.type === "exact") {
-                return cached.bestScore
-            } else if (cached.type === "lowerBound" && cached.bestScore > alpha) {
-                alpha = cached.bestScore
-            } else if (cached.type === "upperBound" && cached.bestScore < beta) {
-                beta = cached.bestScore
-            }
-            if (alpha >= beta) return cached.bestScore
-        }
-        let breakFlag = false
-        let result = checkEnd(rw, cl)
         
-        let undoHashMove = []
+
+        let breakFlag = false
+        let undoHashMove = null
+        let lastMove = null
         let bestScore = isMax ? -Infinity : Infinity
         let token = isMax ? players[0].token : players[1].token
         let entryType = "exact"
@@ -500,13 +507,17 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             field[move[0]][move[1]].setValue(defaultSymbol) // prevToken
             movesCounter--
             // Обновить лучший счёт
-            if (isMax) {
-                bestScore = Math.max(bestScore, score);
-                alpha = Math.max(alpha, score);
-            } else {
-                bestScore = Math.min(bestScore, score);
-                beta = Math.min(beta, score);
+            if (better(score, bestScore, isMax)) {
+                bestScore = score
+                lastMove = [move[0], move[1]]
             }
+            /* if (isMax) {
+                 bestScore = Math.max(bestScore, score);
+                 alpha = Math.max(alpha, score);
+             } else {
+                 bestScore = Math.min(bestScore, score);
+                 beta = Math.min(beta, score);
+             }*/
 
             // Альфа-бета отсечение
             if (beta <= alpha) {
@@ -521,8 +532,12 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
 
         // Сохраняем в транспозиционную таблицу
-        storeTransposition(initialHash, depth, bestScore, entryType, isMax, false);
-        if (breakFlag) initialHash ^= zobristTable[undoHashMove[0]][undoHashMove[1]][token]
+        if (breakFlag) {
+            initialHash ^= zobristTable[undoHashMove[0]][undoHashMove[1]][token]
+            storeTransposition(initialHash, maxDepth - depth, bestScore, entryType, isMax, false)
+        } else {
+            storeTransposition(initialHash, maxDepth - depth, bestScore, entryType, isMax, false)
+        }
 
         return bestScore
     }
