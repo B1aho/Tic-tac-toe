@@ -260,17 +260,17 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             // Применяем ход
             field[move[0]][move[1]].setValue(playerToken);
             const newHash = initialHash ^ zobristTable[move[0]][move[1]][playerToken];
-    
+
             // Получаем оценку из таблицы транспозиций (если есть)
             const entry = transpositionTable.get(newHash);
             const score = entry && entry.depth >= depthLimit ? entry.bestScore : null;
-    
+
             // Откатываем ход
             field[move[0]][move[1]].setValue(defaultSymbol);
-    
+
             return { move, score };
         });
-    
+
         // Сортируем ходы на основе оценок (сначала высокие для макс., низкие для мин.)
         evaluatedMoves = evaluatedMoves.sort((a, b) => {
             if (a.score === null && b.score === null) return 0;
@@ -278,7 +278,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             if (b.score === null) return -1; // null в конец
             return playerToken === "X" ? b.score - a.score : a.score - b.score;
         });
-    
+
         // Возвращаем отсортированные ходы
         return evaluatedMoves.map(item => item.move);
     }
@@ -293,7 +293,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     // isMax можно не передавать, достаточно idx чтобы определить
     const remainingMoves = () => {
         let count = 0
-        field.map(row => row.map(cell => {if (cell.getValue() === defaultSymbol) count++} ))
+        field.map(row => row.map(cell => { if (cell.getValue() === defaultSymbol) count++ }))
         return count
     }
 
@@ -381,7 +381,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     const heuristic = (player) => {
         const opponent = player === 'X' ? 'O' : 'X';
         let score = 0;
-        
+
         // Оценка строк
         if (size === 2) {
             for (let row = 0; row < size; row++) {
@@ -394,17 +394,17 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 score += evaluateLine([field[0][col], field[1][col], field[2][col]], player, opponent);
             }
             for (let row = 0; row <= size - 3; row++) {
-            for (let col = 0; col <= size - 3; col++) {
-                score += evaluateLine([field[row][col], field[row + 1][col + 1], field[row + 2][col + 2], field[row + 3][col + 3]], player, opponent)
+                for (let col = 0; col <= size - 3; col++) {
+                    score += evaluateLine([field[row][col], field[row + 1][col + 1], field[row + 2][col + 2], field[row + 3][col + 3]], player, opponent)
+                }
             }
-        }
-        // Проверяем диагонали (слева-направо)
-        score += evaluateLine([field[0][0], field[1][1], field[2][2]], player, opponent)
-          
-        // Проверяем диагонали (справа-налево)
-      score += evaluateLine([field[0][2], field[1][1], field[2][0]], player, opponent)
-            
-        }else if (size === 4) {
+            // Проверяем диагонали (слева-направо)
+            score += evaluateLine([field[0][0], field[1][1], field[2][2]], player, opponent)
+
+            // Проверяем диагонали (справа-налево)
+            score += evaluateLine([field[0][2], field[1][1], field[2][0]], player, opponent)
+
+        } else if (size === 4) {
             for (let row = 0; row < size; row++) {
                 score += evaluateLine([field[row][0], field[row][1], field[row][2], field[row][3], field[row][4]], player, opponent);
 
@@ -414,6 +414,22 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             for (let col = 0; col < size; col++) {
                 score += evaluateLine([field[0][col], field[1][col], field[2][col], field[3][col], field[4][col]], player, opponent);
             }
+            // Проверяем диагонали (слева-направо)
+            for (let row = 0; row <= size - 3; row++) {
+                for (let col = 0; col <= size - 3; col++) {
+                    score += evaluateLine([field[row][col], field[row + 1][col + 1], field[row + 2][col + 2], field[row + 3][col + 3]], player, opponent)
+                }
+            }
+            score += evaluateLine([field[0][1], field[1][2], field[2][3], field[3][4]], player, opponent)
+            score += evaluateLine([field[1][0], field[2][1], field[3][2], field[4][3]], player, opponent)
+            // Проверяем диагонали (справа-налево)
+            for (let row = 0; row <= size - 3; row++) {
+                for (let col = 3; col < size; col++) {
+                    score += evaluateLine([field[row][col], field[row + 1][col - 1], field[row + 2][col - 2], field[row + 3][col - 3]], player, opponent)
+                }
+            }
+            score += evaluateLine([field[4][1], field[3][2], field[2][3], field[1][4]], player, opponent)
+            score += evaluateLine([field[3][0], field[2][1], field[1][2], field[0][3]], player, opponent)
         } else if (size === 3) {
             for (let row = 0; row < size; row++) {
                 for (let col = 0; col <= size - 3; col++) {
@@ -437,20 +453,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             for (let col = 0; col < size; col++) {
                 score += evaluateLine([field[0][col], field[1][col], field[2][col], field[3][col], field[4][col], field[5][col]], player, opponent);
             }
-        }
-     /*   // Проверяем диагонали (слева-направо)
-        for (let row = 0; row <= size - 3; row++) {
-            for (let col = 0; col <= size - 3; col++) {
-                score += evaluateLine([field[row][col], field[row + 1][col + 1], field[row + 2][col + 2], field[row + 3][col + 3]], player, opponent)
-            }
-        }
 
-        // Проверяем диагонали (справа-налево)
-        for (let row = 0; row <= size - 3; row++) {
-            for (let col = 3; col < size; col++) {
-                score += evaluateLine([field[row][col], field[row + 1][col - 1], field[row + 2][col - 2], field[row + 3][col - 3]], player, opponent)
-            }
-        }*/
+
+        }
 
         return score;
     };
@@ -499,6 +504,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     https://stackoverflow.com/questions/51427156/how-to-solve-tic-tac-toe-4x4-game-using-minimax-algorithm-and-alpha-beta-pruning
     */
     const minimax = (depth, isMax, rw, cl, alpha, beta, hash, maxDepth) => {
+        
         let terminalState = checkEnd(rw, cl)
         if (terminalState === "win" || terminalState === "draw") {
             if (terminalState === "win") {
@@ -514,25 +520,6 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             return returnVal
         }
 
-        // Проверка транспозиционной таблицы
-        let cached = getTransposition(hash);
-        if (cached && cached.depth >= maxDepth - depth) {
-            if (cached.isMax !== isMax) {
-                cached = getTransposition(hash + 1)
-            }
-
-            if (cached && cached.depth >= depth) {
-                cached.inUse = true
-                if (cached.type === "exact") {
-                    return cached.bestScore
-                } else if (cached.type === "lowerBound" && cached.bestScore > alpha) {
-                    alpha = cached.bestScore
-                } else if (cached.type === "upperBound" && cached.bestScore < beta) {
-                    beta = cached.bestScore
-                }
-                if (alpha >= beta) return cached.bestScore
-            }
-        }
 
         // Закончить игру оценив доску статическим методов
         if (depth >= maxDepth) {
@@ -541,7 +528,25 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             return result
         }
 
-        
+// Проверка транспозиционной таблицы
+let cached = getTransposition(hash);
+if (cached && cached.depth >= maxDepth - depth) {
+    if (cached.isMax !== isMax) {
+        cached = getTransposition(hash + 1)
+    }
+
+    if (cached && cached.depth >= depth) {
+        cached.inUse = true
+        if (cached.type === "exact") {
+            return cached.bestScore
+        } else if (cached.type === "lowerBound" && cached.bestScore > alpha) {
+            alpha = cached.bestScore
+        } else if (cached.type === "upperBound" && cached.bestScore < beta) {
+            beta = cached.bestScore
+        }
+        if (alpha >= beta) return cached.bestScore
+    }
+}
 
         let breakFlag = false
         let undoHashMove = null
@@ -569,12 +574,12 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             movesCounter--
             // Обновить лучший счёт
             if (isMax) {
-                 bestScore = Math.max(bestScore, score);
-                 alpha = Math.max(alpha, score);
-             } else {
-                 bestScore = Math.min(bestScore, score);
-                 beta = Math.min(beta, score);
-             }
+                bestScore = Math.max(bestScore, score);
+                alpha = Math.max(alpha, score);
+            } else {
+                bestScore = Math.min(bestScore, score);
+                beta = Math.min(beta, score);
+            }
 
             // Альфа-бета отсечение
             if (beta <= alpha) {
