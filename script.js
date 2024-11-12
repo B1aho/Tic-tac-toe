@@ -1,5 +1,5 @@
 let BenchCount = 0
-let MAX_DEPTH_ITER = 2 // Пока глобально поставлю, потом в модуле, это для настройки оптимальной
+let MAX_DEPTH_ITER = 3 // Пока глобально поставлю, потом в модуле, это для настройки оптимальной
 /*
     5. Захардкодить первые лучшие ходы для аи, и мб некоторые комбинации
     6. Изменять глубину когда применяется эвристическая функция, в зависимости от кол-ва сделанных ходов
@@ -237,7 +237,10 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         initialHash = initHash()
         console.log(initialHash)
         transpositionTable.clear()
-        MAX_DEPTH_ITER = 3
+        if (size === 2)
+            MAX_DEPTH_ITER = 10
+        else
+            MAX_DEPTH_ITER = (size >= 4) ? 3 : 4
     }
 
     function getPossibleMoves() {
@@ -305,7 +308,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         return count
     }
     // MAX_DEPTH_ITER Сильно повышает перфоманс ограничение глубины на ранних этапах. Math.min(remainingMoves(), depthMax)
-    let MAX_TIME = 9000
+    let MAX_TIME = 8000
     const moveAi = (idx, isMax) => {
         if (size === 4) {
             if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
@@ -478,10 +481,16 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             if (cellValue === player) {
                 playerCount++;
             } else if (cellValue === opponent) {
-                if (player === 'O') playerCount--
-                else {
+                if (size < 4) {
                     opponentExists = true;
                     break;
+                }
+                else {
+                    if (player === 'O') playerCount--
+                    else {
+                        opponentExists = true;
+                        break;
+                    }
                 }
             }
         }
@@ -691,7 +700,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
             // Блокируем клик, если один игрок
             if (typeof aiStrategy !== "undefined" && typeof result === "undefined") {
                 makeAiMove()
-                if (MAX_DEPTH_ITER !== 5) MAX_DEPTH_ITER++
+                //if (MAX_DEPTH_ITER !== 5) MAX_DEPTH_ITER++
             }
         }
     }
@@ -742,7 +751,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
         BenchCount = 0
         playScreen.style.display = "none"
         optionScreen.style.display = "block"
-        MAX_DEPTH_ITER = 3
+        MAX_DEPTH_ITER = (row >= 4) ? 3 : 4
     }
 
     // Сделать просто changeMove, и добавлять аттрибут актив терн, чтобы подсвечивать рамку
