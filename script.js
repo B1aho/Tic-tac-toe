@@ -428,20 +428,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
         // Оценка строк
         if (size === 2) {
-         /*   for (let row = 0; row <= size; row++) {
-                score += evaluateLine([field[row][0], field[row][1], field[row][2]], player, opponent);
-
-            }
-
-            // Оценка столбцов
-            for (let col = 0; col <= size; col++) {
-                score += evaluateLine([field[0][col], field[1][col], field[2][col]], player, opponent);
-            }
-        /*    for (let row = 0; row <= size - 3; row++) {
-                for (let col = 0; col <= size - 3; col++) {
-                    score += evaluateLine([field[row][col], field[row + 1][col + 1], field[row + 2][col + 2], field[row + 3][col + 3]], player, opponent)
-                }
-            }*/
+        
             // Проверяем диагонали (слева-направо)
             score += evaluateLine([field[0][0], field[1][1], field[2][2]], player, opponent)
 
@@ -449,19 +436,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             score += evaluateLine([field[0][2], field[1][1], field[2][0]], player, opponent)
 
         } else if (size === 4) {
-            // Должны быть не строки, а подстроки 
-            for (let col = 0; col < 2; col++) {
-                for (let row = 0; row <= size; row++) {
-                    score += evaluateLine([field[row][0 + col], field[row][1 + col], field[row][2 + col], field[row][3 + col]], player, opponent)
-                }
-            }
-
-            // Оценка столбцов
-            for (let row = 0; row < 2; row++) {
-                for (let col = 0; col <= size; col++) {
-                    score += evaluateLine([field[0 + row][col], field[1 + row][col], field[2 + row][col], field[3 + row][col]], player, opponent)
-                }
-            }
+         
             // Проверяем диагонали (слева-направо)
             for (let row = 0; row <= size - 3; row++) {
                 for (let col = 0; col <= size - 3; col++) {
@@ -479,28 +454,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             score += evaluateLine([field[4][1], field[3][2], field[2][3], field[1][4]], player, opponent)
             score += evaluateLine([field[3][0], field[2][1], field[1][2], field[0][3]], player, opponent)
         } else if (size === 3) {
-            for (let row = 0; row < size; row++) {
-                for (let col = 0; col <= size - 3; col++) {
-                    score += evaluateLine([field[row][col], field[row][col + 1], field[row][col + 2], field[row][col + 3]], player, opponent);
-                }
-            }
-
-            // Оценка столбцов
-            for (let col = 0; col < size; col++) {
-                for (let row = 0; row <= size - 3; row++) {
-                    score += evaluateLine([field[row][col], field[row + 1][col], field[row + 2][col], field[row + 3][col]], player, opponent);
-                }
-            }
+            
         } else if (size === 5) {
-            for (let row = 0; row < size; row++) {
-                score += evaluateLine([field[row][0], field[row][1], field[row][2], field[row][3], field[row][4], field[row][5]], player, opponent);
-
-            }
-
-            // Оценка столбцов
-            for (let col = 0; col < size; col++) {
-                score += evaluateLine([field[0][col], field[1][col], field[2][col], field[3][col], field[4][col], field[5][col]], player, opponent);
-            }
+           
 
 
         }
