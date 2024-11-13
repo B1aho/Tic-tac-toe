@@ -1,10 +1,6 @@
 let BenchCount = 0
-let MAX_DEPTH_ITER = 3 // Пока глобально поставлю, потом в модуле, это для настройки оптимальной
-/*
-    5. Захардкодить первые лучшие ходы для аи, и мб некоторые комбинации
-    6. Изменять глубину когда применяется эвристическая функция, в зависимости от кол-ва сделанных ходов
-*/
-// Добавь уровни сложности для ии как тот чел, от рандомных ходов, половина рандомные, а половина минимакс, минимакс с опред. глубиной
+
+// Добавь уровни сложности для ии, от рандомных ходов, половина рандомные, а половина минимакс, минимакс с опред. глубиной
 // Разбей всё по модулям, после того как доделаешь игру, чекни как правильно рефакторить такой код
 // Добавить векторную графику (canvas) 
 
@@ -129,6 +125,18 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     const fieldControl = GameField(size)
     const field = fieldControl.getField()
 
+    let MAX_DEPTH_ITER = 0
+
+    const evaluateMaxDepth = () => {
+        if (size === 2)
+            MAX_DEPTH_ITER = 10
+        else
+            MAX_DEPTH_ITER = (size >= 4) ? 3 : 4
+    }
+
+    evaluateMaxDepth() // Пока глобально поставлю, потом в модуле, это для настройки оптимальной
+
+
     // https://en.wikipedia.org/wiki/Zobrist_hashing
     // Добавить всё что с аи в отдельный модуль, можно внутри гейм контрол мб, он будет активироваться, только если 
     // выбрана игра с аи. Загуглить норма практика ли модуль в модуле
@@ -212,31 +220,28 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
     }
 
-    const evluateDepthMax = () => {
-        if (size >= 3 && size < 5) {
-            return 6
-        } else if (size >= 5) {
-            return 6
-        } else
-            return 100
-    }
+    /*   const evluateDepthMax = () => {
+           if (size >= 3 && size < 5) {
+               return 6
+           } else if (size >= 5) {
+               return 6
+           } else
+               return 100
+       }*/
 
-  // let depthMax = evluateDepthMax()
-  //  console.log("Max depth = " + depthMax)
-    
+    // let depthMax = evluateDepthMax()
+    //  console.log("Max depth = " + depthMax)
+
     const resetGame = () => {
         console.table(field.map(el => el.map(cell => cell.getValue())))
         fieldControl.resetField()
         console.table(field.map(el => el.map(cell => cell.getValue())))
         movesCounter = 0
-    //    depthMax = evluateDepthMax()
+        //    depthMax = evluateDepthMax()
         activeTurn = players[0]
         initialHash = initHash()
         transpositionTable.clear()
-        if (size === 2)
-            MAX_DEPTH_ITER = 10
-        else
-            MAX_DEPTH_ITER = (size >= 4) ? 3 : 4
+        evaluateMaxDepth()
     }
 
     function getPossibleMoves() {
@@ -298,13 +303,15 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
     // Будет получать номер 0 или 1 соответсвующий за кого аи играет
     // isMax можно не передавать, достаточно idx чтобы определить
-    const remainingMoves = () => {
-        let count = 0
-        field.map(row => row.map(cell => { if (cell.getValue() === defaultSymbol) count++ }))
-        return count
-    }
+    /* const remainingMoves = () => {
+         let count = 0
+         field.map(row => row.map(cell => { if (cell.getValue() === defaultSymbol) count++ }))
+         return count
+     }*/
     // MAX_DEPTH_ITER Сильно повышает перфоманс ограничение глубины на ранних этапах. Math.min(remainingMoves(), depthMax)
     let MAX_TIME = 5000
+
+
     const moveAi = (idx, isMax) => {
         MAX_DEPTH_ITER++
         if (size === 4) {
@@ -320,7 +327,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 return move
 
             }
-        }/* else if (size === 5) {
+        } else if (size === 5) {
             if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
                 let move = bestAiMoves.firstIn6
                 field[move[0]][move[1]].setValue(players[idx].token)
@@ -333,18 +340,17 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 return move
 
             }
-        }*/
+        }
 
         let bestScore = isMax ? -Infinity : Infinity
         let bestMove = null
-        let startTime = Date.now()
         let breakFlag = false
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves();
         if (size >= 3) {
             possibleMoves = sortMovesByHeuristic(possibleMoves)
         }
-        //MAX_DEPTH_ITER = movesCounter > 4 ? 6 : 4 // Сильно повышает перфоманс ограничение глубины на ранних этапах. Math.min(remainingMoves(), depthMax)
+        let startTime = Date.now()
         // Вместо remaining moves использовать просто длину possiblemoves ??
         for (let currDepth = 1; currDepth <= MAX_DEPTH_ITER; currDepth++) { // Чем больше условие ставлю, тем больше итераций делает - проблема
             possibleMoves = sortMoves(possibleMoves, players[idx].token, currDepth - 1)
@@ -380,29 +386,62 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     const finalHeuristic = (player) => {
         const opponent = player === 'X' ? 'O' : 'X';
         const first = heuristic(player)
-        const second = heuristic(opponent)
-        return first - second
+       // const second = heuristic(opponent)
+        return first// - second
     }
+
+    const evaluateRow = (row, length, player, opponent) => {
+        let score = 0
+        for (let startCol = 0; startCol <= field[row].length - length; startCol++) {
+            const line = field[row].slice(startCol, startCol + length)
+            score += evaluateLine(line, player, opponent)
+        }
+        return score
+    }
+
+    const evaluateColumn = (col, length, player, opponent) => {
+        let score = 0
+        for (let startRow = 0; startRow <= size + 1 - length; startRow++) {
+            const line = []
+            for (let i = 0; i < length; i++) {
+                line.push(field[startRow + i][col])
+            }
+            score += evaluateLine(line, player, opponent)
+        }
+        return score
+    }
+
     const heuristic = (player) => {
         const opponent = player === 'X' ? 'O' : 'X';
         let score = 0;
+        const length = size > 2 ? 4 : 3
+        
+       // Оценка строк
+        for (let row = 0; row <= size; row++) {
+            score += evaluateRow(row, length, player, opponent);
+        }
+
+        // Оценка столбцов
+        for (let col = 0; col <= size; col++) {
+            score += evaluateColumn(col, length, player, opponent);
+        }
 
         // Оценка строк
         if (size === 2) {
-            for (let row = 0; row < size; row++) {
+         /*   for (let row = 0; row <= size; row++) {
                 score += evaluateLine([field[row][0], field[row][1], field[row][2]], player, opponent);
 
             }
 
             // Оценка столбцов
-            for (let col = 0; col < size; col++) {
+            for (let col = 0; col <= size; col++) {
                 score += evaluateLine([field[0][col], field[1][col], field[2][col]], player, opponent);
             }
-            for (let row = 0; row <= size - 3; row++) {
+        /*    for (let row = 0; row <= size - 3; row++) {
                 for (let col = 0; col <= size - 3; col++) {
                     score += evaluateLine([field[row][col], field[row + 1][col + 1], field[row + 2][col + 2], field[row + 3][col + 3]], player, opponent)
                 }
-            }
+            }*/
             // Проверяем диагонали (слева-направо)
             score += evaluateLine([field[0][0], field[1][1], field[2][2]], player, opponent)
 
@@ -478,17 +517,20 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             if (cellValue === player) {
                 playerCount++;
             } else if (cellValue === opponent) {
-                if (size < 4) {
+               /* if (size < 4) {
+                    if (player === 'O') playerCount--
+                    else{
                     opponentExists = true;
                     break;
+                    }
                 }
-                else {
+                else {*/
                     if (player === 'O') playerCount--
                     else {
                         opponentExists = true;
                         break;
                     }
-                }
+                
             }
         }
 
@@ -628,6 +670,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         moveAi,
         initialHash,
         zobristTable,
+        evaluateMaxDepth,
+        transpositionTable,
     }
 }
 
@@ -747,7 +791,8 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
         BenchCount = 0
         playScreen.style.display = "none"
         optionScreen.style.display = "block"
-        MAX_DEPTH_ITER = (row >= 4) ? 3 : 4
+        game.evaluateMaxDepth()
+        game.transpositionTable.clear()
     }
 
     // Сделать просто changeMove, и добавлять аттрибут актив терн, чтобы подсвечивать рамку
