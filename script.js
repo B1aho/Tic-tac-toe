@@ -162,9 +162,6 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
     let initialHash = initHash()
 
-    // Обновляем хэш для каждого вызова: Откатываем хэш предыдущего ход и вычисляем новый 
-
-
     // Транспозиционная таблица для хранения хэшей
     const transpositionTable = new Map();
 
@@ -224,18 +221,17 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
             return 100
     }
 
-    let depthMax = evluateDepthMax()
-    console.log("Max depth = " + depthMax)
-
+  // let depthMax = evluateDepthMax()
+  //  console.log("Max depth = " + depthMax)
+    
     const resetGame = () => {
         console.table(field.map(el => el.map(cell => cell.getValue())))
         fieldControl.resetField()
         console.table(field.map(el => el.map(cell => cell.getValue())))
         movesCounter = 0
-        depthMax = evluateDepthMax()
+    //    depthMax = evluateDepthMax()
         activeTurn = players[0]
         initialHash = initHash()
-        console.log(initialHash)
         transpositionTable.clear()
         if (size === 2)
             MAX_DEPTH_ITER = 10
@@ -308,8 +304,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         return count
     }
     // MAX_DEPTH_ITER Сильно повышает перфоманс ограничение глубины на ранних этапах. Math.min(remainingMoves(), depthMax)
-    let MAX_TIME = 8000
+    let MAX_TIME = 5000
     const moveAi = (idx, isMax) => {
+        MAX_DEPTH_ITER++
         if (size === 4) {
             if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
                 let move = bestAiMoves.firstIn5
@@ -534,7 +531,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 cached = getTransposition(oppositeHash)
             }
             if (cached) {
-                cached.inUse = true
+                cached.inUse++
                 if (cached.type === "exact") {
                     return cached.bestScore
                 } else if (cached.type === "lowerBound" && cached.bestScore >= alpha) {// Равно попробуй поубирать потом
@@ -557,7 +554,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 returnVal = scores[terminalState] + depth
             } else
                 returnVal = scores[terminalState]
-            //storeTransposition(initialHash, maxDepth - depth, returnVal, "exact", isMax, false)
+            //storeTransposition(initialHash, maxDepth - depth, returnVal, "exact", isMax, 0)
             return returnVal
         }
 
@@ -565,7 +562,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         // Закончить игру оценив доску статическим методов
         if (depth >= maxDepth) {
             const result = finalHeuristic(isMax ? 'X' : 'O')
-            storeTransposition(initialHash, maxDepth - depth, result, "exact", isMax, false)
+            storeTransposition(initialHash, maxDepth - depth, result, "exact", isMax, 0)
             return result
         }
 
@@ -614,9 +611,9 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         // Сохраняем в транспозиционную таблицу
         if (breakFlag) {
             initialHash ^= zobristTable[undoHashMove[0]][undoHashMove[1]][token]
-            storeTransposition(initialHash, maxDepth - depth, bestScore, entryType, isMax, false)
+            storeTransposition(initialHash, maxDepth - depth, bestScore, entryType, isMax, 0)
         } else {
-            storeTransposition(initialHash, maxDepth - depth, bestScore, entryType, isMax, false)
+            storeTransposition(initialHash, maxDepth - depth, bestScore, entryType, isMax, 0)
         }
 
         return bestScore
@@ -689,7 +686,6 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
             field[row][col].setValue(token)
             // update cell rendering
             target.innerText = token
-            MAX_DEPTH_ITER++
             // update zobrist transposotion table
             //game.initialHash = game.updateHash(game.initialHash, row, col, defaultSymbol ,token)
             game.initialHash ^= game.zobristTable[row][col][token]
