@@ -133,7 +133,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         if (size === 2)
             MAX_DEPTH_ITER = 10
         else
-            MAX_DEPTH_ITER = (size >= 4) ? 3 : 4
+            MAX_DEPTH_ITER = (size >= 4) ? 6 : 6
     }
 
     evaluateMaxDepth() // Пока глобально поставлю, потом в модуле, это для настройки оптимальной
@@ -303,15 +303,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         } else
             return a < b
     }
-    // Будет получать номер 0 или 1 соответсвующий за кого аи играет
-    // isMax можно не передавать, достаточно idx чтобы определить
-    /* const remainingMoves = () => {
-         let count = 0
-         field.map(row => row.map(cell => { if (cell.getValue() === defaultSymbol) count++ }))
-         return count
-     }*/
-    // MAX_DEPTH_ITER Сильно повышает перфоманс ограничение глубины на ранних этапах. Math.min(remainingMoves(), depthMax)
-    let MAX_TIME = 5000
+
+    let MAX_TIME = 6000
 
 
     const moveAi = (idx, isMax) => {
@@ -329,14 +322,37 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 return move
 
             }
-        } else if (size === 5) {
-            if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
+        } // Прописать первый ходы за нолики в центр, но если в центре есть соперник то по диагонали к нему. Потом вынести в отдел функцию
+        else if (size === 5) {
+            if (movesCounter === 1) {
+                let leftTop = field[2][2]
+                let rightTop = field[2][3]
+                let leftBottom = field[3][2]
+                let rightBottom = field[3][3]
+                if (leftTop.getValue() !== defaultSymbol) {
+                    rightBottom.setValue(players[idx].token)
+                    initialHash ^= zobristTable[3][3][players[idx].token]
+                    return [3, 3]
+                } else if (rightTop.getValue() !== defaultSymbol) {
+                    leftBottom.setValue(players[idx].token)
+                    initialHash ^= zobristTable[3][2][players[idx].token]
+                    return [3, 2]
+                } else if (leftBottom.getValue() !== defaultSymbol) {
+                    rightTop.setValue(players[idx].token)
+                    initialHash ^= zobristTable[2][3][players[idx].token]
+                    return [2, 3]
+                } else if (rightBottom.getValue() !== defaultSymbol) {
+                    leftTop.setValue(players[idx].token)
+                    initialHash ^= zobristTable[2][2][players[idx].token]
+                    return [2, 2]
+                } else {
+                    let move = bestAiMoves.firstIn6
+                    field[move[0]][move[1]].setValue(players[idx].token)
+                    initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
+                    return move
+                }
+            }else if (movesCounter === 0) {
                 let move = bestAiMoves.firstIn6
-                field[move[0]][move[1]].setValue(players[idx].token)
-                initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
-                return move
-            } else if (movesCounter === 1) {
-                let move = bestAiMoves.secondIn6
                 field[move[0]][move[1]].setValue(players[idx].token)
                 initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
                 return move
@@ -353,7 +369,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
         let startTime = Date.now()
         // Вместо remaining moves использовать просто длину possiblemoves ??
-        for (let currDepth = 1; currDepth <= MAX_DEPTH_ITER; currDepth++) { // Чем больше условие ставлю, тем больше итераций делает - проблема
+        // let currDepth = movesCounter <= 2 ? 3 : 1
+        for (let currDepth = size < 4 ? 1 : 3; currDepth <= MAX_DEPTH_ITER; currDepth++) { // Чем больше условие ставлю, тем больше итераций делает - проблема
             possibleMoves = sortMoves(possibleMoves, players[idx].token, currDepth - 1)
             for (const move of possibleMoves) {
                 // Выполнить ход
@@ -381,18 +398,12 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
         field[bestMove[0]][bestMove[1]].setValue(players[idx].token)
         initialHash ^= zobristTable[bestMove[0]][bestMove[1]][players[idx].token]
-        //  movesCounter = saveMovesCounter
         return bestMove
     }
     const finalHeuristic = (player) => {
         const opponent = player === 'X' ? 'O' : 'X';
-        //const first = heuristic(player)
-        const second = heuristic(opponent)
-       // if (size < 3)
-     //       return second
-      //  else {
-            return second
-      //  }
+        const opponentScore = heuristic(opponent)
+        return opponentScore
     }
 
     const evaluateRow = (row, length, player, opponent) => {
@@ -418,7 +429,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
     const evaluateDiagonals = (length, player, opponent) => {
         let score = 0
-    
+
         // Левая диагональ
         for (let startRow = 0; startRow <= size - length + 1; startRow++) {
             for (let startCol = 0; startCol <= field[startRow].length - length; startCol++) {
@@ -429,7 +440,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 score += evaluateLine(line, player, opponent)
             }
         }
-    
+
         // Правая диагональ
         for (let startRow = 0; startRow <= size - length + 1; startRow++) {
             for (let startCol = length - 1; startCol < field[startRow].length; startCol++) {
@@ -447,8 +458,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         const opponent = player === 'X' ? 'O' : 'X'
         let score = 0
         const length = size > 2 ? 4 : 3
-        
-       // Оценка строк
+
+        // Оценка строк
         for (let row = 0; row <= size; row++) {
             score += evaluateRow(row, length, player, opponent)
         }
@@ -464,28 +475,20 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
 
     const evaluateLine = (line, player, opponent) => {
-        let playerCount = 0;
+        let playerCount = 0
         let opponentExists = false;
 
         for (const cell of line) {
             const cellValue = cell.getValue();
             if (cellValue === player) {
-                playerCount++;
+                playerCount++
             } else if (cellValue === opponent) {
-               /* if (size < 4) {
-                    if (player === 'O') playerCount--
-                    else{
+                if (player === 'O') playerCount--
+                else {
                     opponentExists = true;
                     break;
-                    }
                 }
-                else {*/
-                    if (player === 'O') playerCount--
-                    else {
-                        opponentExists = true;
-                        break;
-                    }
-                
+
             }
         }
 
@@ -499,8 +502,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     };
 
     const scores = {
-        win: 15000,
-        lose: -15000,
+        win: 10000,
+        lose: -10000,
         draw: 0,
     }
 
@@ -552,7 +555,6 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 returnVal = scores[terminalState] + depth
             } else
                 returnVal = scores[terminalState]
-            //storeTransposition(initialHash, maxDepth - depth, returnVal, "exact", isMax, 0)
             return returnVal
         }
 
@@ -566,13 +568,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
         let breakFlag = false
         let undoHashMove = null
-        let lastMove = null
         let bestScore = isMax ? -Infinity : Infinity
         let token = isMax ? players[0].token : players[1].token
         let entryType = "exact"
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves();
-        possibleMoves = sortMoves(possibleMoves, token, maxDepth)
+        //possibleMoves = sortMoves(possibleMoves, token, maxDepth)
+        possibleMoves =sortMovesByHeuristic(possibleMoves)
         for (const move of possibleMoves) {
             // Выполнить ход
             initialHash ^= zobristTable[move[0]][move[1]][token]
@@ -748,7 +750,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
         BenchCount = 0
         playScreen.style.display = "none"
         optionScreen.style.display = "block"
-       // game.evaluateMaxDepth()
+        // game.evaluateMaxDepth()
         game.transpositionTable.clear()
     }
 
