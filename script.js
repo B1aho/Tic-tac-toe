@@ -1,3 +1,5 @@
+"use strict";
+
 let BenchCount = 0
 
 // Добавь уровни сложности для ии, от рандомных ходов, половина рандомные, а половина минимакс, минимакс с опред. глубиной
@@ -46,7 +48,7 @@ const GameField = function (row) {
         const winLine = row > 2 ? 4 : 3
         // Check win in a row 
         let oneRow = 0
-        for (el of field[rw]) {
+        for (let el of field[rw]) {
             if (el.getValue() === token) {
                 oneRow++
                 if (oneRow >= winLine)
@@ -57,7 +59,7 @@ const GameField = function (row) {
         }
         // Check win in a column
         let oneColumn = 0
-        for (el of field) {
+        for (let el of field) {
             if (el[cl].getValue() === token) {
                 oneColumn++
                 if (oneColumn >= winLine)
@@ -338,7 +340,6 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
                 field[move[0]][move[1]].setValue(players[idx].token)
                 initialHash ^= zobristTable[move[0]][move[1]][players[idx].token]
                 return move
-
             }
         }
 
@@ -385,9 +386,13 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
     }
     const finalHeuristic = (player) => {
         const opponent = player === 'X' ? 'O' : 'X';
-        const first = heuristic(player)
-       // const second = heuristic(opponent)
-        return first// - second
+        //const first = heuristic(player)
+        const second = heuristic(opponent)
+       // if (size < 3)
+     //       return second
+      //  else {
+            return second
+      //  }
     }
 
     const evaluateRow = (row, length, player, opponent) => {
@@ -411,58 +416,52 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         return score
     }
 
+    const evaluateDiagonals = (length, player, opponent) => {
+        let score = 0
+    
+        // Левая диагональ
+        for (let startRow = 0; startRow <= size - length + 1; startRow++) {
+            for (let startCol = 0; startCol <= field[startRow].length - length; startCol++) {
+                const line = []
+                for (let i = 0; i < length; i++) {
+                    line.push(field[startRow + i][startCol + i])
+                }
+                score += evaluateLine(line, player, opponent)
+            }
+        }
+    
+        // Правая диагональ
+        for (let startRow = 0; startRow <= size - length + 1; startRow++) {
+            for (let startCol = length - 1; startCol < field[startRow].length; startCol++) {
+                const line = []
+                for (let i = 0; i < length; i++) {
+                    line.push(field[startRow + i][startCol - i])
+                }
+                score += evaluateLine(line, player, opponent)
+            }
+        }
+        return score
+    }
+
     const heuristic = (player) => {
-        const opponent = player === 'X' ? 'O' : 'X';
-        let score = 0;
+        const opponent = player === 'X' ? 'O' : 'X'
+        let score = 0
         const length = size > 2 ? 4 : 3
         
        // Оценка строк
         for (let row = 0; row <= size; row++) {
-            score += evaluateRow(row, length, player, opponent);
+            score += evaluateRow(row, length, player, opponent)
         }
 
         // Оценка столбцов
         for (let col = 0; col <= size; col++) {
-            score += evaluateColumn(col, length, player, opponent);
+            score += evaluateColumn(col, length, player, opponent)
         }
 
-        // Оценка строк
-        if (size === 2) {
-        
-            // Проверяем диагонали (слева-направо)
-            score += evaluateLine([field[0][0], field[1][1], field[2][2]], player, opponent)
-
-            // Проверяем диагонали (справа-налево)
-            score += evaluateLine([field[0][2], field[1][1], field[2][0]], player, opponent)
-
-        } else if (size === 4) {
-         
-            // Проверяем диагонали (слева-направо)
-            for (let row = 0; row <= size - 3; row++) {
-                for (let col = 0; col <= size - 3; col++) {
-                    score += evaluateLine([field[row][col], field[row + 1][col + 1], field[row + 2][col + 2], field[row + 3][col + 3]], player, opponent)
-                }
-            }
-            score += evaluateLine([field[0][1], field[1][2], field[2][3], field[3][4]], player, opponent)
-            score += evaluateLine([field[1][0], field[2][1], field[3][2], field[4][3]], player, opponent)
-            // Проверяем диагонали (справа-налево)
-            for (let row = 0; row <= size - 3; row++) {
-                for (let col = 3; col < size; col++) {
-                    score += evaluateLine([field[row][col], field[row + 1][col - 1], field[row + 2][col - 2], field[row + 3][col - 3]], player, opponent)
-                }
-            }
-            score += evaluateLine([field[4][1], field[3][2], field[2][3], field[1][4]], player, opponent)
-            score += evaluateLine([field[3][0], field[2][1], field[1][2], field[0][3]], player, opponent)
-        } else if (size === 3) {
-            
-        } else if (size === 5) {
-           
-
-
-        }
-
-        return score;
-    };
+        // Оценка диагоналей
+        score += evaluateDiagonals(length, player, opponent)
+        return score
+    }
 
     const evaluateLine = (line, player, opponent) => {
         let playerCount = 0;
@@ -543,6 +542,7 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
 
         let terminalState = checkEnd(rw, cl)
         if (terminalState === "win" || terminalState === "draw") {
+            let returnVal = 0
             if (terminalState === "win") {
                 terminalState = !isMax ? "win" : "lose"
             }
@@ -645,6 +645,8 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
 
     const getToken = () => game.getActiveTurn().token
 
+    game.evaluateMaxDepth()
+
     // Функция рендерит игровое поле, как грид
     let cols = row
     const renderField = () => {
@@ -696,18 +698,17 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
             // Блокируем клик, если один игрок
             if (typeof aiStrategy !== "undefined" && typeof result === "undefined") {
                 makeAiMove()
-                //if (MAX_DEPTH_ITER !== 5) MAX_DEPTH_ITER++
             }
         }
     }
 
     // Change player's name into Cross player;s name and noliki player's name
     const renderPlayers = () => {
-        nameDivOne = document.createElement("div")
+        const nameDivOne = document.createElement("div")
         nameDivOne.id = "player-name-div-1"
         nameDivOne.innerText = `First player's name: ${firstPlayerName}`
 
-        nameDivTwo = document.createElement("div")
+        const nameDivTwo = document.createElement("div")
         nameDivTwo.id = "player-name-div-2"
         nameDivTwo.innerText = `Second player's name: ${secondPlayerName}`
 
@@ -737,17 +738,17 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
         fieldContainer.removeEventListener('click', handleClick)
         resetBtn.removeEventListener('click', handleReset)
         backBtn.removeEventListener('click', handleBack)
-        fieldWrap = document.querySelector("#field-wrapper")
-        nameDivOne = document.querySelector("#player-name-div-1")
-        nameDivTwo = document.querySelector("#player-name-div-2")
-        optionScreen = document.querySelector(".option-screen")
+        const fieldWrap = document.querySelector("#field-wrapper")
+        const nameDivOne = document.querySelector("#player-name-div-1")
+        const nameDivTwo = document.querySelector("#player-name-div-2")
+        const optionScreen = document.querySelector(".option-screen")
         fieldWrap.remove()
         nameDivOne.remove()
         nameDivTwo.remove()
         BenchCount = 0
         playScreen.style.display = "none"
         optionScreen.style.display = "block"
-        game.evaluateMaxDepth()
+       // game.evaluateMaxDepth()
         game.transpositionTable.clear()
     }
 
@@ -783,7 +784,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
         renderAiMove(aiCoords)
         console.log(BenchCount)
         BenchCount = 0
-        result = game.checkEnd(aiCoords[0], aiCoords[1])
+        const result = game.checkEnd(aiCoords[0], aiCoords[1])
         game.turnMove()
         controlMove(result)
         gameActiveState = result === "win" || result === "draw" ? false : true
@@ -805,7 +806,7 @@ const PlayScreenControl = function (firstPlayerName, secondPlayerName, row) {
     }
 }
 
-OptionScreenControl = function () {
+const OptionScreenControl = function () {
     const playBtn = document.querySelector(".play-btn")
     const xInput = document.querySelector("#player-x-input")
     const oInput = document.querySelector("#player-o-input")
