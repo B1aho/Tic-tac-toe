@@ -10,11 +10,13 @@ These optimizations create some degree of uncertainty in the AI’s play on larg
 
 ## Screenshots:
 
+## Stack and performance:
+This project is built with vanilla JavaScript, CSS, and HTML. Although JavaScript is not the ideal language for implementing complex AI algorithms due to its performance limitations compared to lower-level languages like C, my goal was to challenge myself by practicing JavaScript and optimizing the AI to perform as close as possible to the speed and efficiency of implementations in more performant languages. Creating a competitive, well-optimized AI in JavaScript was an exciting and rewarding challenge.
+
 ## Notes on AI implementation:
 ### Minimax + alpha-beta pruning:
 ### Zobrist hashing + transposition table:
 ### Iterative deepening (time and depth limits):
 ### Heuristic method development: 
-### Performance:
 
 ## Future improvements:
