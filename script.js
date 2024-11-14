@@ -2,12 +2,9 @@
 
 let BenchCount = 0
 
-// Добавь уровни сложности для ии, от рандомных ходов, половина рандомные, а половина минимакс, минимакс с опред. глубиной
-// Разбей всё по модулям, после того как доделаешь игру, чекни как правильно рефакторить такой код
-// Добавить векторную графику (canvas) 
-
 // Cell module with private value
 const defaultSymbol = '*'
+// Cell module with private value
 const Cell = function () {
     let value = defaultSymbol
     const getValue = () => {
@@ -222,24 +219,11 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         }
     }
 
-    /*   const evluateDepthMax = () => {
-           if (size >= 3 && size < 5) {
-               return 6
-           } else if (size >= 5) {
-               return 6
-           } else
-               return 100
-       }*/
-
-    // let depthMax = evluateDepthMax()
-    //  console.log("Max depth = " + depthMax)
-
     const resetGame = () => {
         console.table(field.map(el => el.map(cell => cell.getValue())))
         fieldControl.resetField()
         console.table(field.map(el => el.map(cell => cell.getValue())))
         movesCounter = 0
-        //    depthMax = evluateDepthMax()
         activeTurn = players[0]
         initialHash = initHash()
         transpositionTable.clear()
@@ -253,8 +237,8 @@ const GameControl = function (playerOne = 'Player-One', playerTwo = 'Player-Two'
         for (let row = 0; row <= size; row++) {
             for (let col = 0; col <= size; col++) {
                 if (field[row][col].getValue() === defaultSymbol) {
-                    //const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol)
-                    const distanceFromCenter = Math.sqrt(Math.pow(row - centerRow, 2) + Math.pow(col - centerCol, 2))
+                    const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol)
+                    //const distanceFromCenter = Math.sqrt(Math.pow(row - centerRow, 2) + Math.pow(col - centerCol, 2))
                     const centerWeight = 5 - distanceFromCenter // Чем ближе к центру, тем выше значение
                     moves.push([row, col, centerWeight])
                 }
