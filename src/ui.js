@@ -69,12 +69,22 @@ export const ui = {
             })
             rows++
         })
-        fieldWrap.style.display = 'grid'
+        fieldWrap.style.display = "grid"
         fieldWrap.style.gridTemplateColumns = `repeat(${field.length}, 1fr)`
-        fieldWrap.addEventListener('click', this.onCellClick)
+        fieldWrap.addEventListener("click", this.onCellClick)
+        this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
+        this.elements.resetBtn.addEventListener("click", this.onResetClick)
     },
 
     onCellClick() {
+        // It will be filled by main.js
+    },
+
+    onBackBtnClick() {
+        // It will be filled by main.js
+    },
+
+    onResetClick(){
         // It will be filled by main.js
     },
 
