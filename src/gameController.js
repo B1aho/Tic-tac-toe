@@ -1,7 +1,7 @@
 import { currentOptions } from "./screens/controller"
 import { createField } from "./gameField"
 import { checkWIn } from "./terminalState"
-import { moveDescription } from "./screens/play"
+import { moveDescription, backBtn, resetBtn } from "./screens/play"
 
 // Создаем наше игровое поле с данными 
 // Это поле запихиваем в currentOptions, и все. Потом на back это поле будет удаляться как поле из объекта
@@ -77,6 +77,78 @@ const handleClick = (e) => {
         moveDescription.innerText = `Draw. No one lose..`
     } else {
         moveDescription.innerText = `It is now ${name}'s turn!`
+    }
+}
+
+export const resetField = () => {
+    const cells = document.querySelectorAll('.cell')
+    cells.forEach((cell) => cell.innerText = defaultSymbol)
+}
+
+const handleReset = () => {
+    BenchCount = 0
+    game.resetGame()
+    resetField()
+    controlMove(false)
+    gameActiveState = true
+    if (game.getActiveTurn().playerName === "AI") {
+        makeAiMove()
+    }
+}
+
+// Нужно удалить всё что тут было нарисовано и отключить слушатели
+// плей сркин рисовать придется каждый раз заново, так как разнын настройки
+const handleBack = () => {
+    fieldContainer.removeEventListener('click', handleClick)
+    resetBtn.removeEventListener('click', handleReset)
+    backBtn.removeEventListener('click', handleBack)
+    const fieldWrap = document.querySelector("#field-wrapper")
+    const nameDivOne = document.querySelector("#player-name-div-1")
+    const nameDivTwo = document.querySelector("#player-name-div-2")
+    const optionScreen = document.querySelector(".option-screen")
+    fieldWrap.remove()
+    nameDivOne.remove()
+    nameDivTwo.remove()
+    BenchCount = 0
+    playScreen.style.display = "none"
+    optionScreen.style.display = "block"
+    // game.evaluateMaxDepth()
+    game.transpositionTable.clear()
+}
+
+
+const renderAiMove = (coords) => {
+    const col = coords[1]
+    const row = coords[0]
+    document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = getToken()
+}
+
+// Выбираем стратегию для компьютера в алгоритме minmax, а также блокируем клик на первый ход, если компьютер крестик
+let aiStrategy
+let aiIdx
+
+const makeAiMove = () => {
+    gameActiveState = false
+    console.time("Ai move")
+    const aiCoords = game.moveAi(aiIdx, aiStrategy === "max" ? true : false)
+    console.timeEnd("Ai move")
+    renderAiMove(aiCoords)
+    console.log(BenchCount)
+    BenchCount = 0
+    const result = game.checkEnd(aiCoords[0], aiCoords[1])
+    game.turnMove()
+    controlMove(result)
+    gameActiveState = result === "win" || result === "draw" ? false : true
+}
+
+resetBtn.addEventListener('click', handleReset)
+backBtn.addEventListener('click', handleBack)
+
+if (firstPlayerName === "AI" || secondPlayerName === "AI") {
+    aiStrategy = firstPlayerName === "AI" ? "max" : "min"
+    aiIdx = aiStrategy === "max" ? 0 : 1
+    if (aiStrategy === "max") {
+        makeAiMove()
     }
 }
 
