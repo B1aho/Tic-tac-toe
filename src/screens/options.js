@@ -1,33 +1,19 @@
-const playBtn = document.querySelector(".play-btn")
-const xInput = document.querySelector("#player-x-input")
-const oInput = document.querySelector("#player-o-input")
+// Такой подход: этот модуль зведует всем, что есть на экране настроек,
+//  сохраняет их в объект и экспортирует объект настроек
+export const playBtn = document.querySelector(".play-btn")
+export const xInput = document.querySelector("#player-x-input")
+export const oInput = document.querySelector("#player-o-input")
 const choosePlayers = document.querySelector(".players-radio")
-const optionScreen = document.querySelector(".option-screen")
+export const optionScreen = document.querySelector(".option-screen")
 
-const handlePlay = () => {
-    const size = document.querySelector('input[name="size"]:checked').value
-    const players = Number(document.querySelector('input[name="players-number"]:checked').value)
-    if (haveNames(players)) {
-        console.log('have names')
-        optionScreen.style.display = "none"
-        xInput.value = xInput.value === "" ? "AI" : xInput.value
-        oInput.value = oInput.value === "" ? "AI" : oInput.value
-        PlayScreenControl(xInput.value, oInput.value, Number(size) - 1)
-        document.querySelector("#two-players").checked = true
-        resetInputs()
-    } else {
-        console.log('don have names')
-        // Подсветить красным инпуты
-    }
-}
-
-const haveNames = (playersNum) => {
+export const haveNames = (playersNum) => {
     if (playersNum === 1) {
         return xInput.value !== "" || oInput.value !== "" ? true : false
     } else if (playersNum === 2) {
         return xInput.value !== "" && oInput.value !== "" ? true : false
     }
 }
+
 
 // If input value have non-empty string, other input block. If input value empty then all inputs avaliable
 const handleInputBlock = (e) => {
@@ -54,7 +40,7 @@ const resetInputs = () => {
     xInput.value = oInput.value = ""
 }
 
-// If one player was choses then only on input should be available for name writing
+// If one player was choses then only one input should be available for name writing
 const handleInputs = (e) => {
     resetInputs()
     if (e.target.checked === true && e.target.value === "1") {
@@ -62,5 +48,5 @@ const handleInputs = (e) => {
         oInput.addEventListener("input", handleInputBlock)
     }
 }
-playBtn.addEventListener("click", handlePlay)
+
 choosePlayers.addEventListener("change", handleInputs)

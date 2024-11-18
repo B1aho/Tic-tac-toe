@@ -117,7 +117,13 @@ const better = (a, b, isMax) => {
 }
 
 const MAX_TIME = 6000
-
+let MAX_DEPTH_ITER = 0
+const evaluateMaxDepth = () => {
+    if (size === 2)
+        MAX_DEPTH_ITER = 10
+    else
+        MAX_DEPTH_ITER = (size >= 4) ? 6 : 6
+}
 const checkBestMoves = () => {
     if (size === 4) {
         if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {

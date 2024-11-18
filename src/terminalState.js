@@ -1,6 +1,6 @@
-const checkEnd = (rw, cl) => {
+export const checkWIn = (field, rw, cl) => {
     const token = field[rw][cl].getValue()
-    const winLine = row > 2 ? 4 : 3
+    const winLine = field.length > 2 ? 4 : 3
     // Check win in a row 
     let oneRow = 0
     for (let el of field[rw]) {
@@ -57,4 +57,5 @@ const checkEnd = (rw, cl) => {
             secondDiag = 0
         }
     }
+    return false
 }
