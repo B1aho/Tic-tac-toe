@@ -1,24 +1,3 @@
-// Идея данного модуля в том, что он управляет сменой экранов и каждый экран работает не зная о существовании другого
-import { optionScreen, xInput, oInput, haveNames } from "./options";
-import { playScreen, renderField, renderPlayers } from "./play";
-
-export const currentOptions = {
-    playersNumber: 0,
-    player1: {
-        name: "",
-        token: "X",
-        activeTurn: true,
-    },
-    player2: {
-        name: "",
-        token: "O",
-        activeTurn: false,
-    },
-    defaultSymbol: "*",
-    gridSize: 0,
-    AiLevel: 0,
-    movesCounter: 0,
-}
 
 const handlePlay = () => {
     xName = xInput.value
@@ -42,11 +21,6 @@ const handlePlay = () => {
         console.log('dont have names')
         // Подсветить красным инпуты
     }
-}
-
-export const screenChange = (currScreen, newScreen) => {
-    currScreen.style.display = "none"
-    newScreen.style.display = "block"
 }
 
 playBtn.addEventListener("click", handlePlay)
