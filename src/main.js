@@ -47,9 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
             // No effect if is not human turn
             if (game.currentPlayer.name === "AI")
                 return
-            gameState = game.checkTerminalState(row, col)
             // Update field data
             game.updateFieldValue(row, col, token)
+            // Check game end
+            gameState = game.checkTerminalState(row, col)
             // Update cell rendering
             targetCell.innerText = token
             // Check if game over
