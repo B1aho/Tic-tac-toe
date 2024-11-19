@@ -5,17 +5,39 @@ export const game = {
     field: [],
     currentPlayer: null,
     size: 0,
-    createField(size) {
-        for (let i = 0; i < size; i++) {
+    createField() {
+        for (let i = 0; i < this.size; i++) {
             this.field[i] = []
-            for (let j = 0; j < size; j++) {
+            for (let j = 0; j < this.size; j++) {
                 this.field[i].push(this.Cell())
             }
         }
     },
 
-    resetField() {
+    initialize(size, player) {
+        this.size = size
+        this.currentPlayer = player
+    },
+
+    getDeafultSymbol () {
+        return defaultSymbol
+    },
+
+    updateFieldValue(row, col, newValue) {
+        this.field[row][col].setValue(newValue)
+    },
+
+    back() {
+        this.field = []
+        movesCounter = 0
+        this.currentPlayer = null
+        this.size = 0
+    },
+
+    reset(playerX) {
         this.field.forEach(el => el.forEach(cell => cell.setValue(defaultSymbol)))
+        movesCounter = 0
+        this.currentPlayer = playerX
     },
 
     Cell() {
@@ -119,49 +141,14 @@ export const game = {
             return "win"
     },
 
-
+    nextPlayerMove(nextPlayer) {
+        this.currentPlayer = nextPlayer
+        movesCounter++ 
+    },
 }
-
+/*
 // Добавить всю эту логику в наш объект
 // Подумать как красиво добавить ИИ
-
-const getActiveTurn = () => {
-    if (currentOptions.player1.activeTurn) {
-        return currentOptions.player1
-    } else
-        return currentOptions.player2
-}
-
-const turnMove = () => {
-    const activePlayer = getActiveTurn()
-    activePlayer.activeTurn = false
-    if (currentOptions.player1 === activePlayer) {
-        currentOptions.player2.activeTurn = true
-    } else {
-        currentOptions.player1.activeTurn = true
-    }
-    currentOptions.movesCounter++
-}
-
-
- // Сделать просто changeMove, и добавлять аттрибут актив терн, чтобы подсвечивать рамку
- const controlMove = (isEnd) => {
-    const name = getActiveTurn().name
-    if (isEnd === 'win') {
-        // Поменять на get activePlayer
-        moveDescription.innerText = `${name} is the winner. Congratulation!`
-    } else if (isEnd === 'draw') {
-        moveDescription.innerText = `Draw. No one lose..`
-    } else {
-        moveDescription.innerText = `It is now ${name}'s turn!`
-    }
-}
-
-const renderAiMove = (coords) => {
-    const col = coords[1]
-    const row = coords[0]
-    document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = getToken()
-}
 
 // Выбираем стратегию для компьютера в алгоритме minmax, а также блокируем клик на первый ход, если компьютер крестик
 let aiStrategy
@@ -188,3 +175,4 @@ if (firstPlayerName === "AI" || secondPlayerName === "AI") {
         makeAiMove()
     }
 }
+    */

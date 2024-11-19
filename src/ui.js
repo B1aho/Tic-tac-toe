@@ -8,6 +8,7 @@ export const ui = {
         xInput: document.querySelector("#player-x-input"),
         oInput: document.querySelector("#player-o-input"),
         choosePlayers: document.querySelector(".players-radio"),
+        twoPlayersMode: document.querySelector("#two-players"),
         playBtn: document.querySelector(".play-btn"),
         resetBtn: document.querySelector('#reset'),
         backBtn: document.querySelector('#back'),
@@ -25,9 +26,10 @@ export const ui = {
     },
 
     getOptions() {
-        return {
-            size: getSize(),
-            playersNumber: getPlayersNumber(),
+        // Get current options
+        const options = {
+            size: this.getSize(),
+            playersNumber: this.getPlayersNumber(),
             player1: {
                 name: this.elements.xInput.value || "Player X",
                 token: "X",
@@ -37,6 +39,11 @@ export const ui = {
                 token: "O",
             }
         }
+        // Set options to default 
+        this.elements.xInput.value = this.elements.oInput.value = "" // Мб оставить имена
+        this.elements.twoPlayersMode.checked = true
+
+        return options
     },
 
     getSize: () => {
@@ -76,6 +83,12 @@ export const ui = {
         this.elements.resetBtn.addEventListener("click", this.onResetClick)
     },
 
+    removeListener() {
+        document.querySelector("#field-wrapper").removeEventListener("click", this.onCellClick)
+        this.elements.resetBtn.removeEventListener("click", this.onResetClick)
+        this.elements.backBtn.removeEventListener("click", this.onBackBtnClick)
+    },
+
     onCellClick() {
         // It will be filled by main.js
     },
@@ -89,6 +102,9 @@ export const ui = {
     },
 
     renderPlayers(firstPlayerName, secondPlayerName) {
+        // Clear previous content
+        this.elements.playerOneDiv.innerHTML = this.elements.playerTwoDiv.innerHTML = ""
+        // Create new names
         const nameDivOne = document.createElement("div")
         nameDivOne.id = "player-1-name"
         nameDivOne.innerText = `First player's name: ${firstPlayerName}`
@@ -99,6 +115,17 @@ export const ui = {
 
         this.elements.playerOneDiv.prepend(nameDivOne)
         this.elements.playerTwoDiv.prepend(nameDivTwo)
+    },
+
+    updateMoveDescription(state, currentName) {
+        const moveDescDiv = this.elements.moveDescription
+        if (state === "win") {
+            moveDescDiv.innerText = `${currentName} is the winner. Congratulation!`
+        } else if (state === "draw") {
+            moveDescDiv.innerText = "Draw. No one lose.."
+        } else {
+            moveDescDiv.innerText = `It is now ${currentName}'s turn!`
+        }
     },
 
     // Убери this.elements. везде кроме начала, чтобы короче было
@@ -148,4 +175,9 @@ export const ui = {
         }
     },
 
+    renderAiMove(coords) {
+        const row = coords[0]
+        const col = coords[1]
+        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = getToken()
+    },
 }
