@@ -1,5 +1,5 @@
+import { defaultSymbol } from "./defaultSymbol.js"
 let movesCounter = 0
-const defaultSymbol = '*'
 
 export const game = {
     field: [],

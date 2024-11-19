@@ -1,3 +1,5 @@
+import { defaultSymbol } from "./defaultSymbol.js";
+
 export const ui = {
     screens: {
         options: document.querySelector(".option-screen"),
@@ -41,8 +43,8 @@ export const ui = {
         }
         // Set options to default 
         this.elements.xInput.value = this.elements.oInput.value = "" // Мб оставить имена
+        this.elements.xInput.disabled = this.elements.oInput.disabled = false 
         this.elements.twoPlayersMode.checked = true
-
         return options
     },
 
@@ -70,7 +72,7 @@ export const ui = {
                 btnDiv.className = 'cell'
                 btnDiv.dataset.column = columns++
                 btnDiv.dataset.row = rows
-                if (columns === cols + 1)
+                if (columns === field.length)
                     columns = 0
                 fieldWrap.append(btnDiv)
             })
@@ -78,15 +80,32 @@ export const ui = {
         })
         fieldWrap.style.display = "grid"
         fieldWrap.style.gridTemplateColumns = `repeat(${field.length}, 1fr)`
-        fieldWrap.addEventListener("click", this.onCellClick)
-        this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
-        this.elements.resetBtn.addEventListener("click", this.onResetClick)
+        //fieldWrap.addEventListener("click", this.onCellClick)
+        //this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
+        //this.elements.resetBtn.addEventListener("click", this.onResetClick)
     },
 
     removeListener() {
         document.querySelector("#field-wrapper").removeEventListener("click", this.onCellClick)
+        this.removeInputListener()
         this.elements.resetBtn.removeEventListener("click", this.onResetClick)
         this.elements.backBtn.removeEventListener("click", this.onBackBtnClick)
+    },
+
+    resetFieldRender(field) {
+        const cells = document.querySelectorAll(".cell")
+        cells.forEach(cell => cell.innerText = defaultSymbol)
+    },
+
+    removeInputListener() {
+        this.elements.xInput.removeEventListener("input", this.blockInputListeners.xInput)
+        this.elements.oInput.removeEventListener("input", this.blockInputListeners.oInput)
+    },
+
+    registerListener() {
+        document.querySelector("#field-wrapper").addEventListener("click", this.onCellClick)
+        this.elements.resetBtn.addEventListener("click", this.onResetClick)
+        this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
     },
 
     onCellClick() {
@@ -154,6 +173,11 @@ export const ui = {
         }
     },
 
+    blockInputListeners: {
+        xInput: null,
+        oInput: null,
+    },
+
     resetInputs() {
         this.elements.xInput.removeEventListener("input", (e) => this.blockOtherInput(e))
         this.elements.oInput.removeEventListener("input", (e) => this.blockOtherInput(e))
@@ -171,8 +195,12 @@ export const ui = {
     handleInputsAvaliability(e) {
         this.resetInputs()
         if (e.target.checked === true && e.target.value === "1") {
-            this.elements.xInput.addEventListener("input", (e) => this.blockOtherInput(e))
-            this.elements.oInput.addEventListener("input", (e) => this.blockOtherInput(e))
+            this.blockInputListeners.xInput = (e) => this.blockOtherInput(e)
+            this.blockInputListeners.oInput = (e) => this.blockOtherInput(e)
+            this.elements.xInput.addEventListener("input", this.blockInputListeners.xInput)
+            this.elements.oInput.addEventListener("input", this.blockInputListeners.oInput)
+        } else {
+            this.removeInputListener()
         }
     },
 
