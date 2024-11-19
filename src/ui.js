@@ -137,11 +137,6 @@ export const ui = {
         }
     },
 
-    bindListeners: {
-        xInput: null, 
-        oInput: null,
-    },
-
     // If input value have non-empty string, other input block. If input value empty then all inputs avaliable
     blockOtherInput(e) {
         if (e.target === this.elements.xInput) {
@@ -160,25 +155,24 @@ export const ui = {
     },
 
     resetInputs() {
-        this.elements.xInput.removeEventListener("input", this.bindListeners.xInput)
-        this.elements.oInput.removeEventListener("input", this.bindListeners.oInput)
+        this.elements.xInput.removeEventListener("input", (e) => this.blockOtherInput(e))
+        this.elements.oInput.removeEventListener("input", (e) => this.blockOtherInput(e))
         this.elements.oInput.disabled = false
         this.elements.xInput.disabled = false
         this.elements.xInput.value = this.elements.oInput.value = ""
     },
 
+    // Arrow function look for the parent scope's context binding - addPlayerChooseListener()
     addPlayerChooseListener() {
-        this.elements.choosePlayers.addEventListener("change", this.handleInputsAvaliability.bind(this))
+        this.elements.choosePlayers.addEventListener("change", (e) => this.handleInputsAvaliability(e))
     },
 
     // If 1-player mode checked, then only one input can ba filled at time
     handleInputsAvaliability(e) {
         this.resetInputs()
         if (e.target.checked === true && e.target.value === "1") {
-            this.bindListeners.xInput = this.blockOtherInput.bind(this)
-            this.bindListeners.oInput = this.blockOtherInput.bind(this)
-            this.elements.xInput.addEventListener("input", this.bindListeners.xInput)
-            this.elements.oInput.addEventListener("input", this.bindListeners.oInput)
+            this.elements.xInput.addEventListener("input", (e) => this.blockOtherInput(e))
+            this.elements.oInput.addEventListener("input", (e) => this.blockOtherInput(e))
         }
     },
 
