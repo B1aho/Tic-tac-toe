@@ -1,10 +1,10 @@
-import { ui } from "./ui";
-import { game } from "./game";
+import { ui } from "./ui.js";
+import { game } from "./game.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+    ui.addPlayerChooseListener()
     ui.elements.playBtn.addEventListener("click", () => {
         // Validate options before starting game
-        ui.addPlayerChooseListener()
         if (!ui.isNamesFilled) {
             console.log("Fill required options")
             // ui.highlightEmptyInputs()
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Сделать мб field приватной и геттер для нее
         game.createField()
         // Render game
-        ui.showScreen("game")
+        ui.showScreen("play")
         ui.renderField(game.field)
         ui.renderPlayers(players.playerX.name, players.playerO.name)
         ui.updateMoveDescription("First turn")
