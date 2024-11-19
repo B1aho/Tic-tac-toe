@@ -1,4 +1,4 @@
-function getPossibleMoves(field) {
+export function getPossibleMoves(field) {
     const centerRow = Math.floor(size / 2);
     const centerCol = Math.floor(size / 2);
     const moves = [];
@@ -16,11 +16,11 @@ function getPossibleMoves(field) {
 }
 
 // Оценить и отсортировать ходы по их выгодности
-function sortMovesByHeuristic(moves) {
+export function sortMovesByHeuristic(moves) {
     return moves.sort((a, b) => b[2] - a[2]);
 }
 
-function sortMoves(possibleMoves, playerToken, depthLimit) {
+export function sortMoves(possibleMoves, playerToken, depthLimit) {
     // Создаем массив с оценками ходов
     let evaluatedMoves = possibleMoves.map(move => {
         // Применяем ход

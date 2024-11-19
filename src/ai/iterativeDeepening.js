@@ -1,4 +1,6 @@
 
+import { checkBestMoves } from "./openBook";
+import { getPossibleMoves, sortMovesByHeuristic, sortMoves } from "./sortMoves";
 
 const better = (a, b, isMax) => {
     if (isMax) {
@@ -9,14 +11,14 @@ const better = (a, b, isMax) => {
 
 const MAX_TIME = 6000
 let MAX_DEPTH_ITER = 0
-const evaluateMaxDepth = () => {
+const evaluateMaxDepth = (size) => {
     if (size === 2)
         MAX_DEPTH_ITER = 10
     else
         MAX_DEPTH_ITER = (size >= 4) ? 6 : 6
 }
 
-const iterativeDeeping = (field, idx, isMax) => {
+export const createIterativeDeeping = (field, isMax) => {
     MAX_DEPTH_ITER++
     const hardMove = checkBestMoves()
     if (hardMove)
@@ -31,8 +33,7 @@ const iterativeDeeping = (field, idx, isMax) => {
     }
     let startTime = Date.now()
     // Вместо remaining moves использовать просто длину possiblemoves ??
-    // let currDepth = movesCounter <= 2 ? 3 : 1
-    for (let currDepth = size < 4 ? 1 : 3; currDepth <= MAX_DEPTH_ITER; currDepth++) { // Чем больше условие ставлю, тем больше итераций делает - проблема
+    for (let currDepth = size < 4 ? 1 : 3; currDepth <= MAX_DEPTH_ITER; currDepth++) {
         possibleMoves = sortMoves(possibleMoves, players[idx].token, currDepth - 1)
         for (const move of possibleMoves) {
             // Выполнить ход

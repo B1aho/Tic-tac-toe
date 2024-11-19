@@ -1,4 +1,4 @@
-const checkBestMoves = () => {
+export const checkBestMoves = () => {
     if (size === 4) {
         if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
             let move = bestAiMoves.firstIn5
