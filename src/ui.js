@@ -1,3 +1,5 @@
+// Пусть автоматические в блокированном инпуте АИ имя возникает
+
 import { defaultSymbol } from "./defaultSymbol.js";
 
 export const ui = {

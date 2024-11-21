@@ -1,4 +1,4 @@
-import { getPossibleMoves, sortMovesByHeuristic, sortMoves, isBetterMove } from "./moveHelpers";
+import { getPossibleMoves, sortMovesByHeuristic, sortMoves, isBetterMove } from "./moveHelpers.js";
 
 export const createIterativeDeeping = (state) => {
     const runSearch = (search, limits) => {

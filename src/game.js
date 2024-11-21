@@ -1,10 +1,11 @@
 // Заменить на shared state
-import { defaultSymbol } from "./defaultSymbol.js"
-let movesCounter = 0
+import { defaultSymbol } from "./defaultSymbol.js";
+import { getSharedState } from "./sharedState.js";
+const state = getSharedState()
 
+// Size убрать
 export const game = {
-    field: [],
-    currentPlayer: null,
+    field: state.field,
     size: 0,
     createField() {
         for (let i = 0; i < this.size; i++) {
@@ -17,7 +18,7 @@ export const game = {
 
     initialize(size, player) {
         this.size = size
-        this.currentPlayer = player
+        state.currentPlayer = player
     },
 
     getDeafultSymbol () {
@@ -30,15 +31,15 @@ export const game = {
 
     back() {
         this.field = []
-        movesCounter = 0
-        this.currentPlayer = null
+        state.movesCounter = 0
+        state.currentPlayer = null
         this.size = 0
     },
 
     reset(playerX) {
         this.field.forEach(el => el.forEach(cell => cell.setValue(defaultSymbol)))
-        movesCounter = 0
-        this.currentPlayer = playerX
+        state.movesCounter = 0
+        state.currentPlayer = playerX
     },
 
     Cell() {
@@ -135,7 +136,7 @@ export const game = {
 
     checkTerminalState (row, col) {
         const maxMoves = Math.pow((this.size), 2)
-        if (movesCounter === maxMoves) {
+        if (state.movesCounter === maxMoves) {
             return "draw"
         }
         if (this.checkWin(row, col))
@@ -143,8 +144,8 @@ export const game = {
     },
 
     nextPlayerMove(nextPlayer) {
-        this.currentPlayer = nextPlayer
-        movesCounter++ 
+        state.currentPlayer = nextPlayer
+        state.movesCounter++ 
     },
 }
 /*

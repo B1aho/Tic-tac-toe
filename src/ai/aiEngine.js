@@ -1,8 +1,8 @@
-import { createIterativeDeeping } from "./iterativeDeepening";
-import { createZobristHash } from "./zobristHashing";
-import { createTranspositionTable } from "./transpositionTable";
-import { createMinimax } from "./minimax";
-import { getSharedState } from "./sharedState";
+import { createIterativeDeeping } from "./iterativeDeepening.js";
+import { createZobristHash } from "./zobristHashing.js";
+import { createTranspositionTable } from "./transpositionTable.js";
+import { createMinimax } from "./minimax.js";
+import { getSharedState } from "../sharedState.js";
 
 const evaluateMaxDepth = (size) => {
     if (size === 2)
@@ -38,10 +38,18 @@ export const createEngine = (config) => {
     state.hash = zobristHashing.initHash(state.field)
 
     // Construct function that define AI move. Pass minimax-callback to iterative deepening method
-    const getBestMove = (state) => {
+    const getBestMove = (state = state) => {
         return iterativeDeepening.runSearch((state, depth, move) => {
             return minimax.search(state, depth, !state.isMax, move, Infinity, -Infinity, 0)
         }, limits)
     }
-    return {getBestMove, getSharedState}
+
+    const makeMove = () => {
+        console.time("Ai move")
+        const move = getBestMove(state)
+        console.time("Ai move")
+        state.field[move[0]][move[1]].setValue(state.currentToken)
+        state.movesCounter++
+    }
+    return {makeMove}
 }

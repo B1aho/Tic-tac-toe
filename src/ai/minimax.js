@@ -1,5 +1,5 @@
-import { game } from "../game";
-import { finalHeuristic } from "./heuristics";
+import { game } from "../game.js";
+import { finalHeuristic } from "./heuristics.js";
 
 const scores = {
     win: 10000,
