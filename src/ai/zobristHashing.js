@@ -25,5 +25,6 @@ export const createZobristHash = (size, tokenTypes) => {
     return {
         initHash,
         updateHash,
+        zobristTable,
     }
 };

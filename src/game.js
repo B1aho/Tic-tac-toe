@@ -145,7 +145,6 @@ export const game = {
 
     nextPlayerMove(nextPlayer) {
         state.currentPlayer = nextPlayer
-        state.movesCounter++ 
     },
 }
 /*

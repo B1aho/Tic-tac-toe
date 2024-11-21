@@ -5,10 +5,15 @@ const sharedState = {
     field: [],
     movesCounter: 0,
     defaultSymbol: "*",
+    zobristTable: null,
 
     applyMove(move) {
         this.field[move[0]][move[1]].setValue(this.currentPlayer.token)
-        this.hash ^= zobristTable[move[0]][move[1]][this.currentPlayer.token]
+        this.hash ^= this.zobristTable[move[0]][move[1]][this.currentPlayer.token]
+    },
+    undoMove(move) {
+        this.field[move[0]][move[1]].setValue(this.defaultSymbol)
+        this.hash ^= this.zobristTable[move[0]][move[1]][this.currentPlayer.token]
     },
 }
 

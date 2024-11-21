@@ -32,10 +32,13 @@ export const createEngine = (config) => {
     }
     const zobristHashing = createZobristHash(state.field.length, tokenTypes)
     const transpositionTable = createTranspositionTable()
+    state.getRecord = transpositionTable.getRecord
+    state.zobristTable = zobristHashing.zobristTable
     const iterativeDeepening = createIterativeDeeping(state)
     const minimax = createMinimax(transpositionTable)
 
     state.hash = zobristHashing.initHash(state.field)
+    state.storeRecord = transpositionTable.storeRecord
 
     // Construct function that define AI move. Pass minimax-callback to iterative deepening method
     const getBestMove = (state = state) => {
@@ -46,7 +49,6 @@ export const createEngine = (config) => {
 
     const makeMove = (move) => {
         state.field[move[0]][move[1]].setValue(state.currentToken)
-        state.movesCounter++
     }
     return {makeMove, getBestMove}
 }

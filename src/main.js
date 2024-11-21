@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 token: options.player2.token,
             },
         }
-
         // If options were validate then
         // Initialize game
         game.initialize(options.size, players.playerX)
@@ -35,20 +34,22 @@ document.addEventListener("DOMContentLoaded", () => {
         ui.showScreen("play")
         ui.renderField(game.field)
         ui.renderPlayers(players.playerX.name, players.playerO.name)
-        state.currentPlayer = players.playerX
+      //  state.currentPlayer = players.playerX
         ui.updateMoveDescription(null, state.currentPlayer.name)
         // Убрать потом, почему выше написано
         const AI = (options.playersNumber === 1) ? true : false
         if (AI) {
-            var aiEngine = createEngine({ timeOut: 6000, })
+            var aiEngine = createEngine({ timeOut: 600000, })
             // Вынести один общий shared state мб, не два отдельных для АИ и game
             state.isMax = players.playerX.name === "Player X" ? true : false
             if (state.isMax) {
                 console.time("Ai move")
                 let aiMove = aiEngine.getBestMove(state)
-                console.time("Ai move")
+                console.timeEnd("Ai move")
                 aiEngine.makeMove(aiMove)
-                ui.renderAiMove(aiMove)
+                ui.renderAiMove(aiMove, state.currentPlayer.token)
+                state.movesCounter++ 
+                console.log("movesCounte++")
                 game.nextPlayerMove(state.currentPlayer === players.playerX ? players.playerO : players.playerX)
                 ui.updateMoveDescription(null, state.currentPlayer.name)
             }
@@ -64,37 +65,48 @@ document.addEventListener("DOMContentLoaded", () => {
             if (targetCell.innerText !== game.getDeafultSymbol() || gameStatus)
                 return
             // No effect if is not human turn
-            if (state.currentPlayer.name === "")
+            if (state.currentPlayer.name === "Player X")
                 return
             // Update field data
             game.updateFieldValue(row, col, token)
-            // Check game end
-            gameStatus = game.checkTerminalState(row, col)
             // Update cell rendering
             targetCell.innerText = token
+            state.movesCounter++ 
+            console.log("movesCounte++")
             // Check if game over
+            // Check game end
+            gameStatus = game.checkTerminalState(row, col)
             if (gameStatus) {
-                // Убедиться насколько нужен данный ремувер. Ведь у нас и так должен блокаться клик на занятых, с другой стороны когда бэк нажата правильнее будет убирать все листенеры одной функцией
                 ui.updateMoveDescription(gameStatus, state.currentPlayer.name)
                 return;
             }
+            game.nextPlayerMove(state.currentPlayer === players.playerX ? players.playerO : players.playerX)
+            ui.updateMoveDescription(null, state.currentPlayer.name)
             // Next-move logic for 1/2 players modes 
             if (AI) {
                 console.time("Ai move")
                 let aiMove = aiEngine.getBestMove(state)
-                console.time("Ai move")
+                console.timeEnd("Ai move")
                 aiEngine.makeMove(aiMove)
-                ui.renderAiMove(aiMove)
+                ui.renderAiMove(aiMove, state.currentPlayer.token)
+                state.movesCounter++ 
+                console.log("movesCounte++")
+                gameStatus = game.checkTerminalState(aiMove[0], aiMove[1])
+                if (gameStatus) {
+                    ui.updateMoveDescription(gameStatus, state.currentPlayer.name)
+                    return;
+                }
+                game.nextPlayerMove(state.currentPlayer === players.playerX ? players.playerO : players.playerX)
+                ui.updateMoveDescription(null, state.currentPlayer.name)
             }
-            game.nextPlayerMove(state.currentPlayer === players.playerX ? players.playerO : players.playerX)
-            ui.updateMoveDescription(null, state.currentPlayer.name)
-
         };
         ui.onBackBtnClick = () => {
             game.back()
             ui.removeListener()
             ui.showScreen("options")
             gameStatus = null
+            // в game reset записать
+            state.movesCounter = 0
             // ai.back()
             /*
             ai.evaluateMaxDepth()
@@ -106,6 +118,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ui.updateMoveDescription(null, state.currentPlayer.name)
             ui.resetFieldRender()
             gameStatus = null
+            // в game reset записать
+            state.movesCounter = 0
             // ai.reset()
             /*
             initialHash = initHash()

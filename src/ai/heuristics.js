@@ -1,10 +1,10 @@
-export const finalHeuristic = (player) => {
+export const finalHeuristic = (field, player) => {
     const opponent = player === 'X' ? 'O' : 'X';
-    const opponentScore = heuristic(opponent)
+    const opponentScore = heuristic(field, opponent)
     return opponentScore
 }
 
-const evaluateRow = (row, length, player, opponent) => {
+const evaluateRow = (field, row, length, player, opponent) => {
     let score = 0
     for (let startCol = 0; startCol <= field[row].length - length; startCol++) {
         const line = field[row].slice(startCol, startCol + length)
@@ -13,9 +13,9 @@ const evaluateRow = (row, length, player, opponent) => {
     return score
 }
 
-const evaluateColumn = (col, length, player, opponent) => {
+const evaluateColumn = (field, col, length, player, opponent) => {
     let score = 0
-    for (let startRow = 0; startRow <= size + 1 - length; startRow++) {
+    for (let startRow = 0; startRow <= field.length - length; startRow++) {
         const line = []
         for (let i = 0; i < length; i++) {
             line.push(field[startRow + i][col])
@@ -25,11 +25,11 @@ const evaluateColumn = (col, length, player, opponent) => {
     return score
 }
 
-const evaluateDiagonals = (length, player, opponent) => {
+const evaluateDiagonals = (field, length, player, opponent) => {
     let score = 0
 
     // Левая диагональ
-    for (let startRow = 0; startRow <= size - length + 1; startRow++) {
+    for (let startRow = 0; startRow <= field.length - length; startRow++) {
         for (let startCol = 0; startCol <= field[startRow].length - length; startCol++) {
             const line = []
             for (let i = 0; i < length; i++) {
@@ -40,7 +40,7 @@ const evaluateDiagonals = (length, player, opponent) => {
     }
 
     // Правая диагональ
-    for (let startRow = 0; startRow <= size - length + 1; startRow++) {
+    for (let startRow = 0; startRow <= field.length - length; startRow++) {
         for (let startCol = length - 1; startCol < field[startRow].length; startCol++) {
             const line = []
             for (let i = 0; i < length; i++) {
@@ -52,23 +52,24 @@ const evaluateDiagonals = (length, player, opponent) => {
     return score
 }
 
-const heuristic = (player) => {
+const heuristic = (field, player) => {
     const opponent = player === 'X' ? 'O' : 'X'
     let score = 0
-    const length = size > 2 ? 4 : 3
+    const size = field.length
+    const length = size > 3 ? 4 : 3
 
     // Оценка строк
-    for (let row = 0; row <= size; row++) {
-        score += evaluateRow(row, length, player, opponent)
+    for (let row = 0; row < size; row++) {
+        score += evaluateRow(field, row, length, player, opponent)
     }
 
     // Оценка столбцов
-    for (let col = 0; col <= size; col++) {
-        score += evaluateColumn(col, length, player, opponent)
+    for (let col = 0; col < size; col++) {
+        score += evaluateColumn(field, col, length, player, opponent)
     }
 
     // Оценка диагоналей
-    score += evaluateDiagonals(length, player, opponent)
+    score += evaluateDiagonals(field, length, player, opponent)
     return score
 }
 

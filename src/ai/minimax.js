@@ -1,5 +1,6 @@
 import { game } from "../game.js";
 import { finalHeuristic } from "./heuristics.js";
+import { getPossibleMoves, sortMovesByHeuristic } from "./moveHelpers.js";
 
 const scores = {
     win: 10000,
@@ -30,7 +31,7 @@ export const createMinimax = (transpositionTable) => {
         let cached = transpositionTable.getRecord(state.hash);
         if (cached && cached.depth >= maxDepth - depth) {
             if (cached.isMax !== isMax) {
-                const oppositeHash = `${hash}:${isMax ? 'min' : 'max'}`
+                const oppositeHash = `${state.hash}:${isMax ? 'min' : 'max'}`
                 cached = transpositionTable.getRecord(oppositeHash)
             }
             if (cached) {
@@ -75,8 +76,8 @@ export const createMinimax = (transpositionTable) => {
 
         // Закончить игру оценив доску статическим методов
         if (depth >= maxDepth) {
-            const result = finalHeuristic(isMax ? 'X' : 'O')
-            storeTransposition(state.hash, createRecord(maxDepth - depth, result, types.exact, isMax, 0))
+            const result = finalHeuristic(state.field, isMax ? 'X' : 'O')
+            state.storeRecord(state.hash, createRecord(maxDepth - depth, result, types.exact, isMax, 0))
             return result
         }
 
@@ -86,7 +87,7 @@ export const createMinimax = (transpositionTable) => {
         let token = isMax ? "X" : "O"
         let entryType = types.exact
         // Генерация и сортировка возможных ходов
-        let possibleMoves = getPossibleMoves();
+        let possibleMoves = getPossibleMoves(state.field);
         //possibleMoves = sortMoves(possibleMoves, token, maxDepth)
         possibleMoves = sortMovesByHeuristic(possibleMoves)
         for (const move of possibleMoves) {
@@ -95,7 +96,7 @@ export const createMinimax = (transpositionTable) => {
             state.movesCounter++
 
             // Рекурсивный вызов минимакса
-            const score = search(state, maxDepth, !isMax, move[0], move[1], alpha, beta, depth + 1);
+            const score = search(state, maxDepth, !isMax, move, alpha, beta, depth + 1);
 
             // Откатить ход
             //field[move[0]][move[1]].setValue(defaultSymbol) // prevToken
@@ -119,16 +120,16 @@ export const createMinimax = (transpositionTable) => {
                 break
             }
             //Hash ^= zobristTable[move[0]][move[1]][token]
-            state.applyMove(move)
+            state.undoMove(move)
         }
 
         // Сохраняем в транспозиционную таблицу
         if (breakFlag) {
             //Hash ^= zobristTable[undoHashMove[0]][undoHashMove[1]][token]
-            storeTransposition(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
-            state.applyMove(undoHashMove)
+            state.storeRecord(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
+            state.undoMove(undoHashMove)
         } else {
-            storeTransposition(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
+            state.storeRecord(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
         }
 
         return bestScore

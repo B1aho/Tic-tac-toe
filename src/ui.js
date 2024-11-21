@@ -206,9 +206,9 @@ export const ui = {
         }
     },
 
-    renderAiMove(coords) {
+    renderAiMove(coords, token) {
         const row = coords[0]
         const col = coords[1]
-        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = getToken()
+        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = token
     },
 }

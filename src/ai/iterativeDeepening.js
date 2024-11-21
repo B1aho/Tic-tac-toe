@@ -1,5 +1,6 @@
-import { getPossibleMoves, sortMovesByHeuristic, sortMoves, isBetterMove } from "./moveHelpers.js";
-
+import { getPossibleMoves, sortMovesByHeuristic, isBetterMove } from "./moveHelpers.js";
+import { getSharedState } from "../sharedState.js";
+// Добавить флаг максимальной глубины!, иначе по сто раз смотрит терминалньую стади, если время не стоит ограничени
 export const createIterativeDeeping = (state) => {
     const runSearch = (search, limits) => {
         limits.maxDepth++
@@ -14,7 +15,7 @@ export const createIterativeDeeping = (state) => {
         let startTime = Date.now()
         // Вместо remaining moves использовать просто длину possiblemoves ??
         for (let currDepth = state.field.length <= 4 ? 1 : 3; currDepth <= limits.maxDepth; currDepth++) {
-            possibleMoves = sortMoves(state.field, possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
+            //possibleMoves = sortMoves(possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
             for (const move of possibleMoves) {
                 // Выполнить ход
                 // Добавить флаг undo, чтобы понимать, когда счетчик ходов увеличиваем, а когда уменьшаем
@@ -23,7 +24,7 @@ export const createIterativeDeeping = (state) => {
                 // Вызов рекурсивного минимакса с альфа-бета отсечением
                 const score = search(state, currDepth, move)
                 // Откатить ход
-                state.applyMove(move)
+                state.undoMove(move)
                 state.movesCounter--
                 // Обновить лучший счёт
                 if (isBetterMove(score, bestScore, state.isMax)) {
@@ -36,6 +37,7 @@ export const createIterativeDeeping = (state) => {
                     break;
                 }
             }
+            //possibleMoves = sortMoves(possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
             if (breakFlag)
                 break
         }
@@ -43,4 +45,37 @@ export const createIterativeDeeping = (state) => {
         return bestMove
     }
     return { runSearch }
+}
+
+
+function sortMoves(possibleMoves, playerToken, depthLimit) {
+    const state = getSharedState()
+    // Создаем массив с оценками ходов
+    let evaluatedMoves = possibleMoves.map(move => {
+        // Применяем ход
+        state.applyMove(move)
+       // field[move[0]][move[1]].setValue(playerToken);
+      //  const newHash = Hash ^ zobristTable[move[0]][move[1]][playerToken];
+
+        // Получаем оценку из таблицы транспозиций (если есть)
+        const entry = state.getRecord(state.hash)
+        const score = entry && entry.depth >= depthLimit ? entry.bestScore : null;
+
+        state.undoMove(move)
+        // Откатываем ход
+        //field[move[0]][move[1]].setValue(defaultSymbol);
+
+        return { move, score };
+    });
+
+    // Сортируем ходы на основе оценок (сначала высокие для макс., низкие для мин.)
+    evaluatedMoves = evaluatedMoves.sort((a, b) => {
+        if (a.score === null && b.score === null) return 0;
+        if (a.score === null) return 1;  // null в конец
+        if (b.score === null) return -1; // null в конец
+        return playerToken === "X" ? b.score - a.score : a.score - b.score;
+    });
+
+    // Возвращаем отсортированные ходы
+    return evaluatedMoves.map(item => item.move);
 }
