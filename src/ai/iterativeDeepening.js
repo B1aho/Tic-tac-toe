@@ -14,14 +14,14 @@ export const createIterativeDeeping = (state) => {
         let startTime = Date.now()
         // Вместо remaining moves использовать просто длину possiblemoves ??
         for (let currDepth = state.field.length <= 4 ? 1 : 3; currDepth <= limits.maxDepth; currDepth++) {
-            possibleMoves = sortMoves(possibleMoves, state.token, currDepth - 1)
+            possibleMoves = sortMoves(possibleMoves, isMax ? "X" : "O", currDepth - 1)
             for (const move of possibleMoves) {
                 // Выполнить ход
                 // Добавить флаг undo, чтобы понимать, когда счетчик ходов увеличиваем, а когда уменьшаем
                 state.applyMove(move)
                 state.movesCounter++
                 // Вызов рекурсивного минимакса с альфа-бета отсечением
-                const score = search(state, currDepth)
+                const score = search(state, currDepth, move)
                 // Откатить ход
                 state.applyMove(move)
                 state.movesCounter--

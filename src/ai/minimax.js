@@ -25,7 +25,7 @@ const createRecord = (depthDelta, score, type, isMax, inUse) => {
 
 export const createMinimax = (transpositionTable) => {
     // Огрничить кол-во аргументов, что-то вынести в другую функцию, либо объект параметров передавать
-    const minimax = (state, maxDepth, isMax, lastMove, alpha, beta, depth) => {
+    const search = (state, maxDepth, isMax, lastMove, alpha, beta, depth) => {
         // Проверка транспозиционной таблицы
         let cached = transpositionTable.getRecord(state.hash);
         if (cached && cached.depth >= maxDepth - depth) {
@@ -95,7 +95,7 @@ export const createMinimax = (transpositionTable) => {
             state.movesCounter++
 
             // Рекурсивный вызов минимакса
-            const score = minimax(state, maxDepth, !isMax, move[0], move[1], alpha, beta, depth + 1);
+            const score = search(state, maxDepth, !isMax, move[0], move[1], alpha, beta, depth + 1);
 
             // Откатить ход
             //field[move[0]][move[1]].setValue(defaultSymbol) // prevToken
@@ -133,5 +133,5 @@ export const createMinimax = (transpositionTable) => {
 
         return bestScore
     }
-    return { minimax }
+    return { search }
 }
