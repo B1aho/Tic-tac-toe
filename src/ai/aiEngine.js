@@ -17,3 +17,5 @@ const applyMove = (move) => {
 const hardMove = checkBestMoves(state.movesCounter, state.field)
 if (hardMove)
     return hardMove
+
+0, !state.isMax, move[0], move[1], -Infinity, Infinity, Hash, currDepth

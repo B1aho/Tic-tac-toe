@@ -1,3 +1,4 @@
+// Заменить на shared state
 import { defaultSymbol } from "./defaultSymbol.js"
 let movesCounter = 0
 

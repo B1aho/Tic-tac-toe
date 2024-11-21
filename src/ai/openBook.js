@@ -1,4 +1,4 @@
-export const checkBestMoves = () => {
+export const checkBestMoves = (movesCounter, field) => {
     if (size === 4) {
         if (movesCounter === 0 || movesCounter === 1 && field[2][2].getValue() === defaultSymbol) {
             let move = bestAiMoves.firstIn5
@@ -50,14 +50,6 @@ export const checkBestMoves = () => {
     }
 }
  
-
-
-const scores = {
-    win: 10000,
-    lose: -10000,
-    draw: 0,
-}
-
 // Захардкодить лучшие ходы для разных ситуаций, лучше объект, где свойства своим именем поисывают ситуацию для хода
 const bestAiMoves = {
     firstIn5: [2, 2],
