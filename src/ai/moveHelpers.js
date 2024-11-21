@@ -48,3 +48,10 @@ export function sortMoves(possibleMoves, playerToken, depthLimit) {
     // Возвращаем отсортированные ходы
     return evaluatedMoves.map(item => item.move);
 }
+
+export const isBetterMove = (a, b, isMax) => {
+    if (isMax) {
+        return a > b
+    } else
+        return a < b
+}
