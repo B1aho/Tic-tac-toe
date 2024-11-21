@@ -1,7 +1,7 @@
 // Инициализируем уникальные хэши для каждого состояния клетки, т.е. получаем задаем по три уникальных хэша на каждую клетку
 export const createZobristHash = (size, tokenTypes) => {
-    const zobristTable = Array.from({ length: size + 1 }, () =>
-        Array.from({ length: size + 1 }, () => ({
+    const zobristTable = Array.from({ length: size }, () =>
+        Array.from({ length: size }, () => ({
             [tokenTypes.x]: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
             [tokenTypes.o]: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
             [tokenTypes.empty]: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),

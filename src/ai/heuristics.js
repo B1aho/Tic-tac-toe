@@ -1,5 +1,4 @@
-
-const finalHeuristic = (player) => {
+export const finalHeuristic = (player) => {
     const opponent = player === 'X' ? 'O' : 'X';
     const opponentScore = heuristic(opponent)
     return opponentScore

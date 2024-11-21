@@ -1,3 +1,9 @@
+import { createIterativeDeeping } from "./iterativeDeepening";
+import { createZobristHash } from "./zobristHashing";
+import { createTranspositionTable } from "./transpositionTable";
+import { createMinimax } from "./minimax";
+import { getSharedState } from "./sharedState";
+
 const MAX_TIME = 6000
 
 let MAX_DEPTH_ITER = 0
@@ -19,3 +25,19 @@ if (hardMove)
     return hardMove
 
 0, !state.isMax, move[0], move[1], -Infinity, Infinity, Hash, currDepth
+export const createEngine = (config) => {
+    const state = getSharedState()
+    const tokenTypes = {
+        x: "X",
+        o: "O",
+        empty: state.defaultSymbol,
+    }
+    const zobristHashing = createZobristHash(state.field.length, tokenTypes)
+    const transpositionTable = createTranspositionTable()
+    const iterativeDeepening = createIterativeDeeping(state)
+    const minimax = createMinimax(transpositionTable)
+    const getBestMove = (state) => {
+
+    }
+    return {}
+}
