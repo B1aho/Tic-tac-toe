@@ -2,7 +2,7 @@ const sharedState = {
     currentPlayer: null, // Нужно его обновлять каждый раз, наверно в applyMoves
     hash: null,
     isMax: true,
-    field: null,
+    field: [],
     movesCounter: 0,
     defaultSymbol: "*",
 

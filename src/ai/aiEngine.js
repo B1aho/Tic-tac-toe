@@ -6,9 +6,9 @@ import { getSharedState } from "../sharedState.js";
 
 const evaluateMaxDepth = (size) => {
     if (size === 2)
-        MAX_DEPTH_ITER = 10
+        return 10
     else
-        MAX_DEPTH_ITER = (size >= 4) ? 6 : 6
+        return (size > 4) ? 6 : 6
 }
 
 // Проверяем ходы до алгоритма углубления
@@ -44,12 +44,9 @@ export const createEngine = (config) => {
         }, limits)
     }
 
-    const makeMove = () => {
-        console.time("Ai move")
-        const move = getBestMove(state)
-        console.time("Ai move")
+    const makeMove = (move) => {
         state.field[move[0]][move[1]].setValue(state.currentToken)
         state.movesCounter++
     }
-    return {makeMove}
+    return {makeMove, getBestMove}
 }

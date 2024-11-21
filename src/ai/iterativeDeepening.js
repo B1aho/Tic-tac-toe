@@ -14,7 +14,7 @@ export const createIterativeDeeping = (state) => {
         let startTime = Date.now()
         // Вместо remaining moves использовать просто длину possiblemoves ??
         for (let currDepth = state.field.length <= 4 ? 1 : 3; currDepth <= limits.maxDepth; currDepth++) {
-            possibleMoves = sortMoves(possibleMoves, isMax ? "X" : "O", currDepth - 1)
+            possibleMoves = sortMoves(state.field, possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
             for (const move of possibleMoves) {
                 // Выполнить ход
                 // Добавить флаг undo, чтобы понимать, когда счетчик ходов увеличиваем, а когда уменьшаем
