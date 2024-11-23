@@ -77,8 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
             // Next-move logic for 1/2 players modes 
             if (AI) {
                 console.time("Ai move")
+                console.log("Get info from TT before: " + state.countGetCash)
+            console.log("Store info from TT before: " + state.countStoreCash)
                 let aiMove = aiEngine.makeBestMove(state)
                 console.timeEnd("Ai move")
+                console.log("Get info from TT after: " + state.countGetCash)
+            console.log("Store info from TT after: " + state.countStoreCash)
+            state.countGetCash = 0
+            state.countStoreCash = 0
                 ui.renderAiMove(aiMove, state.currentPlayer.token)
                 state.movesCounter++
                 if (state.movesCounter > 4)
@@ -119,8 +125,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function aiMove() {
             console.time("Ai move")
+            console.log("Get info from TT before: " + state.countGetCash)
+            console.log("Store info from TT before: " + state.countStoreCash)
             let aiMove = aiEngine.makeBestMove(state)
             console.timeEnd("Ai move")
+            console.log("Get info from TT after: " + state.countGetCash)
+            console.log("Store info from TT after: " + state.countStoreCash)
+            state.countGetCash = 0
+            state.countStoreCash = 0
             ui.renderAiMove(aiMove, state.currentPlayer.token)
             state.movesCounter++
             game.nextPlayerMove(state.currentPlayer === players.playerX ? players.playerO : players.playerX)

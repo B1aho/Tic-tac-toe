@@ -37,10 +37,13 @@ export const createMinimax = (transpositionTable) => {
             if (cached) {
                 cached.inUse++
                 if (cached.type === types.exact) {
+                    state.countGetCash++
                     return cached.bestScore
                 } else if (cached.type === types.lower && cached.bestScore >= alpha) {
+                    state.countGetCash++
                     alpha = cached.bestScore
                 } else if (cached.type === types.upper && cached.bestScore <= beta) {
+                    state.countGetCash++
                     beta = cached.bestScore
                 }
                 if (alpha >= beta) return cached.bestScore
@@ -67,6 +70,7 @@ export const createMinimax = (transpositionTable) => {
         if (depth >= maxDepth) {
             const result = finalHeuristic(state.field, isMax ? 'X' : 'O')
             state.storeRecord(state.hash, createRecord(maxDepth - depth, result, types.exact, isMax, 0))
+            state.countStoreCash++
             return result
         }
 
@@ -81,14 +85,14 @@ export const createMinimax = (transpositionTable) => {
         possibleMoves = sortMovesByHeuristic(possibleMoves)
         for (const move of possibleMoves) {
             // Выполнить ход
+         //   console.log("Hash before apply: " + state.hash)
             state.applyMove(move, token)
+         //   console.log("Hash after apply: " + state.hash)
             state.movesCounter++
 
             // Рекурсивный вызов минимакса
             const score = search(state, maxDepth, !isMax, move, alpha, beta, depth + 1);
 
-            // Откатить ход
-            //field[move[0]][move[1]].setValue(defaultSymbol) // prevToken
             state.movesCounter--
             // Обновить лучший счёт
             if (isMax) {
@@ -110,17 +114,22 @@ export const createMinimax = (transpositionTable) => {
                 break
             }
             //Hash ^= zobristTable[move[0]][move[1]][token]
-            state.undoMove(move)
+            state.undoMove(move, token)
+    //        console.log("Hash after undo: " + state.hash)
         }
 
         // Сохраняем в транспозиционную таблицу
         if (breakFlag) {
             //Hash ^= zobristTable[undoHashMove[0]][undoHashMove[1]][token]
-            state.undoMove(undoHashMove)
+            state.undoMove(undoHashMove, token)
+           // console.log("Hash after undo: " + state.hash)
             state.storeRecord(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
+            state.countStoreCash++
            // state.undoMove(undoHashMove)
         } else {
             state.storeRecord(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
+            state.countStoreCash++
+
         }
 
         return bestScore

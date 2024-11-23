@@ -20,12 +20,15 @@ export const createIterativeDeeping = (state) => {
             for (const move of possibleMoves) {
                 // Выполнить ход
                 // Добавить флаг undo, чтобы понимать, когда счетчик ходов увеличиваем, а когда уменьшаем
+          //      console.log("Hash before apply: " + state.hash)
                 state.applyMove(move, token)
+       //         console.log("Hash after apply: " + state.hash)
                 state.movesCounter++
                 // Вызов рекурсивного минимакса с альфа-бета отсечением
                 const score = search(state, currDepth, move)
                 // Откатить ход
-                state.undoMove(move)
+                state.undoMove(move, token)
+       //         console.log("Hash after undo: " + state.hash)
                 state.movesCounter--
                 // Обновить лучший счёт
                 if (isBetterMove(score, bestScore, state.isMax)) {
@@ -62,7 +65,7 @@ function sortMoves(possibleMoves, playerToken, depthLimit) {
         const entry = state.getRecord(state.hash)
         const score = entry && entry.depth >= depthLimit ? entry.bestScore : null;
 
-        state.undoMove(move)
+        state.undoMove(move, token)
         // Откатываем ход
         //field[move[0]][move[1]].setValue(defaultSymbol);
 
