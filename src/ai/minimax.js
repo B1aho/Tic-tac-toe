@@ -28,7 +28,7 @@ export const createMinimax = (transpositionTable) => {
     // Огрничить кол-во аргументов, что-то вынести в другую функцию, либо объект параметров передавать
     const search = (state, maxDepth, isMax, lastMove, alpha, beta, depth) => {
         // Проверка транспозиционной таблицы
-        let cached = transpositionTable.getRecord(state.hash);
+  /*      let cached = transpositionTable.getRecord(state.hash);
         if (cached && cached.depth >= maxDepth - depth) {
             if (cached.isMax !== isMax) {
                 const oppositeHash = `${state.hash}:${isMax ? 'min' : 'max'}`
@@ -45,9 +45,13 @@ export const createMinimax = (transpositionTable) => {
                 }
                 if (alpha >= beta) return cached.bestScore
             }
-        }
+        }*/
         // Зависит
         let terminalState = game.checkTerminalState(lastMove[0], lastMove[1])
+        if (terminalState === "win") {
+            // Проверяем выиграл предыдущий ход или нет, если выиграл и предыдущим был макс, тогда победа
+            terminalState = !isMax ? "win" : "lose"
+        }
         switch (terminalState) {
             case "win":
                 return scores.win - depth
@@ -59,8 +63,8 @@ export const createMinimax = (transpositionTable) => {
                 break;
         }
         // Тут ошибка по моему была доаущена. Если достигнута победа, то надо сравнивать не isMax, а равен ли isMax state.isMax
-        /* Точнее нет, это не важно для алгоритма минимакс. Это лишнее всё скорее всего. Надо просто давать победу
-        if (terminalState === "win" || terminalState === "draw") {
+        // Точнее нет, это не важно для алгоритма минимакс. Это лишнее всё скорее всего. Надо просто давать победу
+       /* if (terminalState === "win" || terminalState === "draw") {
             let returnVal = 0
             if (terminalState === "win") {
                 terminalState = !isMax ? "win" : "lose"
@@ -92,7 +96,7 @@ export const createMinimax = (transpositionTable) => {
         possibleMoves = sortMovesByHeuristic(possibleMoves)
         for (const move of possibleMoves) {
             // Выполнить ход
-            state.applyMove(move)
+            state.applyMove(move, token)
             state.movesCounter++
 
             // Рекурсивный вызов минимакса
@@ -115,6 +119,7 @@ export const createMinimax = (transpositionTable) => {
                 // Определяем тип записи для текущей позиции перед её сохранением
                 if (score <= alpha) entryType = types.upper
                 else if (score >= beta) entryType = types.lower
+
                 breakFlag = true
                 undoHashMove = move
                 break

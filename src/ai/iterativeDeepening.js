@@ -7,6 +7,7 @@ export const createIterativeDeeping = (state) => {
         let bestScore = state.isMax ? -Infinity : Infinity
         let bestMove = null
         let breakFlag = false
+        const token = state.isMax ? "X" : "O"
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves(state.field);
         if (state.field.length >= 4) {
@@ -14,12 +15,12 @@ export const createIterativeDeeping = (state) => {
         }
         let startTime = Date.now()
         // Вместо remaining moves использовать просто длину possiblemoves ??
-        for (let currDepth = state.field.length <= 4 ? 1 : 3; currDepth <= limits.maxDepth; currDepth++) {
+        for (let currDepth = state.field.length < 4 ? 10 : 3; currDepth <= limits.maxDepth; currDepth++) {
             //possibleMoves = sortMoves(possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
             for (const move of possibleMoves) {
                 // Выполнить ход
                 // Добавить флаг undo, чтобы понимать, когда счетчик ходов увеличиваем, а когда уменьшаем
-                state.applyMove(move)
+                state.applyMove(move, token)
                 state.movesCounter++
                 // Вызов рекурсивного минимакса с альфа-бета отсечением
                 const score = search(state, currDepth, move)
@@ -41,7 +42,7 @@ export const createIterativeDeeping = (state) => {
             if (breakFlag)
                 break
         }
-        state.applyMove(bestMove)
+        state.applyMove(bestMove, token)
         return bestMove
     }
     return { runSearch }
@@ -53,7 +54,7 @@ function sortMoves(possibleMoves, playerToken, depthLimit) {
     // Создаем массив с оценками ходов
     let evaluatedMoves = possibleMoves.map(move => {
         // Применяем ход
-        state.applyMove(move)
+        state.applyMove(move, playerToken)
        // field[move[0]][move[1]].setValue(playerToken);
       //  const newHash = Hash ^ zobristTable[move[0]][move[1]][playerToken];
 

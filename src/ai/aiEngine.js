@@ -41,14 +41,10 @@ export const createEngine = (config) => {
     state.storeRecord = transpositionTable.storeRecord
 
     // Construct function that define AI move. Pass minimax-callback to iterative deepening method
-    const getBestMove = (state = state) => {
+    const makeBestMove = (state = state) => {
         return iterativeDeepening.runSearch((state, depth, move) => {
-            return minimax.search(state, depth, !state.isMax, move, Infinity, -Infinity, 0)
+            return minimax.search(state, depth, !state.isMax, move, -Infinity, Infinity, 0)
         }, limits)
     }
-
-    const makeMove = (move) => {
-        state.field[move[0]][move[1]].setValue(state.currentToken)
-    }
-    return {makeMove, getBestMove}
+    return {makeBestMove}
 }

@@ -44,9 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
             state.isMax = players.playerX.name === "Player X" ? true : false
             if (state.isMax) {
                 console.time("Ai move")
-                let aiMove = aiEngine.getBestMove(state)
+                let aiMove = aiEngine.makeBestMove(state)
                 console.timeEnd("Ai move")
-                aiEngine.makeMove(aiMove)
                 ui.renderAiMove(aiMove, state.currentPlayer.token)
                 state.movesCounter++ 
                 console.log("movesCounte++")
@@ -85,9 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
             // Next-move logic for 1/2 players modes 
             if (AI) {
                 console.time("Ai move")
-                let aiMove = aiEngine.getBestMove(state)
+                let aiMove = aiEngine.makeBestMove(state)
                 console.timeEnd("Ai move")
-                aiEngine.makeMove(aiMove)
                 ui.renderAiMove(aiMove, state.currentPlayer.token)
                 state.movesCounter++ 
                 console.log("movesCounte++")

@@ -7,13 +7,13 @@ const sharedState = {
     defaultSymbol: "*",
     zobristTable: null,
 
-    applyMove(move) {
-        this.field[move[0]][move[1]].setValue(this.currentPlayer.token)
-        this.hash ^= this.zobristTable[move[0]][move[1]][this.currentPlayer.token]
+    applyMove(move, token) {
+        this.field[move[0]][move[1]].setValue(token)
+        this.hash ^= this.zobristTable[move[0]][move[1]][token]
     },
     undoMove(move) {
         this.field[move[0]][move[1]].setValue(this.defaultSymbol)
-        this.hash ^= this.zobristTable[move[0]][move[1]][this.currentPlayer.token]
+        this.hash ^= this.zobristTable[move[0]][move[1]][this.defaultSymbol]
     },
 }
 
