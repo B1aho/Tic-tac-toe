@@ -1,3 +1,4 @@
+// Отдельное поле для ИИ
 const sharedState = {
     currentPlayer: null, // Нужно его обновлять каждый раз, наверно в applyMoves
     hash: null,

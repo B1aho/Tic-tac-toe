@@ -5,10 +5,11 @@ import { createMinimax } from "./minimax.js";
 import { getSharedState } from "../sharedState.js";
 
 const evaluateMaxDepth = (size) => {
-    if (size === 2)
+    return Math.pow(size, 2)
+ /*   if (size === 2)
         return 10
     else
-        return (size > 4) ? 6 : 6
+        return (size > 4) ? 6 : 6*/
 }
 
 // Проверяем ходы до алгоритма углубления
@@ -18,7 +19,6 @@ if (hardMove)
     return hardMove
 */
 
-//0, !state.isMax, move[0], move[1], -Infinity, Infinity, Hash, currDepth
 export const createEngine = (config) => {
     const state = getSharedState()
     const tokenTypes = {
@@ -27,7 +27,7 @@ export const createEngine = (config) => {
         empty: state.defaultSymbol,
     }
     const limits = {
-        maxDepth: evaluateMaxDepth(state.field.length - 1),
+        maxDepth: evaluateMaxDepth(state.field.length),
         timeOut: config.timeOut,
     }
     const zobristHashing = createZobristHash(state.field.length, tokenTypes)
@@ -46,5 +46,11 @@ export const createEngine = (config) => {
             return minimax.search(state, depth, !state.isMax, move, -Infinity, Infinity, 0)
         }, limits)
     }
-    return {makeBestMove}
+
+    const reset = () => {
+        state.hash = zobristHashing.initHash(state.field)
+        limits.maxDepth = evaluateMaxDepth(state.field.length)
+        transpositionTable.clear()
+    }
+    return {makeBestMove, reset}
 }

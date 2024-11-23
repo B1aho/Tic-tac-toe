@@ -14,8 +14,8 @@ export const createIterativeDeeping = (state) => {
             possibleMoves = sortMovesByHeuristic(possibleMoves)
         }
         let startTime = Date.now()
-        // Вместо remaining moves использовать просто длину possiblemoves ??
-        for (let currDepth = state.field.length < 4 ? 10 : 3; currDepth <= limits.maxDepth; currDepth++) {
+        //
+        for (let currDepth = state.field.length < 4 ? 1 : 3; currDepth <= limits.maxDepth; currDepth++) {
             //possibleMoves = sortMoves(possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
             for (const move of possibleMoves) {
                 // Выполнить ход

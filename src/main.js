@@ -34,23 +34,16 @@ document.addEventListener("DOMContentLoaded", () => {
         ui.showScreen("play")
         ui.renderField(game.field)
         ui.renderPlayers(players.playerX.name, players.playerO.name)
-      //  state.currentPlayer = players.playerX
+        //  state.currentPlayer = players.playerX
         ui.updateMoveDescription(null, state.currentPlayer.name)
         // Убрать потом, почему выше написано
         const AI = (options.playersNumber === 1) ? true : false
         if (AI) {
-            var aiEngine = createEngine({ timeOut: 600000, })
+            var aiEngine = createEngine({ timeOut: 6000, })
             // Вынести один общий shared state мб, не два отдельных для АИ и game
             state.isMax = players.playerX.name === "Player X" ? true : false
             if (state.isMax) {
-                console.time("Ai move")
-                let aiMove = aiEngine.makeBestMove(state)
-                console.timeEnd("Ai move")
-                ui.renderAiMove(aiMove, state.currentPlayer.token)
-                state.movesCounter++ 
-                console.log("movesCounte++")
-                game.nextPlayerMove(state.currentPlayer === players.playerX ? players.playerO : players.playerX)
-                ui.updateMoveDescription(null, state.currentPlayer.name)
+                aiMove()
             }
         }
         // Initialize events:
@@ -70,11 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
             game.updateFieldValue(row, col, token)
             // Update cell rendering
             targetCell.innerText = token
-            state.movesCounter++ 
-            console.log("movesCounte++")
+            state.movesCounter++
             // Check if game over
             // Check game end
-            gameStatus = game.checkTerminalState(row, col)
+            if (state.movesCounter > 4)
+                gameStatus = game.checkTerminalState(row, col)
             if (gameStatus) {
                 ui.updateMoveDescription(gameStatus, state.currentPlayer.name)
                 return;
@@ -87,9 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 let aiMove = aiEngine.makeBestMove(state)
                 console.timeEnd("Ai move")
                 ui.renderAiMove(aiMove, state.currentPlayer.token)
-                state.movesCounter++ 
-                console.log("movesCounte++")
-                gameStatus = game.checkTerminalState(aiMove[0], aiMove[1])
+                state.movesCounter++
+                if (state.movesCounter > 4)
+                    gameStatus = game.checkTerminalState(aiMove[0], aiMove[1])
                 if (gameStatus) {
                     ui.updateMoveDescription(gameStatus, state.currentPlayer.name)
                     return;
@@ -105,11 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
             gameStatus = null
             // в game reset записать
             state.movesCounter = 0
-            // ai.back()
-            /*
-            ai.evaluateMaxDepth()
-            ai.transpositionTable.clear()
-            */
+            if (AI) {
+                //aiEngine.reset()
+                aiEngine = null
+            }
         };
         ui.onResetClick = () => {
             game.reset(players.playerX)
@@ -118,16 +110,26 @@ document.addEventListener("DOMContentLoaded", () => {
             gameStatus = null
             // в game reset записать
             state.movesCounter = 0
-            // ai.reset()
-            /*
-            initialHash = initHash()
-            transpositionTable.clear()
-            evaluateMaxDepth()
-            if (game.currentPlayer.name === AI)
-                 makeAiMove()
-             */
+            if (AI) {
+                aiEngine.reset()
+                if (state.isMax)
+                    aiMove()
+            }
         };
+
+        function aiMove() {
+            console.time("Ai move")
+            let aiMove = aiEngine.makeBestMove(state)
+            console.timeEnd("Ai move")
+            ui.renderAiMove(aiMove, state.currentPlayer.token)
+            state.movesCounter++
+            game.nextPlayerMove(state.currentPlayer === players.playerX ? players.playerO : players.playerX)
+            ui.updateMoveDescription(null, state.currentPlayer.name)
+        }
         // Register listeners
         ui.registerListener()
+
     })
+
+
 })

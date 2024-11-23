@@ -18,7 +18,7 @@ export const createTranspositionTable = () => {
             // Если роль отличается, то
             else if (previousRecord.isMax !== isMax) {
                 // Используем "другой хеш" для для записи конфигурации противоположной роли
-                const oppositeHash = `${hash}:${isMax ? 'min' : 'max'}` 
+                const oppositeHash = `${hash}:${isMax ? "min" : "max"}` 
                 const otherPreviousRecord = transpositionTable.get(oppositeHash)
                 // Если не было такой конфигурации с противоположной ролью или была но с меньшей глубиной, тогда перезаписываем 
                 if (!otherPreviousRecord || otherPreviousRecord.depth < depth) {
@@ -32,8 +32,13 @@ export const createTranspositionTable = () => {
         return transpositionTable.get(hash);
     };
 
+    const clear = () => {
+        transpositionTable.clear()
+    }
+
     return {
         getRecord,
         storeRecord,
+        clear,
     }
 }

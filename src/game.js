@@ -18,6 +18,7 @@ export const game = {
 
     initialize(size, player) {
         this.size = size
+        this.field = state.field
         state.currentPlayer = player
     },
 
@@ -30,7 +31,7 @@ export const game = {
     },
 
     back() {
-        this.field = []
+        state.field = []
         state.movesCounter = 0
         state.currentPlayer = null
         this.size = 0
@@ -136,44 +137,14 @@ export const game = {
 
     checkTerminalState (row, col) {
         const maxMoves = Math.pow((this.size), 2)
+        if (this.checkWin(row, col))
+            return "win"
         if (state.movesCounter === maxMoves) {
             return "draw"
         }
-        if (this.checkWin(row, col))
-            return "win"
     },
 
     nextPlayerMove(nextPlayer) {
         state.currentPlayer = nextPlayer
     },
 }
-/*
-// Добавить всю эту логику в наш объект
-// Подумать как красиво добавить ИИ
-
-// Выбираем стратегию для компьютера в алгоритме minmax, а также блокируем клик на первый ход, если компьютер крестик
-let aiStrategy
-let aiIdx
-
-const makeAiMove = () => {
-    gameActiveState = false
-    console.time("Ai move")
-    const aiCoords = game.moveAi(aiIdx, aiStrategy === "max" ? true : false)
-    console.timeEnd("Ai move")
-    renderAiMove(aiCoords)
-    console.log(BenchCount)
-    BenchCount = 0
-    const result = game.checkEnd(aiCoords[0], aiCoords[1])
-    game.turnMove()
-    controlMove(result)
-    gameActiveState = result === "win" || result === "draw" ? false : true
-}
-
-if (firstPlayerName === "AI" || secondPlayerName === "AI") {
-    aiStrategy = firstPlayerName === "AI" ? "max" : "min"
-    aiIdx = aiStrategy === "max" ? 0 : 1
-    if (aiStrategy === "max") {
-        makeAiMove()
-    }
-}
-    */

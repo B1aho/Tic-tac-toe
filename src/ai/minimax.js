@@ -3,8 +3,8 @@ import { finalHeuristic } from "./heuristics.js";
 import { getPossibleMoves, sortMovesByHeuristic } from "./moveHelpers.js";
 
 const scores = {
-    win: 10000,
-    lose: -10000,
+    winX: 10000,
+    winO: -10000,
     draw: 0,
 };
 
@@ -28,7 +28,7 @@ export const createMinimax = (transpositionTable) => {
     // Огрничить кол-во аргументов, что-то вынести в другую функцию, либо объект параметров передавать
     const search = (state, maxDepth, isMax, lastMove, alpha, beta, depth) => {
         // Проверка транспозиционной таблицы
-  /*      let cached = transpositionTable.getRecord(state.hash);
+        let cached = transpositionTable.getRecord(state.hash);
         if (cached && cached.depth >= maxDepth - depth) {
             if (cached.isMax !== isMax) {
                 const oppositeHash = `${state.hash}:${isMax ? 'min' : 'max'}`
@@ -45,38 +45,23 @@ export const createMinimax = (transpositionTable) => {
                 }
                 if (alpha >= beta) return cached.bestScore
             }
-        }*/
-        // Зависит
+        }
+        // Здесь вместо undefined, отдавать что-то осознанное, "continue" или null
         let terminalState = game.checkTerminalState(lastMove[0], lastMove[1])
+        // Проверяем какой игрок выиграл, максимимзирующий или минимизирующий
         if (terminalState === "win") {
-            // Проверяем выиграл предыдущий ход или нет, если выиграл и предыдущим был макс, тогда победа
-            terminalState = !isMax ? "win" : "lose"
+            terminalState = !isMax ? "winX" : "winO"
         }
         switch (terminalState) {
-            case "win":
-                return scores.win - depth
-            case "lose":
-                return scores.lose + depth
+            case "winX":
+                return scores.winX - depth
+            case "winO":
+                return scores.winO + depth
             case "draw":
                 return scores.draw
             default:
                 break;
         }
-        // Тут ошибка по моему была доаущена. Если достигнута победа, то надо сравнивать не isMax, а равен ли isMax state.isMax
-        // Точнее нет, это не важно для алгоритма минимакс. Это лишнее всё скорее всего. Надо просто давать победу
-       /* if (terminalState === "win" || terminalState === "draw") {
-            let returnVal = 0
-            if (terminalState === "win") {
-                terminalState = !isMax ? "win" : "lose"
-            }
-            if (terminalState === "win") {
-                returnVal = scores[terminalState] - depth
-            } else if (terminalState === "lose") {
-                returnVal = scores[terminalState] + depth
-            } else
-                returnVal = scores[terminalState]
-            return returnVal
-        }*/
 
         // Закончить игру оценив доску статическим методов
         if (depth >= maxDepth) {
@@ -131,8 +116,9 @@ export const createMinimax = (transpositionTable) => {
         // Сохраняем в транспозиционную таблицу
         if (breakFlag) {
             //Hash ^= zobristTable[undoHashMove[0]][undoHashMove[1]][token]
-            state.storeRecord(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
             state.undoMove(undoHashMove)
+            state.storeRecord(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
+           // state.undoMove(undoHashMove)
         } else {
             state.storeRecord(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
         }
