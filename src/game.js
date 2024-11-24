@@ -55,7 +55,7 @@ export const game = {
             case 6:
                 winLine = 4
                 break;
-            case 16:
+            case 12:
                 winLine = 5
                 break;
 

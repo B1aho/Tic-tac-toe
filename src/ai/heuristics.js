@@ -66,7 +66,7 @@ const heuristic = (field, player) => {
         case 6:
             length = 4
             break;
-        case 16:
+        case 12:
             length = 5
             break;
     } 
