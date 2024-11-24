@@ -3,6 +3,9 @@ import { humanVsHuman } from "./humanVsHuman.js";
 import { createEngine } from "../ai/aiEngine.js";
 
 export const createGameMode = (gameType, game, ui, state) => {
+    if (state.isExtended) {
+        // Добавить 
+    }
     switch(gameType) {
         case "humanVsAi":
             return humanVsAi(game, ui, state, createAi(game))

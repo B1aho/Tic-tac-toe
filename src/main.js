@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const state = getSharedState()
     let gameMode = null
     ui.addPlayerChooseListener()
-    // По нажатию на play
+  
     ui.elements.playBtn.addEventListener("click", () => {
         const options = ui.getOptions()
         state.initialize(options)

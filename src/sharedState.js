@@ -19,6 +19,7 @@ const sharedState = {
     defaultSymbol: "*",
     zobristTable: null,
     gameStatus: null,
+    isExtended: false,
     countStoreCash: 0,
     countGetCash: 0,
 
@@ -29,7 +30,8 @@ const sharedState = {
         this.players.playerX.token = options.player1.token,
         this.players.playerO.name = options.player2.name,
         this.players.playerO.token = options.player2.token,
-      
+
+        this.isExtended = options.isExtended === "true" ? true : false
         this.currentPlayer = this.players.playerX
     },
 
