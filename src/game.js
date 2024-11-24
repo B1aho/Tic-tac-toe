@@ -24,17 +24,9 @@ export const game = {
         field[row][col].setValue(newValue)
     },
 
-    back() {
-        state.field = []
-        state.movesCounter = 0
-        state.currentPlayer = null
-    },
-
-    reset() {
+    resetField() {
         const field = state.field
         field.forEach(el => el.forEach(cell => cell.setValue(state.defaultSymbol)))
-        state.movesCounter = 0
-        state.currentPlayer = state.players.playerX
     },
 
     Cell() {

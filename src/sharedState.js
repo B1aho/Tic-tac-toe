@@ -1,8 +1,14 @@
-// Отдельное поле для ИИ
+// Отдельное поле для ИИ 
 const sharedState = {
     players: {
-        playerX: null,
-        playerO: null,
+        playerX: {
+            name: null,
+            token: null,
+        },
+        playerO: {
+            name: null,
+            token: null,
+        },
     },
     size: 0,
     currentPlayer: null,
@@ -12,21 +18,32 @@ const sharedState = {
     movesCounter: 0,
     defaultSymbol: "*",
     zobristTable: null,
+    gameStatus: null,
     countStoreCash: 0,
     countGetCash: 0,
 
     initialize(options) {
         this.size = options.size
-        this.players = {
-            playerX: {
-                name: options.player1.name,
-                token: options.player1.token,
-            },
-            playerO: {
-                name: options.player2.name,
-                token: options.player2.token,
-            },
-        }
+
+        this.players.playerX.name = options.player1.name,
+        this.players.playerX.token = options.player1.token,
+        this.players.playerO.name = options.player2.name,
+        this.players.playerO.token = options.player2.token,
+      
+        this.currentPlayer = this.players.playerX
+    },
+
+    back() {
+        this.field = []
+        this.movesCounter = 0
+        this.currentPlayer = null
+        this.gameStatus = null
+        this.size = 0
+    },
+
+    reset() {
+        this.movesCounter = 0
+        this.gameStatus = null
         this.currentPlayer = this.players.playerX
     },
 

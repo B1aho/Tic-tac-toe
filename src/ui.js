@@ -1,6 +1,6 @@
 // Пусть автоматические в блокированном инпуте АИ имя возникает
-
-import { defaultSymbol } from "./defaultSymbol.js";
+import { getSharedState } from "./sharedState";
+const state = getSharedState()
 
 export const ui = {
     screens: {
@@ -58,7 +58,8 @@ export const ui = {
         return Number(document.querySelector('input[name="players-number"]:checked').value)
     },
 
-    renderField(field) {
+    renderField() {
+        const field = state.field
         // Clear previous game field
         this.elements.fieldContainer.innerHTML = ""
         const fieldWrap = document.createElement("div")
@@ -96,7 +97,7 @@ export const ui = {
 
     resetFieldRender(field) {
         const cells = document.querySelectorAll(".cell")
-        cells.forEach(cell => cell.innerText = defaultSymbol)
+        cells.forEach(cell => cell.innerText = state.defaultSymbol)
     },
 
     removeInputListener() {
@@ -122,7 +123,9 @@ export const ui = {
         // It will be filled by main.js
     },
 
-    renderPlayers(firstPlayerName, secondPlayerName) {
+    renderPlayers() {
+        const firstPlayerName = state.players.playerX.name
+        const secondPlayerName = state.players.playerO.name
         // Clear previous content
         this.elements.playerOneDiv.innerHTML = this.elements.playerTwoDiv.innerHTML = ""
         // Create new names
@@ -138,14 +141,15 @@ export const ui = {
         this.elements.playerTwoDiv.prepend(nameDivTwo)
     },
 
-    updateMoveDescription(state, currentName) {
+    updateMoveDescription() {
         const moveDescDiv = this.elements.moveDescription
-        if (state === "win") {
-            moveDescDiv.innerText = `${currentName} is the winner. Congratulation!`
-        } else if (state === "draw") {
+        const gameStatus = state.gameStatus
+        if (gameStatus === "win") {
+            moveDescDiv.innerText = `${state.currentPlayer.name} is the winner. Congratulation!`
+        } else if (gameStatus === "draw") {
             moveDescDiv.innerText = "Draw. No one lose.."
         } else {
-            moveDescDiv.innerText = `It is now ${currentName}'s turn!`
+            moveDescDiv.innerText = `It is now ${state.currentPlayer.name}'s turn!`
         }
     },
 
@@ -206,10 +210,10 @@ export const ui = {
         }
     },
 
-    renderAiMove(coords, token) {
+    renderAiMove(coords) {
         const row = coords[0]
         const col = coords[1]
-        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = token
+        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = state.currentPlayer.token
     },
 }
 
