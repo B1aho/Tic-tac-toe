@@ -12,11 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const options = ui.getOptions()
         state.initialize(options)
         
-        // В будущем в верстке будет не кол-во игроков, а mode выбирать и уних такие value будут
+        // В будущем в верстке будет не кол-во игроков, а mode выбирать и у них такие value будут
         const gameType = options.playersNumber === 1 ? "humanVsAi" : "humanVsHuman"
         gameMode = createGameMode(gameType, game, ui, state)
         gameMode.startGame()
-        
+
         // Initialize events:
         ui.onCellClick = (e) => {
             const targetCell = e.target

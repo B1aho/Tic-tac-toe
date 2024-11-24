@@ -1,6 +1,8 @@
 
 export const modeHelpers = (aiEngine, ui, state, game) => {
 const aiMove = () => {
+    if (state.gameStatus) 
+        return
     console.time("Ai move")
     console.log("Get info from TT before: " + state.countGetCash)
     console.log("Store info from TT before: " + state.countStoreCash)
@@ -16,12 +18,13 @@ const aiMove = () => {
 }
 
 const humanMove = (targetCell, coords) => {
+    // No effect if: no human turn, or game is not active, or cell is not empty
+    if (targetCell.innerText !== state.defaultSymbol || state.gameStatus || state.currentPlayer.name === "Player X")
+        return null;
+
     const row = coords.row
     const col = coords.column
     const token = state.currentPlayer.token
-    // No effect if: no human turn, or game is not active, or cell is not empty
-    if (targetCell.innerText !== state.defaultSymbol || state.gameStatus || state.currentPlayer.name === "Player X")
-        return
     // Human make move:
     game.updateFieldValue(row, col, token)
     // Update cell rendering

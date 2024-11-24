@@ -30,7 +30,7 @@ export const createEngine = (config) => {
         maxDepth: evaluateMaxDepth(state.field.length),
         timeOut: config.timeOut,
     }
-    const zobristHashing = createZobristHash(state.field.length, tokenTypes)
+    const zobristHashing = createZobristHash(state.size, tokenTypes)
     const transpositionTable = createTranspositionTable()
     state.getRecord = transpositionTable.getRecord
     state.zobristTable = zobristHashing.zobristTable

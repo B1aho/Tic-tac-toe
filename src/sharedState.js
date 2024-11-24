@@ -57,13 +57,6 @@ const sharedState = {
         this.hash ^= this.zobristTable[move[0]][move[1]][token]
     },
 
-    reset() {
-
-    },
-
-    back() {
-
-    },
 }
 
 export const getSharedState = () => sharedState

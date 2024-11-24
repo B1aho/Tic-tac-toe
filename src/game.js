@@ -15,10 +15,6 @@ export const game = {
         }
     },
 
-    initialize(size, player) {
-        state.currentPlayer = player
-    },
-
     updateFieldValue(row, col, newValue) {
         const field = state.field
         field[row][col].setValue(newValue)

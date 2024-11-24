@@ -1,5 +1,5 @@
 // Пусть автоматические в блокированном инпуте АИ имя возникает
-import { getSharedState } from "./sharedState";
+import { getSharedState } from "./sharedState.js";
 const state = getSharedState()
 
 export const ui = {
