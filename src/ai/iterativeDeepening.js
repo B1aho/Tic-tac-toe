@@ -41,7 +41,7 @@ export const createIterativeDeeping = (state) => {
                     break;
                 }
             }
-            //possibleMoves = sortMoves(possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
+            possibleMoves = sortMoves(possibleMoves, token, currDepth - 1)
             if (breakFlag)
                 break
         }
@@ -52,12 +52,12 @@ export const createIterativeDeeping = (state) => {
 }
 
 
-function sortMoves(possibleMoves, playerToken, depthLimit) {
+function sortMoves(possibleMoves, token, depthLimit) {
     const state = getSharedState()
     // Создаем массив с оценками ходов
     let evaluatedMoves = possibleMoves.map(move => {
         // Применяем ход
-        state.applyMove(move, playerToken)
+        state.applyMove(move, token)
        // field[move[0]][move[1]].setValue(playerToken);
       //  const newHash = Hash ^ zobristTable[move[0]][move[1]][playerToken];
 
@@ -77,7 +77,7 @@ function sortMoves(possibleMoves, playerToken, depthLimit) {
         if (a.score === null && b.score === null) return 0;
         if (a.score === null) return 1;  // null в конец
         if (b.score === null) return -1; // null в конец
-        return playerToken === "X" ? b.score - a.score : a.score - b.score;
+        return token === "X" ? b.score - a.score : a.score - b.score;
     });
 
     // Возвращаем отсортированные ходы

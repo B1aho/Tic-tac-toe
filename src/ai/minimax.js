@@ -59,7 +59,7 @@ export const createMinimax = (transpositionTable) => {
             case "winX":
                 return scores.winX - depth
             case "winO":
-                return scores.winO + depth
+                return scores.winO - depth // + depth
             case "draw":
                 return scores.draw
             default:

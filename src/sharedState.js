@@ -1,6 +1,11 @@
 // Отдельное поле для ИИ
 const sharedState = {
-    currentPlayer: null, // Нужно его обновлять каждый раз, наверно в applyMoves
+    players: {
+        playerX: null,
+        playerO: null,
+    },
+    size: 0,
+    currentPlayer: null,
     hash: null,
     isMax: true,
     field: [],
@@ -10,6 +15,21 @@ const sharedState = {
     countStoreCash: 0,
     countGetCash: 0,
 
+    initialize(options) {
+        this.size = options.size
+        this.players = {
+            playerX: {
+                name: options.player1.name,
+                token: options.player1.token,
+            },
+            playerO: {
+                name: options.player2.name,
+                token: options.player2.token,
+            },
+        }
+        this.currentPlayer = this.players.playerX
+    },
+
     // насколько это должно быть shared?
     applyMove(move, token) {
         this.field[move[0]][move[1]].setValue(token)
@@ -18,6 +38,14 @@ const sharedState = {
     undoMove(move, token) {
         this.field[move[0]][move[1]].setValue(this.defaultSymbol)
         this.hash ^= this.zobristTable[move[0]][move[1]][token]
+    },
+
+    reset() {
+
+    },
+
+    back() {
+
     },
 }
 

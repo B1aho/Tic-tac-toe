@@ -1,50 +1,44 @@
 // Заменить на shared state
-import { defaultSymbol } from "./defaultSymbol.js";
 import { getSharedState } from "./sharedState.js";
 const state = getSharedState()
 
 // Size убрать
 export const game = {
-    field: state.field,
-    size: 0,
     createField() {
-        for (let i = 0; i < this.size; i++) {
-            this.field[i] = []
-            for (let j = 0; j < this.size; j++) {
-                this.field[i].push(this.Cell())
+        const field = state.field
+        const size = state.size
+        for (let i = 0; i < size; i++) {
+            field[i] = []
+            for (let j = 0; j < size; j++) {
+                field[i].push(this.Cell())
             }
         }
     },
 
     initialize(size, player) {
-        this.size = size
-        this.field = state.field
         state.currentPlayer = player
     },
 
-    getDeafultSymbol () {
-        return defaultSymbol
-    },
-
     updateFieldValue(row, col, newValue) {
-        this.field[row][col].setValue(newValue)
+        const field = state.field
+        field[row][col].setValue(newValue)
     },
 
     back() {
         state.field = []
         state.movesCounter = 0
         state.currentPlayer = null
-        this.size = 0
     },
 
-    reset(playerX) {
-        this.field.forEach(el => el.forEach(cell => cell.setValue(defaultSymbol)))
+    reset() {
+        const field = state.field
+        field.forEach(el => el.forEach(cell => cell.setValue(state.defaultSymbol)))
         state.movesCounter = 0
-        state.currentPlayer = playerX
+        state.currentPlayer = state.players.playerX
     },
 
     Cell() {
-        let value = defaultSymbol
+        let value = state.defaultSymbol
     
         const getValue = () => {
             return value;
@@ -61,10 +55,23 @@ export const game = {
     },
 
     checkWin (rw, cl) {
-        const field = this.field
+        const field = state.field
         const token = field[rw][cl].getValue();
-        const winLine = field.length > 3 ? 4 : 3;
-    
+        let winLine = 0
+        switch (field.length) {
+            case 3:
+                winLine = 3
+                break;
+            case 4:
+            case 5:
+            case 6:
+                winLine = 4
+                break;
+            case 16:
+                winLine = 5
+                break;
+
+        }    
         // General function to check consecutive tokens
         const countConsecutive = (getCellValue) => {
             let count = 0;
@@ -136,7 +143,8 @@ export const game = {
     },
 
     checkTerminalState (row, col) {
-        const maxMoves = Math.pow((this.size), 2)
+        const size = state.field.length
+        const maxMoves = Math.pow((size), 2)
         if (this.checkWin(row, col))
             return "win"
         if (state.movesCounter === maxMoves) {
@@ -144,7 +152,8 @@ export const game = {
         }
     },
 
-    nextPlayerMove(nextPlayer) {
+    nextPlayerMove() {
+        const nextPlayer = state.currentPlayer === state.players.playerX ? state.players.playerO : state.players.playerX
         state.currentPlayer = nextPlayer
     },
 }

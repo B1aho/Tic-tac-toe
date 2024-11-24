@@ -56,7 +56,20 @@ const heuristic = (field, player) => {
     const opponent = player === 'X' ? 'O' : 'X'
     let score = 0
     const size = field.length
-    const length = size > 3 ? 4 : 3
+    let length = 0
+    switch (size) {
+        case 3:
+            length = 3
+            break;
+        case 4:
+        case 5:
+        case 6:
+            length = 4
+            break;
+        case 16:
+            length = 5
+            break;
+    } 
 
     // Оценка строк
     for (let row = 0; row < size; row++) {
