@@ -212,3 +212,10 @@ export const ui = {
         document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = token
     },
 }
+
+ // Validate options before starting game
+        /*   if (!ui.isNamesFilled(options.playersNumber)) {
+               console.log("Fill required options")
+               // ui.highlightEmptyInputs()
+               return
+           }*/

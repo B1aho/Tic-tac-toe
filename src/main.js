@@ -11,12 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // По нажатию на play
     ui.elements.playBtn.addEventListener("click", () => {
         const options = ui.getOptions()
-        // Validate options before starting game
-        /*   if (!ui.isNamesFilled(options.playersNumber)) {
-               console.log("Fill required options")
-               // ui.highlightEmptyInputs()
-               return
-           }*/
         // If options were validate then
         // Initialize state
         state.initialize(options)
