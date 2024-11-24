@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic-tac-toe</title>
-    <script src="./script.js" defer></script>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="icon" href="./images/tic-tac-toe.png">
+    <script type="module" src="./src/main.js"></script>
+    <link rel="stylesheet" href="./assets/style.css">
+    <link rel="icon" href="./assets/images/tic-tac-toe.png">
 </head>
 
 <body>
@@ -19,14 +19,16 @@
                 <div class="game-options">
                     <div class="game-field-size">
                         <fieldset>
-                            <input type="radio" id="3x3" value="3" name="field" checked>
+                            <input type="radio" id="3x3" value="3" name="size" checked>
                             <label for="3x3">3X3</label>
-                            <input type="radio" id="4x4" value="4" name="field">
+                            <input type="radio" id="4x4" value="4" name="size">
                             <label for="4x4">4X4</label>
-                            <input type="radio" id="5x5" value="5" name="field">
+                            <input type="radio" id="5x5" value="5" name="size">
                             <label for="5x5">5X5</label>
-                            <input type="radio" id="6x6" value="6" name="field">
+                            <input type="radio" id="6x6" value="6" name="size">
                             <label for="6x6">6X6</label>
+                            <input type="radio" id="16x16" value="16" name="size">
+                            <label for="16x16">16X16</label>
                         </fieldset>
                     </div>
                     <div class="players-number">
