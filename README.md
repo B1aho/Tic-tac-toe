@@ -1,6 +1,6 @@
 # Tic-tac-toe
 ## Description:
-This project is an advanced Tic-Tac-Toe game featuring both single-player (against AI) and two-player modes, with customizable board sizes of 3x3, 4x4, 5x5, and 6x6. 
+This project is an advanced Tic-Tac-Toe game (frontend-heavy) featuring both single-player (against AI) and two-player modes, with customizable board sizes of 3x3, 4x4, 5x5, and 6x6. 
 
 The AI is powered by the Minimax algorithm enhanced with alpha-beta pruning, a transposition table for storing previously analyzed game states, and iterative deepening to refine its decision-making in real-time. 
 
@@ -20,3 +20,9 @@ This project is built with vanilla JavaScript, CSS, and HTML. Although JavaScrip
 ### Heuristic method development: 
 
 ## Future improvements:
+- Add extended game mode
+- Add AI levels
+- Add AI vs AI game mode
+- Add Web Worker
+- Add multiplayer game mode
+- Add multithreading in minimax

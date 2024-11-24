@@ -6,10 +6,6 @@ import { getSharedState } from "../sharedState.js";
 
 const evaluateMaxDepth = (size) => {
     return Math.pow(size, 2)
- /*   if (size === 2)
-        return 10
-    else
-        return (size > 4) ? 6 : 6*/
 }
 
 // Проверяем ходы до алгоритма углубления
