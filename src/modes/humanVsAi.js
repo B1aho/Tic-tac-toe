@@ -1,6 +1,5 @@
 import { modeHelpers } from "./helpers.js"
 
-// Если ниче не работает, то вынести ui, game, state в const, чтобы  не передавать их
 export const humanVsAi = (game, ui, state, aiEngine) => {
     const helpers = modeHelpers(aiEngine, ui, state, game)
 
