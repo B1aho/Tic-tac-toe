@@ -27,7 +27,7 @@ export const modeHelpers = (aiEngine, ui, state, game) => {
         const col = coords.column
         const token = state.currentPlayer.token
         if (state.isExtended)
-            updateMovesQueue([row, col])
+            updateMovesQueue([row, col], token)
         // Human make move:
         game.updateFieldValue(row, col, token)
         // Update cell rendering

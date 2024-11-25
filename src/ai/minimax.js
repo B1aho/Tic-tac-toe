@@ -79,6 +79,7 @@ export const createMinimax = (transpositionTable) => {
         let bestScore = isMax ? -Infinity : Infinity
         let token = isMax ? "X" : "O"
         let entryType = types.exact
+        let lastExtendedMove = null
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves(state.field);
         //possibleMoves = sortMoves(possibleMoves, token, maxDepth)
@@ -86,7 +87,10 @@ export const createMinimax = (transpositionTable) => {
         for (const move of possibleMoves) {
             // Выполнить ход
          //   console.log("Hash before apply: " + state.hash)
-            state.applyMove(move, token)
+            if (state.isExtended)
+                lastExtendedMove = state.applyExtendedMove(move, token) 
+            else 
+                state.applyMove(move, token)
          //   console.log("Hash after apply: " + state.hash)
             state.movesCounter++
 
@@ -114,14 +118,20 @@ export const createMinimax = (transpositionTable) => {
                 break
             }
             //Hash ^= zobristTable[move[0]][move[1]][token]
-            state.undoMove(move, token)
+            if (state.isExtended) 
+                state.undoExtendedMove(move, token, lastExtendedMove)
+            else
+                state.undoMove(move, token)
     //        console.log("Hash after undo: " + state.hash)
         }
 
         // Сохраняем в транспозиционную таблицу
         if (breakFlag) {
             //Hash ^= zobristTable[undoHashMove[0]][undoHashMove[1]][token]
-            state.undoMove(undoHashMove, token)
+            if (state.isExtended) 
+                state.undoExtendedMove(undoHashMove, token, lastExtendedMove)
+            else
+                state.undoMove(undoHashMove, token)
            // console.log("Hash after undo: " + state.hash)
             state.storeRecord(state.hash, createRecord(maxDepth - depth, bestScore, entryType, isMax, 0))
             state.countStoreCash++

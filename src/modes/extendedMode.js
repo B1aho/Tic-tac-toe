@@ -7,21 +7,24 @@ const state = getSharedState()
 export function addExtendedState() {
   state.currentMoves = { X: [], O: [] }
   state.winLength = Number(state.size) === 3 ? 3 : 4
+  state.updateMovesQueue = updateMovesQueue
 }
 
-export function updateMovesQueue(move) {
+export function updateMovesQueue(move, token) {
   const { currentMoves, winLength } = state
-  const player = state.currentPlayer.token
+  let lastMove = null
   // Если количество ходов превышает максимально допустимое (выигрышную линию), перемещаем последний ход
-  if (currentMoves[player].length + 1 > winLength) {
+  if (currentMoves[token].length + 1 > winLength) {
     // Перемещаем последний ход
-    const lastMove = currentMoves[player].shift()
+    lastMove = currentMoves[token].shift()
     // Удаляем предыдущий ход с доски и в интерфейсе
     game.removeMove(lastMove)
-    ui.unrenderMove(lastMove)
-    currentMoves[player].push(move)  // Добавляем новый ход на место
+    if (!state.isInMinimax) // Добавить флаг
+      ui.unrenderMove(lastMove)
+    currentMoves[token].push(move)  // Добавляем новый ход на место
   } else {
     // Добавляем ход в очередь для текущего игрока
-    currentMoves[player].push(move)
+    currentMoves[token].push(move)
   }
+  return lastMove
 }

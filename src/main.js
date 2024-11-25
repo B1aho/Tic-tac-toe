@@ -1,6 +1,6 @@
 import { ui } from "./ui.js";
-import { game } from "./game.js";
 import { getSharedState } from "./sharedState.js";
+import { game } from "./game.js";
 import { createGameMode } from "./modes/modesFactory.js";
 
 document.addEventListener("DOMContentLoaded", () => {
