@@ -135,9 +135,13 @@ export const game = {
         const maxMoves = Math.pow((size), 2)
         if (this.checkWin(row, col))
             return "win"
-        if (state.movesCounter === maxMoves) {
+        if (state.movesCounter === maxMoves && !state.isExtended) {
             return "draw"
         }
+    },
+
+    removeMove(move) {
+        state.field[move[0]][move[1]].setValue(state.defaultSymbol)
     },
 
     nextPlayerMove() {

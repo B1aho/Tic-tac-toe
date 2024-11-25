@@ -41,12 +41,19 @@ const sharedState = {
         this.currentPlayer = null
         this.gameStatus = null
         this.size = 0
+        if (this.isExtended) {
+            delete this.currentMoves
+        }
     },
 
     reset() {
         this.movesCounter = 0
         this.gameStatus = null
         this.currentPlayer = this.players.playerX
+        if (this.isExtended) {
+            this.currentMoves.X = []
+            this.currentMoves.O = []
+        }
     },
 
     // насколько это должно быть shared?

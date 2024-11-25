@@ -220,6 +220,12 @@ export const ui = {
         const col = coords[1]
         document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = state.currentPlayer.token
     },
+
+    unrenderMove(move) {
+        const row = move[0]
+        const col = move[1]
+        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = state.defaultSymbol
+    },
 }
 
  // Validate options before starting game
