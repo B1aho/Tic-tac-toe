@@ -22,7 +22,6 @@ export const modeHelpers = (aiEngine, ui, state, game) => {
         // No effect if: no human turn, or game is not active, or cell is not empty
         if (targetCell.innerText !== state.defaultSymbol || state.gameStatus || state.currentPlayer.name === "Player X")
             return null;
-
         const row = coords.row
         const col = coords.column
         const token = state.currentPlayer.token
