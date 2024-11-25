@@ -1,5 +1,7 @@
 import { updateMovesQueue } from "./extendedMode.js";
 
+const worker = new Worker("../ai/aiWorker.js")
+
 export const modeHelpers = (aiEngine, ui, state, game) => {
     const aiMove = () => {
         if (state.gameStatus)
