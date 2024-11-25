@@ -5,7 +5,8 @@ import { createMinimax } from "./minimax.js";
 import { getSharedState } from "../sharedState.js";
 
 const evaluateMaxDepth = (size) => {
-    return Math.pow(size, 2)
+    let maxDepth = size > 3 ? 4 : 10 
+    return maxDepth//Math.pow(size, 2)
 }
 
 // Проверяем ходы до алгоритма углубления
