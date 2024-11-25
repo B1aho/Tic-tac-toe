@@ -1,13 +1,13 @@
 import { ui } from "./ui.js";
-import { game } from "./game.js";
 import { getSharedState } from "./sharedState.js";
+import { game } from "./game.js";
 import { createGameMode } from "./modes/modesFactory.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const state = getSharedState()
     let gameMode = null
     ui.addPlayerChooseListener()
-    // По нажатию на play
+  
     ui.elements.playBtn.addEventListener("click", () => {
         const options = ui.getOptions()
         state.initialize(options)

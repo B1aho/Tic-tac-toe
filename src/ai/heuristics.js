@@ -1,6 +1,7 @@
 export const finalHeuristic = (field, player) => {
     const opponent = player === 'X' ? 'O' : 'X';
     const opponentScore = heuristic(field, opponent)
+    //const playScore = heuristic(field, player)
     return opponentScore
 }
 
@@ -52,6 +53,7 @@ const evaluateDiagonals = (field, length, player, opponent) => {
     return score
 }
 
+// В state вынести winLength
 const heuristic = (field, player) => {
     const opponent = player === 'X' ? 'O' : 'X'
     let score = 0
@@ -66,7 +68,7 @@ const heuristic = (field, player) => {
         case 6:
             length = 4
             break;
-        case 16:
+        case 12:
             length = 5
             break;
     } 

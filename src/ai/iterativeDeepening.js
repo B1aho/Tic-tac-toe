@@ -7,6 +7,7 @@ export const createIterativeDeeping = (state) => {
         let bestScore = state.isMax ? -Infinity : Infinity
         let bestMove = null
         let breakFlag = false
+        let lastExtendedMove = null
         const token = state.isMax ? "X" : "O"
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves(state.field);
@@ -21,13 +22,21 @@ export const createIterativeDeeping = (state) => {
                 // Выполнить ход
                 // Добавить флаг undo, чтобы понимать, когда счетчик ходов увеличиваем, а когда уменьшаем
           //      console.log("Hash before apply: " + state.hash)
-                state.applyMove(move, token)
+                if (state.isExtended) 
+                    lastExtendedMove = state.applyExtendedMove(move, token) 
+                else
+                    state.applyMove(move, token)
        //         console.log("Hash after apply: " + state.hash)
                 state.movesCounter++
                 // Вызов рекурсивного минимакса с альфа-бета отсечением
+                state.isInMinimax = true
                 const score = search(state, currDepth, move)
+                state.isInMinimax = false
                 // Откатить ход
-                state.undoMove(move, token)
+                if (state.isExtended) 
+                    state.undoExtendedMove(move, token, lastExtendedMove)
+                else
+                    state.undoMove(move, token)
        //         console.log("Hash after undo: " + state.hash)
                 state.movesCounter--
                 // Обновить лучший счёт
@@ -41,11 +50,14 @@ export const createIterativeDeeping = (state) => {
                     break;
                 }
             }
-            possibleMoves = sortMoves(possibleMoves, token, currDepth - 1)
             if (breakFlag)
                 break
+            possibleMoves = sortMoves(possibleMoves, token, currDepth - 1)
         }
-        state.applyMove(bestMove, token)
+        if (state.isExtended) 
+           state.applyExtendedMove(bestMove, token)
+        else
+            state.applyMove(bestMove, token)
         return bestMove
     }
     return { runSearch }
@@ -54,10 +66,14 @@ export const createIterativeDeeping = (state) => {
 
 function sortMoves(possibleMoves, token, depthLimit) {
     const state = getSharedState()
+    let lastExtendedMove = null
     // Создаем массив с оценками ходов
     let evaluatedMoves = possibleMoves.map(move => {
         // Применяем ход
-        state.applyMove(move, token)
+        if (state.isExtended) 
+            lastExtendedMove = state.applyExtendedMove(move, token) 
+        else
+            state.applyMove(move, token)
        // field[move[0]][move[1]].setValue(playerToken);
       //  const newHash = Hash ^ zobristTable[move[0]][move[1]][playerToken];
 
@@ -65,7 +81,10 @@ function sortMoves(possibleMoves, token, depthLimit) {
         const entry = state.getRecord(state.hash)
         const score = entry && entry.depth >= depthLimit ? entry.bestScore : null;
 
-        state.undoMove(move, token)
+        if (state.isExtended) 
+            state.undoExtendedMove(move, token, lastExtendedMove)
+        else
+            state.undoMove(move, token)
         // Откатываем ход
         //field[move[0]][move[1]].setValue(defaultSymbol);
 

@@ -19,6 +19,8 @@ const sharedState = {
     defaultSymbol: "*",
     zobristTable: null,
     gameStatus: null,
+    isExtended: false,
+    isInMinimax: false,
     countStoreCash: 0,
     countGetCash: 0,
 
@@ -26,10 +28,11 @@ const sharedState = {
         this.size = options.size
 
         this.players.playerX.name = options.player1.name,
-        this.players.playerX.token = options.player1.token,
-        this.players.playerO.name = options.player2.name,
-        this.players.playerO.token = options.player2.token,
-      
+            this.players.playerX.token = options.player1.token,
+            this.players.playerO.name = options.player2.name,
+            this.players.playerO.token = options.player2.token,
+
+            this.isExtended = options.isExtended === "true" ? true : false
         this.currentPlayer = this.players.playerX
     },
 
@@ -39,12 +42,20 @@ const sharedState = {
         this.currentPlayer = null
         this.gameStatus = null
         this.size = 0
+        if (this.isExtended) {
+            delete this.currentMoves
+            delete this.updateMovesQueue
+        }
     },
 
     reset() {
         this.movesCounter = 0
         this.gameStatus = null
         this.currentPlayer = this.players.playerX
+        if (this.isExtended) {
+            this.currentMoves.X = []
+            this.currentMoves.O = []
+        }
     },
 
     // насколько это должно быть shared?
@@ -52,9 +63,34 @@ const sharedState = {
         this.field[move[0]][move[1]].setValue(token)
         this.hash ^= this.zobristTable[move[0]][move[1]][token]
     },
+
     undoMove(move, token) {
         this.field[move[0]][move[1]].setValue(this.defaultSymbol)
         this.hash ^= this.zobristTable[move[0]][move[1]][token]
+    },
+
+    applyExtendedMove(move, token) {
+        const lastMove = this.updateMovesQueue(move, token)
+        // Если это расширенный ход, то убираем лишний ход из хэша
+        if (lastMove !== null) {
+            this.hash ^= this.zobristTable[lastMove[0]][lastMove[1]][token]
+        }
+        // hash по другому считается по мимо новой клетки старая в дефолт
+        this.field[move[0]][move[1]].setValue(token)
+        this.hash ^= this.zobristTable[move[0]][move[1]][token]
+        return lastMove
+    },
+
+    undoExtendedMove(move, token, lastMove) {
+        // Применяем стертый ход, если он был
+        if (lastMove) {
+            this.field[lastMove[0]][lastMove[1]].setValue(token)
+            this.hash ^= this.zobristTable[lastMove[0]][lastMove[1]][token]
+            this.currentMoves[token].unshift(lastMove)
+        }
+        this.field[move[0]][move[1]].setValue(this.defaultSymbol)
+        this.hash ^= this.zobristTable[move[0]][move[1]][token]
+        this.currentMoves[token].pop()
     },
 
 }

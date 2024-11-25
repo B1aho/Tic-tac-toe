@@ -41,7 +41,8 @@ export const ui = {
             player2: {
                 name: this.elements.oInput.value || "Player O",
                 token: "O",
-            }
+            },
+            isExtended: this.getExtended(),
         }
         // Set options to default 
         this.elements.xInput.value = this.elements.oInput.value = "" // Мб оставить имена
@@ -56,6 +57,10 @@ export const ui = {
 
     getPlayersNumber: () => {
         return Number(document.querySelector('input[name="players-number"]:checked').value)
+    },
+
+    getExtended: () => {
+        return document.querySelector('input[name="extended-mode"]:checked').value
     },
 
     renderField() {
@@ -214,6 +219,12 @@ export const ui = {
         const row = coords[0]
         const col = coords[1]
         document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = state.currentPlayer.token
+    },
+
+    unrenderMove(move) {
+        const row = move[0]
+        const col = move[1]
+        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = state.defaultSymbol
     },
 }
 
