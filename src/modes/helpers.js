@@ -6,18 +6,26 @@ export const modeHelpers = (aiEngine, ui, state, game) => {
     const aiMove = () => {
         if (state.gameStatus)
             return
-        console.time("Ai move")
-        console.log("Get info from TT before: " + state.countGetCash)
-        console.log("Store info from TT before: " + state.countStoreCash)
-        let aiMove = aiEngine.makeBestMove(state)
-        console.timeEnd("Ai move")
-        console.log("Get info from TT after: " + state.countGetCash)
-        console.log("Store info from TT after: " + state.countStoreCash)
-        state.countGetCash = 0
-        state.countStoreCash = 0
-        ui.renderAiMove(aiMove)
-        state.movesCounter++
-        checkTerminalState(aiMove[0], aiMove[1])
+        // Отправляем данные в Worker
+        console.log("ИИ думает ...")
+        worker.postMessage({ action: 'calculateMove', state });
+
+        // Ожидаем результат
+        worker.onmessage = (event) => {
+            const { aiMove } = event.data
+
+            // Обновляем состояние игры на основе результата
+            ui.renderAiMove(aiMove)
+            state.movesCounter++
+            checkTerminalState(aiMove[0], aiMove[1])
+            // Прячем индикатор
+            //hideLoadingIndicator()
+        };
+
+        worker.onerror = (error) => {
+            console.error('Ошибка в Worker:', error.message)
+            hideLoadingIndicator()
+        };
     }
 
     const humanMove = (targetCell, coords) => {
