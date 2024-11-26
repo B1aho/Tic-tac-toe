@@ -19,12 +19,12 @@ export const modeHelpers = (aiEngine, ui, state, game) => {
             state.movesCounter++
             checkTerminalState(aiMove[0], aiMove[1])
             // Прячем индикатор
-            //hideLoadingIndicator()
+            // hideLoadingIndicator()
         };
 
         worker.onerror = (error) => {
             console.error('Ошибка в Worker:', error.message)
-            hideLoadingIndicator()
+            // hideLoadingIndicator()
         };
     }
 

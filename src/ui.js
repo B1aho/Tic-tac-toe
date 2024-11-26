@@ -100,7 +100,7 @@ export const ui = {
         this.elements.backBtn.removeEventListener("click", this.onBackBtnClick)
     },
 
-    resetFieldRender(field) {
+    resetFieldRender() {
         const cells = document.querySelectorAll(".cell")
         cells.forEach(cell => cell.innerText = state.defaultSymbol)
     },
