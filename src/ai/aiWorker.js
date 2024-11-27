@@ -1,8 +1,8 @@
-import { createEngine } from "./aiEngine.js";
 import { Cell } from "../game.js";
 import { getSharedState } from "../sharedState.js";
 import { game } from "../game.js";
 
+import { createEngine } from "./aiEngine.js";
 
 let engine = null
 console.log("Работает new worker")

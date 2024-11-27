@@ -34,6 +34,11 @@ export const humanVsAi = (game, ui, state, worker) => {
 
     const onBackBtnClick = () => {
         state.back()
+        if (worker) {
+            worker.terminate()
+            console.log("Kill worker")
+            worker = null
+        }
         ui.removeListener()
         ui.showScreen("options")
     }
