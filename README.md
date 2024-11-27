@@ -15,7 +15,7 @@ This project (frontend-heavy) is an advanced Tic-Tac-Toe game featuring both sin
 ## Screenshots:
 
 ## Technology stack and performance:
-This project is built with vanilla JavaScript, CSS, and HTML."A craftsman is only as good as their tools, but a true master knows how to work without them."
+This project is built with vanilla JavaScript, CSS, and HTML. "A craftsman is only as good as their tools, but a true master knows how to work without them."
 
 ### Focus on optimization:
 - Although JavaScript is not the ideal language for implementing complex AI algorithms due to its performance limitations compared to lower-level languages like C, my goal was to challenge myself by practicing JavaScript and optimizing the AI to perform as close as possible to the speed and efficiency of implementations in more performant languages
