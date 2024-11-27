@@ -8,13 +8,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let gameMode = null
     ui.addPlayerChooseListener()
   
-    ui.elements.playBtn.addEventListener("click", () => {
+    ui.elements.playBtn.addEventListener("click", async () => {
         const options = ui.getOptions()
         state.initialize(options)
         
         // В будущем в верстке будет не кол-во игроков, а mode выбирать и у них такие value будут
         const gameType = options.playersNumber === 1 ? "humanVsAi" : "humanVsHuman"
-        gameMode = createGameMode(gameType, game, ui, state)
+        gameMode = await createGameMode(gameType, game, ui, state)
         gameMode.startGame()
 
         // Initialize events:

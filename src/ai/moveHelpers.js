@@ -9,7 +9,7 @@ export function getPossibleMoves(field) {
             // Звездочку убрать отсюда
             if (field[row][col].getValue() === "*") {
                 const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol)
-                //const distanceFromCenter = Math.sqrt(Math.pow(row - centerRow, 2) + Math.pow(col - centerCol, 2))
+                // const distanceFromCenter = Math.sqrt(Math.pow(row - centerRow, 2) + Math.pow(col - centerCol, 2))
                 const centerWeight = 5 - distanceFromCenter // Чем ближе к центру, тем выше значение
                 moves.push([row, col, centerWeight])
             }

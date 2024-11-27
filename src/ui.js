@@ -1,5 +1,6 @@
 // Пусть автоматические в блокированном инпуте АИ имя возникает
 import { getSharedState } from "./sharedState.js";
+
 const state = getSharedState()
 
 export const ui = {
@@ -88,9 +89,9 @@ export const ui = {
         })
         fieldWrap.style.display = "grid"
         fieldWrap.style.gridTemplateColumns = `repeat(${field.length}, 1fr)`
-        //fieldWrap.addEventListener("click", this.onCellClick)
-        //this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
-        //this.elements.resetBtn.addEventListener("click", this.onResetClick)
+        // fieldWrap.addEventListener("click", this.onCellClick)
+        // this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
+        // this.elements.resetBtn.addEventListener("click", this.onResetClick)
     },
 
     removeListener() {
@@ -100,7 +101,7 @@ export const ui = {
         this.elements.backBtn.removeEventListener("click", this.onBackBtnClick)
     },
 
-    resetFieldRender(field) {
+    resetFieldRender() {
         const cells = document.querySelectorAll(".cell")
         cells.forEach(cell => cell.innerText = state.defaultSymbol)
     },
@@ -226,6 +227,20 @@ export const ui = {
         const col = move[1]
         document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = state.defaultSymbol
     },
+
+    whenAiThinking() {
+        const fieldWrapper = document.querySelector("#field-wrapper")
+        fieldWrapper.style.pointerEvents = "none"
+        this.elements.fieldContainer.style.cursor = "not-allowed"
+        console.log("ИИ думает..")
+    },
+
+    aiDoneThinking() {
+        const fieldWrapper = document.querySelector("#field-wrapper")
+        fieldWrapper.style.pointerEvents = "auto"
+        this.elements.fieldContainer.style.cursor = "default"
+        console.log("ИИ подумал!")
+    }
 }
 
  // Validate options before starting game

@@ -1,8 +1,11 @@
-import { getPossibleMoves, sortMovesByHeuristic, isBetterMove } from "./moveHelpers.js";
 import { getSharedState } from "../sharedState.js";
+
+import { getPossibleMoves, sortMovesByHeuristic, isBetterMove } from "./moveHelpers.js";
+
 // Добавить флаг максимальной глубины!, иначе по сто раз смотрит терминалньую стади, если время не стоит ограничени
 export const createIterativeDeeping = (state) => {
     const runSearch = (search, limits) => {
+        state.field = getSharedState().field
         limits.maxDepth++
         let bestScore = state.isMax ? -Infinity : Infinity
         let bestMove = null
@@ -17,7 +20,7 @@ export const createIterativeDeeping = (state) => {
         let startTime = Date.now()
         //
         for (let currDepth = state.field.length < 4 ? 1 : 3; currDepth <= limits.maxDepth; currDepth++) {
-            //possibleMoves = sortMoves(possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
+            // possibleMoves = sortMoves(possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
             for (const move of possibleMoves) {
                 // Выполнить ход
                 // Добавить флаг undo, чтобы понимать, когда счетчик ходов увеличиваем, а когда уменьшаем
@@ -37,7 +40,7 @@ export const createIterativeDeeping = (state) => {
                     state.undoExtendedMove(move, token, lastExtendedMove)
                 else
                     state.undoMove(move, token)
-       //         console.log("Hash after undo: " + state.hash)
+                // console.log("Hash after undo: " + state.hash)
                 state.movesCounter--
                 // Обновить лучший счёт
                 if (isBetterMove(score, bestScore, state.isMax)) {
@@ -52,20 +55,20 @@ export const createIterativeDeeping = (state) => {
             }
             if (breakFlag)
                 break
-            possibleMoves = sortMoves(possibleMoves, token, currDepth - 1)
+            possibleMoves = sortMoves(possibleMoves, token, currDepth - 1, state)
         }
         if (state.isExtended) 
            state.applyExtendedMove(bestMove, token)
         else
             state.applyMove(bestMove, token)
+        console.log("Итеративное углубление вернуло ход:" + bestMove)
         return bestMove
     }
     return { runSearch }
 }
 
 
-function sortMoves(possibleMoves, token, depthLimit) {
-    const state = getSharedState()
+function sortMoves(possibleMoves, token, depthLimit, state) {
     let lastExtendedMove = null
     // Создаем массив с оценками ходов
     let evaluatedMoves = possibleMoves.map(move => {
@@ -86,7 +89,7 @@ function sortMoves(possibleMoves, token, depthLimit) {
         else
             state.undoMove(move, token)
         // Откатываем ход
-        //field[move[0]][move[1]].setValue(defaultSymbol);
+        // field[move[0]][move[1]].setValue(defaultSymbol);
 
         return { move, score };
     });

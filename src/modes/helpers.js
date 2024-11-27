@@ -1,21 +1,36 @@
 import { updateMovesQueue } from "./extendedMode.js";
 
-export const modeHelpers = (aiEngine, ui, state, game) => {
+export const modeHelpers = (aiEngineWorker, ui, state, game) => {
     const aiMove = () => {
         if (state.gameStatus)
             return
-        console.time("Ai move")
-        console.log("Get info from TT before: " + state.countGetCash)
-        console.log("Store info from TT before: " + state.countStoreCash)
-        let aiMove = aiEngine.makeBestMove(state)
-        console.timeEnd("Ai move")
-        console.log("Get info from TT after: " + state.countGetCash)
-        console.log("Store info from TT after: " + state.countStoreCash)
-        state.countGetCash = 0
-        state.countStoreCash = 0
-        ui.renderAiMove(aiMove)
-        state.movesCounter++
-        checkTerminalState(aiMove[0], aiMove[1])
+        // Отправляем данные в Worker     
+        console.log("ИИ думает...")
+        const sharedState = JSON.parse(JSON.stringify(state))
+        aiEngineWorker.postMessage({ action: "makeMove", sharedState });
+        // Блокируем поле для взаимодействия пользователя, покка ожидаем ответа ИИ
+        // Меняем выражения лица ИИ. Всё мб одной функцией ui.aiThinking
+        ui.whenAiThinking()
+        // Ожидаем результат
+        aiEngineWorker.onmessage = (event) => {
+            const aiMove = event.data.bestMove
+            console.log("Воркер вернул ход: " + aiMove)
+            // Обновляем состояние игры на основе результата
+            game.updateFieldValue(aiMove[0], aiMove[1], state.currentPlayer.token)
+            if (state.isExtended)
+                updateMovesQueue(aiMove, state.currentPlayer.token)
+            ui.renderAiMove(aiMove)
+            state.movesCounter++
+            checkTerminalState(aiMove[0], aiMove[1], state.field)
+            ui.aiDoneThinking()
+            // Прячем индикатор
+            // hideLoadingIndicator()
+        };
+
+        aiEngineWorker.onerror = (error) => {
+            console.error('Ошибка в Worker:', error.message, error.filename, error.lineno, error.colno)
+            // hideLoadingIndicator()
+        };
     }
 
     const humanMove = (targetCell, coords) => {
@@ -33,12 +48,12 @@ export const modeHelpers = (aiEngine, ui, state, game) => {
         targetCell.innerText = token
         state.movesCounter++
         // Check if game over
-        checkTerminalState(row, col)
+        checkTerminalState(row, col, state.field)
     }
 
-    const checkTerminalState = (row, col) => {
+    const checkTerminalState = (row, col, field) => {
         if (state.movesCounter > 4)
-            state.gameStatus = game.checkTerminalState(row, col)
+            state.gameStatus = game.checkTerminalState(row, col, field)
         if (state.gameStatus) {
             ui.updateMoveDescription()
             return;
