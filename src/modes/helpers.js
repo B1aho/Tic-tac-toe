@@ -17,6 +17,8 @@ export const modeHelpers = (aiEngineWorker, ui, state, game) => {
             console.log("Воркер вернул ход: " + aiMove)
             // Обновляем состояние игры на основе результата
             game.updateFieldValue(aiMove[0], aiMove[1], state.currentPlayer.token)
+            if (state.isExtended)
+                updateMovesQueue(aiMove, state.currentPlayer.token)
             ui.renderAiMove(aiMove)
             state.movesCounter++
             checkTerminalState(aiMove[0], aiMove[1], state.field)
