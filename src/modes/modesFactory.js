@@ -1,6 +1,7 @@
+import { createEngine } from "../ai/aiEngine.js";
+
 import { humanVsAi } from "./humanVsAi.js";
 import { humanVsHuman } from "./humanVsHuman.js";
-import { createEngine } from "../ai/aiEngine.js";
 import { addExtendedState } from "./extendedMode.js";
 
 export const createGameMode = (gameType, game, ui, state) => {

@@ -1,5 +1,6 @@
 // Заменить на shared state
 import { getSharedState } from "./sharedState.js";
+
 const state = getSharedState()
 
 // Size убрать
@@ -28,9 +29,7 @@ export const game = {
     Cell() {
         let value = state.defaultSymbol
     
-        const getValue = () => {
-            return value;
-        }
+        const getValue = () =>  value;
         
         const setValue = (newVal) => {
             value = newVal

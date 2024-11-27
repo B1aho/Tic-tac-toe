@@ -2,7 +2,7 @@ export const createTranspositionTable = () => {
     // Транспозиционная таблица для хранения потенциально повторяющихся конфигураций на поле (от того и название транспозиция - позиция, которая)
     const transpositionTable = new Map();
 
-    //@type value can be exact, upperBound or lowerBound for correct working with alpha-beta puring
+    // @type value can be exact, upperBound or lowerBound for correct working with alpha-beta puring
     const storeRecord = (hash, record) => {
         let previousRecord = transpositionTable.get(hash)
         const {depth, bestScore, type, isMax, inUse} = record
@@ -28,9 +28,7 @@ export const createTranspositionTable = () => {
         }
     };
 
-    const getRecord = (hash) => {
-        return transpositionTable.get(hash);
-    };
+    const getRecord = (hash) => transpositionTable.get(hash);
 
     const clear = () => {
         transpositionTable.clear()

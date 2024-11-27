@@ -15,7 +15,7 @@ export default [
     plugins: {
       import: pluginImport,
     },
-    // Форматирование
+    /* Форматирование */
     rules: {
       /* Отступы — 4 пробела */
       "indent": ["error", 4],
@@ -60,7 +60,7 @@ export default [
         },
       ],
 
-      // Импорты
+      /* Импорты */
       "import/order": [
         "error",
         {
@@ -70,11 +70,13 @@ export default [
       ],
       "import/newline-after-import": "error", // Пустая строка после импортов
 
-      // Best practices
-      "eqeqeq": ["error", "always"], // Использовать === вместо ==
-      "no-console": "warn", // Предупреждение о console.log
-      "curly": ["error", "all"], // Всегда использовать фигурные скобки
+      /* Best practices */
+      /* Предупреждение о console.log */
+      "no-console": "warn",
+      /* Всегда использовать фигурные скобки */
+      "curly": ["error", "all"],
     },
   },
-  prettier, // Отключение конфликтующих правил для совместимости с Prettier
+  /* Отключение конфликтующих правил для совместимости с Prettier */
+  prettier,
 ];

@@ -1,7 +1,7 @@
 export const finalHeuristic = (field, player) => {
     const opponent = player === 'X' ? 'O' : 'X';
     const opponentScore = heuristic(field, opponent)
-    //const playScore = heuristic(field, player)
+    // const playScore = heuristic(field, player)
     return opponentScore
 }
 

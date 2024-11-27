@@ -1,5 +1,6 @@
 // Пусть автоматические в блокированном инпуте АИ имя возникает
 import { getSharedState } from "./sharedState.js";
+
 const state = getSharedState()
 
 export const ui = {
@@ -88,9 +89,9 @@ export const ui = {
         })
         fieldWrap.style.display = "grid"
         fieldWrap.style.gridTemplateColumns = `repeat(${field.length}, 1fr)`
-        //fieldWrap.addEventListener("click", this.onCellClick)
-        //this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
-        //this.elements.resetBtn.addEventListener("click", this.onResetClick)
+        // fieldWrap.addEventListener("click", this.onCellClick)
+        // this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
+        // this.elements.resetBtn.addEventListener("click", this.onResetClick)
     },
 
     removeListener() {

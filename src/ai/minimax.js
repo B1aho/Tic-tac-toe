@@ -1,4 +1,5 @@
 import { game } from "../game.js";
+
 import { finalHeuristic } from "./heuristics.js";
 import { getPossibleMoves, sortMovesByHeuristic } from "./moveHelpers.js";
 
@@ -82,7 +83,7 @@ export const createMinimax = (transpositionTable) => {
         let lastExtendedMove = null
         // Генерация и сортировка возможных ходов
         let possibleMoves = getPossibleMoves(state.field);
-        //possibleMoves = sortMoves(possibleMoves, token, maxDepth)
+        // possibleMoves = sortMoves(possibleMoves, token, maxDepth)
         possibleMoves = sortMovesByHeuristic(possibleMoves)
         for (const move of possibleMoves) {
             // Выполнить ход
@@ -117,7 +118,6 @@ export const createMinimax = (transpositionTable) => {
                 undoHashMove = move
                 break
             }
-            //Hash ^= zobristTable[move[0]][move[1]][token]
             if (state.isExtended) 
                 state.undoExtendedMove(move, token, lastExtendedMove)
             else
@@ -127,7 +127,6 @@ export const createMinimax = (transpositionTable) => {
 
         // Сохраняем в транспозиционную таблицу
         if (breakFlag) {
-            //Hash ^= zobristTable[undoHashMove[0]][undoHashMove[1]][token]
             if (state.isExtended) 
                 state.undoExtendedMove(undoHashMove, token, lastExtendedMove)
             else
