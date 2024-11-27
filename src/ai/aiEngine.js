@@ -18,8 +18,8 @@ if (hardMove)
     return hardMove
 */
 
-export const createEngine = (config) => {
-    const state = getSharedState()
+export const createEngine = (state) => {
+    //const state = getSharedState()
     const tokenTypes = {
         x: "X",
         o: "O",
@@ -27,7 +27,7 @@ export const createEngine = (config) => {
     }
     const limits = {
         maxDepth: evaluateMaxDepth(state.field.length),
-        timeOut: config.timeOut,
+        timeOut: 6000,
     }
     const zobristHashing = createZobristHash(state.size, tokenTypes)
     const transpositionTable = createTranspositionTable()

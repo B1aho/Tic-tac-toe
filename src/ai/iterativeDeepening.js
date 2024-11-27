@@ -54,20 +54,20 @@ export const createIterativeDeeping = (state) => {
             }
             if (breakFlag)
                 break
-            possibleMoves = sortMoves(possibleMoves, token, currDepth - 1)
+            possibleMoves = sortMoves(possibleMoves, token, currDepth - 1, state)
         }
         if (state.isExtended) 
            state.applyExtendedMove(bestMove, token)
         else
             state.applyMove(bestMove, token)
+        console.log("Итеративное углубление вернуло ход:" + bestMove)
         return bestMove
     }
     return { runSearch }
 }
 
 
-function sortMoves(possibleMoves, token, depthLimit) {
-    const state = getSharedState()
+function sortMoves(possibleMoves, token, depthLimit, state) {
     let lastExtendedMove = null
     // Создаем массив с оценками ходов
     let evaluatedMoves = possibleMoves.map(move => {

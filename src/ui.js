@@ -227,6 +227,20 @@ export const ui = {
         const col = move[1]
         document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = state.defaultSymbol
     },
+
+    whenAiThinking() {
+        const fieldWrapper = document.querySelector("#field-wrapper")
+        fieldWrapper.style.pointerEvents = "none"
+        this.elements.fieldContainer.style.cursor = "not-allowed"
+        console.log("ИИ думает..")
+    },
+
+    aiDoneThinking() {
+        const fieldWrapper = document.querySelector("#field-wrapper")
+        fieldWrapper.style.pointerEvents = "auto"
+        this.elements.fieldContainer.style.cursor = "deafult"
+        console.log("ИИ подумал!")
+    }
 }
 
  // Validate options before starting game

@@ -3,6 +3,21 @@ import { getSharedState } from "./sharedState.js";
 
 const state = getSharedState()
 
+export class Cell {
+    constructor (value = "*") {
+        this.value = value
+    }
+
+
+    getValue() {
+        return this.value
+    }
+    
+    setValue(newVal) {
+        this.value = newVal
+    }
+}
+
 // Size убрать
 export const game = {
     createField() {
@@ -11,7 +26,7 @@ export const game = {
         for (let i = 0; i < size; i++) {
             field[i] = []
             for (let j = 0; j < size; j++) {
-                field[i].push(this.Cell())
+                field[i].push(new Cell())
             }
         }
     },
@@ -26,23 +41,7 @@ export const game = {
         field.forEach(el => el.forEach(cell => cell.setValue(state.defaultSymbol)))
     },
 
-    Cell() {
-        let value = state.defaultSymbol
-    
-        const getValue = () =>  value;
-        
-        const setValue = (newVal) => {
-            value = newVal
-        }
-    
-        return {
-            getValue,
-            setValue,
-        }
-    },
-
-    checkWin (rw, cl) {
-        const field = state.field
+    checkWin (rw, cl, field) {
         const token = field[rw][cl].getValue();
         let winLine = 0
         switch (field.length) {
@@ -129,10 +128,10 @@ export const game = {
         return false;
     },
 
-    checkTerminalState (row, col) {
+    checkTerminalState (row, col, field) {
         const size = state.field.length
         const maxMoves = Math.pow((size), 2)
-        if (this.checkWin(row, col))
+        if (this.checkWin(row, col, field))
             return "win"
         if (state.movesCounter === maxMoves && !state.isExtended) {
             return "draw"

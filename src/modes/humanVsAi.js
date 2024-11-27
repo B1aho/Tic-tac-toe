@@ -1,7 +1,7 @@
 import { modeHelpers } from "./helpers.js"
 
-export const humanVsAi = (game, ui, state, aiEngine) => {
-    const helpers = modeHelpers(aiEngine, ui, state, game)
+export const humanVsAi = (game, ui, state, worker) => {
+    const helpers = modeHelpers(worker, ui, state, game)
 
     const startGame = () => {
         // Render - вынести в helper  функцию общую common helpers
@@ -24,7 +24,7 @@ export const humanVsAi = (game, ui, state, aiEngine) => {
     const onResetClick = () => {
         state.reset()
         game.resetField()
-        aiEngine.reset()
+        worker.postMessage({ action: "reset" });
         ui.updateMoveDescription(null)
         ui.resetFieldRender()
 

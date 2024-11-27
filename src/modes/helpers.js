@@ -1,29 +1,31 @@
 import { updateMovesQueue } from "./extendedMode.js";
 
-const worker = new Worker("../ai/aiWorker.js")
-
-export const modeHelpers = (aiEngine, ui, state, game) => {
+export const modeHelpers = (aiEngineWorker, ui, state, game) => {
     const aiMove = () => {
         if (state.gameStatus)
             return
-        // Отправляем данные в Worker
-        console.log("ИИ думает ...")
-        worker.postMessage({ action: 'calculateMove', state });
-
+        // Отправляем данные в Worker     
+        console.log("ИИ думает...")
+        const sharedState = JSON.parse(JSON.stringify(state))
+        aiEngineWorker.postMessage({ action: "makeMove", sharedState });
+        // Блокируем поле для взаимодействия пользователя, покка ожидаем ответа ИИ
+        // Меняем выражения лица ИИ. Всё мб одной функцией ui.aiThinking
+        ui.whenAiThinking()
         // Ожидаем результат
-        worker.onmessage = (event) => {
-            const { aiMove } = event.data
-
+        aiEngineWorker.onmessage = (event) => {
+            const aiMove = event.data.bestMove
+            console.log("Воркер вернул ход: " + aiMove)
             // Обновляем состояние игры на основе результата
             ui.renderAiMove(aiMove)
             state.movesCounter++
-            checkTerminalState(aiMove[0], aiMove[1])
+            checkTerminalState(aiMove[0], aiMove[1], state.field)
+            ui.aiDoneThinking()
             // Прячем индикатор
             // hideLoadingIndicator()
         };
 
-        worker.onerror = (error) => {
-            console.error('Ошибка в Worker:', error.message)
+        aiEngineWorker.onerror = (error) => {
+            console.error('Ошибка в Worker:', error.message, error.filename, error.lineno, error.colno)
             // hideLoadingIndicator()
         };
     }
@@ -43,12 +45,12 @@ export const modeHelpers = (aiEngine, ui, state, game) => {
         targetCell.innerText = token
         state.movesCounter++
         // Check if game over
-        checkTerminalState(row, col)
+        checkTerminalState(row, col, state.field)
     }
 
-    const checkTerminalState = (row, col) => {
+    const checkTerminalState = (row, col, field) => {
         if (state.movesCounter > 4)
-            state.gameStatus = game.checkTerminalState(row, col)
+            state.gameStatus = game.checkTerminalState(row, col, field)
         if (state.gameStatus) {
             ui.updateMoveDescription()
             return;
