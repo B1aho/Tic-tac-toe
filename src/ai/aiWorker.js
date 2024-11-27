@@ -54,7 +54,9 @@ function addMethods(state) {
         }
     }
     let currState = getSharedState()
-    currState = sharedState
+    for (const key in sharedState) {
+        currState[key] = sharedState[key]
+    }
 }
 /*
     if (action === 'calculateMove') {

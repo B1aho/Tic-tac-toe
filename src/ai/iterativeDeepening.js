@@ -5,6 +5,7 @@ import { getPossibleMoves, sortMovesByHeuristic, isBetterMove } from "./moveHelp
 // Добавить флаг максимальной глубины!, иначе по сто раз смотрит терминалньую стади, если время не стоит ограничени
 export const createIterativeDeeping = (state) => {
     const runSearch = (search, limits) => {
+        state.field = getSharedState().field
         limits.maxDepth++
         let bestScore = state.isMax ? -Infinity : Infinity
         let bestMove = null

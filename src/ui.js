@@ -238,7 +238,7 @@ export const ui = {
     aiDoneThinking() {
         const fieldWrapper = document.querySelector("#field-wrapper")
         fieldWrapper.style.pointerEvents = "auto"
-        this.elements.fieldContainer.style.cursor = "deafult"
+        this.elements.fieldContainer.style.cursor = "default"
         console.log("ИИ подумал!")
     }
 }
