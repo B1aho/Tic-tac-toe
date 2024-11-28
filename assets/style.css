@@ -203,11 +203,13 @@ Make radio-group behave like switcher
     padding-bottom: 6px;
     font-weight: 700;
     border-width: 3px;
-    border-image: linear-gradient(to right, #11998e, #38ef7d);
+    border-image: linear-gradient(to right, #11998e, #38ef7d); /* Поменяц на цвета из root*/
     border-image-slice: 1;
 }
 
-.input-field:focus ~ .input-label {
+.input-field:focus ~ .input-label,
+.input-field:valid ~ .input-label,
+.input-field:not(:placeholder-shown) ~ .input-label {
   height: 50%;
   padding-left: 0;
   transform: translateY(-50%);
