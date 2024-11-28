@@ -6,8 +6,13 @@ import { getPossibleMoves, sortMovesByHeuristic, isBetterMove } from "./moveHelp
 export const createIterativeDeeping = (state) => {
     const runSearch = (search, limits) => {
         state.field = getSharedState().field
-        if (limits.maxDepth !== 3)
+        if ( state.movesCounter > 7 && state.aiLevels === "My champ")
             limits.maxDepth++
+        let currDepth = 0
+        if (state.aiLevels === "My champ")
+            currDepth = state.field.length < 4 ? 1 : 3
+        else 
+            currDepth = state.field.length < 4 ? 1 : 1
         let bestScore = state.isMax ? -Infinity : Infinity
         let bestMove = null
         let breakFlag = false
@@ -19,8 +24,7 @@ export const createIterativeDeeping = (state) => {
             possibleMoves = sortMovesByHeuristic(possibleMoves)
         }
         let startTime = Date.now()
-        for (let currDepth = state.field.length < 4 ? 1 : 3; currDepth <= limits.maxDepth; currDepth++) {
-            // possibleMoves = sortMoves(possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
+        for (; currDepth <= limits.maxDepth; currDepth++) {
             for (const move of possibleMoves) {
                 // Выполнить ход
                 // Добавить флаг undo, чтобы понимать, когда счетчик ходов увеличиваем, а когда уменьшаем
@@ -77,9 +81,6 @@ function sortMoves(possibleMoves, token, depthLimit, state) {
             lastExtendedMove = state.applyExtendedMove(move, token) 
         else
             state.applyMove(move, token)
-       // field[move[0]][move[1]].setValue(playerToken);
-      //  const newHash = Hash ^ zobristTable[move[0]][move[1]][playerToken];
-
         // Получаем оценку из таблицы транспозиций (если есть)
         const entry = state.getRecord(state.hash)
         const score = entry && entry.depth >= depthLimit ? entry.bestScore : null;
@@ -88,9 +89,6 @@ function sortMoves(possibleMoves, token, depthLimit, state) {
             state.undoExtendedMove(move, token, lastExtendedMove)
         else
             state.undoMove(move, token)
-        // Откатываем ход
-        // field[move[0]][move[1]].setValue(defaultSymbol);
-
         return { move, score };
     });
 

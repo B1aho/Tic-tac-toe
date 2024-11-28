@@ -4,15 +4,17 @@ import { createTranspositionTable } from "./transpositionTable.js";
 import { createMinimax } from "./minimax.js";
 import { getFreeMoves } from "./moveHelpers.js";
 
-const evaluateMaxDepth = (size) => {
-    let maxDepth = size > 3 ? 4 : 10
-    return maxDepth // Math.pow(size, 2)
-}
-
 const aiLevels = {
     first: "Dumb",
     second: "Medium",
     third: "My champ",
+}
+
+const evaluateMaxDepth = (size, ailvl) => {
+    if (ailvl === aiLevels.second) {
+        return size > 3 ? 3 : 4
+    }
+    return size > 3 ? 3 : 10
 }
 
 export const createEngine = (state) => {
@@ -22,8 +24,8 @@ export const createEngine = (state) => {
         empty: state.defaultSymbol,
     }
     const limits = {
-        maxDepth: evaluateMaxDepth(state.field.length),
-        timeOut: 6000000,
+        maxDepth: evaluateMaxDepth(state.field.length, state.aiLevels),
+        timeOut: 6000,
     }
     const zobristHashing = createZobristHash(state.size, tokenTypes)
     const transpositionTable = createTranspositionTable()
@@ -36,9 +38,6 @@ export const createEngine = (state) => {
     state.storeRecord = transpositionTable.storeRecord
 
     // Здесь создаем функцию makeBestMove в зависимости от уровня ИИ
-    if (state.aiLevels === aiLevels.second) {
-        limits.maxDepth = 3
-    }
     let makeBestMove = null
     // Construct function that define AI move. Pass minimax-callback to iterative deepening method
     if (state.aiLevels === aiLevels.second || state.aiLevels === aiLevels.third) {
@@ -57,7 +56,7 @@ export const createEngine = (state) => {
 
     const reset = () => {
         state.hash = zobristHashing.initHash(state.field)
-        limits.maxDepth = evaluateMaxDepth(state.field.length)
+        limits.maxDepth = evaluateMaxDepth(state.field.length, state.aiLevels)
         transpositionTable.clear()
     }
     return { makeBestMove, reset }
