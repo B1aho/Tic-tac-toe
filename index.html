@@ -29,6 +29,14 @@
                             <label for="6x6">6X6</label>
                         </fieldset>
                     </div>
+                    <div class="extended-mode">
+                        <fieldset class="extended-radio">
+                            <label for="not-extended">Classic mode</label>
+                            <input id="not-extended" type="radio" value="false" name="extended-mode" checked>
+                            <label for="extended">Extended mode</label>
+                            <input id="extended" type="radio" value="true" name="extended-mode">
+                        </fieldset>
+                    </div>
                     <div class="players-number">
                         <fieldset class="players-radio">
                             <label for="one-player">1 Player</label>
@@ -37,13 +45,13 @@
                             <input id="two-players" type="radio" value="2"name="players-number" checked>
                         </fieldset>
                     </div>
-                    <div class="extended-mode">
-                        <fieldset class="extended-radio">
-                            <label for="not-extended">Classic mode</label>
-                            <input id="not-extended" type="radio" value="false" name="extended-mode">
-                            <label for="extended">Extended mode</label>
-                            <input id="extended" type="radio" value="true" name="extended-mode" checked>
-                        </fieldset>
+                    <div class="AI-levels">
+                        <label for="ai-levels">AI levels:</label>
+                        <select id="ai-levels" disabled>
+                            <option>Dumb</option>
+                            <option>Medium</option>
+                            <option selected>My champ</option>
+                        </select>
                     </div>
                 </div>
                 <div class="player-options">

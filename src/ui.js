@@ -11,6 +11,7 @@ export const ui = {
     },
     elements: {
         main: document.querySelector("main"),
+        aiLevel: document.querySelector("#ai-levels"),
         xInput: document.querySelector("#player-x-input"),
         oInput: document.querySelector("#player-o-input"),
         choosePlayers: document.querySelector(".players-radio"),
@@ -53,9 +54,12 @@ export const ui = {
             isExtended: this.getExtended(),
         }
         // Set options to default 
-        this.elements.xInput.value = this.elements.oInput.value = "" // Мб оставить имена
         this.elements.xInput.disabled = this.elements.oInput.disabled = false 
-        setTimeout(() => this.elements.twoPlayersMode.checked = true, 800)
+        this.elements.aiLevel.disabled = true
+        setTimeout(() => {
+            this.elements.twoPlayersMode.checked = true
+            this.elements.xInput.value = this.elements.oInput.value = "" // Мб оставить имена
+        }, 800)
         return options
     },
 
@@ -218,6 +222,8 @@ export const ui = {
     },
 
     resetInputs() {
+        this.elements.xInput.style.outline = "none"
+        this.elements.oInput.style.outline = "none"
         this.elements.xInput.removeEventListener("input", (e) => this.blockOtherInput(e))
         this.elements.oInput.removeEventListener("input", (e) => this.blockOtherInput(e))
         this.elements.oInput.disabled = false
@@ -235,11 +241,13 @@ export const ui = {
     handleInputsAvaliability(e) {
         this.resetInputs()
         if (e.target.checked === true && e.target.value === "1") {
+            this.elements.aiLevel.disabled = false
             this.blockInputListeners.xInput = (e) => this.blockOtherInput(e)
             this.blockInputListeners.oInput = (e) => this.blockOtherInput(e)
             this.elements.xInput.addEventListener("input", this.blockInputListeners.xInput)
             this.elements.oInput.addEventListener("input", this.blockInputListeners.oInput)
         } else {
+            this.elements.aiLevel.disabled = true
             this.removeInputListener()
         }
     },

@@ -10,7 +10,7 @@ export const humanVsAi = (game, ui, state, worker) => {
         ui.renderPlayers()
         ui.updateMoveDescription(null)
 
-        state.isMax = state.players.playerX.name === "Player X" ? true : false
+        state.isMax = state.players.playerX.name === "AI" ? true : false
         if (state.isMax) {
             helpers.aiMove()
         }

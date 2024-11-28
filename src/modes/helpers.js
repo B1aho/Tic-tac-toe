@@ -35,7 +35,7 @@ export const modeHelpers = (aiEngineWorker, ui, state, game) => {
 
     const humanMove = (targetCell, coords) => {
         // No effect if: no human turn, or game is not active, or cell is not empty
-        if (targetCell.innerText !== state.defaultSymbol || state.gameStatus || state.currentPlayer.name === "Player X")
+        if (targetCell.innerText !== state.defaultSymbol || state.gameStatus || state.currentPlayer.name === "AI")
             return null;
         const row = coords.row
         const col = coords.column

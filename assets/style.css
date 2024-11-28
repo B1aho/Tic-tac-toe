@@ -2,6 +2,7 @@
 main {
     pointer-events: none;
 }
+
 .btn {
     outline: 1px solid black;
     text-align: center;
