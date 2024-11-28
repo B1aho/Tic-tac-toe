@@ -26,7 +26,7 @@ const sharedState = {
 
     initialize(options) {
         this.size = options.size
-        this.isMax = Number(options.playersNumber) === 1 ? true : false
+        this.isMax = Number(options.playersNumber) === 1 && options.player1.name === "AI" ? true : false
         this.players.playerX.name = options.player1.name,
         this.players.playerX.token = options.player1.token,
         this.players.playerO.name = options.player2.name,

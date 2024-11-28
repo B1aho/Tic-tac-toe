@@ -1,11 +1,9 @@
 export const finalHeuristic = (field, player) => {
     const opponent = player === 'X' ? 'O' : 'X';
     const opponentScore = heuristic(field, opponent)
-     const playScore = heuristic(field, player)
-     if (player === "X")
+    // const playScore = heuristic(field, player)
+    // if (player === "X")
         return opponentScore 
-    else 
-        return playScore // opponentScore
 }
 
 const evaluateRow = (field, row, length, player, opponent) => {
