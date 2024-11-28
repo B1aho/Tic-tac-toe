@@ -48,7 +48,7 @@ export const ui = {
         // Set options to default 
         this.elements.xInput.value = this.elements.oInput.value = "" // Мб оставить имена
         this.elements.xInput.disabled = this.elements.oInput.disabled = false 
-        this.elements.twoPlayersMode.checked = true
+        setTimeout(() => this.elements.twoPlayersMode.checked = true, 800)
         return options
     },
 
