@@ -216,12 +216,48 @@ Make radio-group behave like switcher
   font-size: 0.8rem;
 }
 
+/*  ----------------------------------------    */
+
+/* Add nice button */
+.play-btn {
+    width: 0%; 
+    font-size: 2rem; 
+    margin-left: auto;
+    margin-right: auto;
+}
+/* ----------------------------------------------------*/
+
 main {
     pointer-events: none;
 }
 
 .options {
     display: flex;
+    justify-content: space-between;
+}
+
+/* Like card */
+.game-options {
+    padding: 10px 0;
+    background-color: #5e386068;
+    border-radius: var(--input-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.switcher {
+    padding-bottom: 4px;
+}
+
+/* Like card */
+.player-options {
+    padding: 0px 10px;
+    background-color: #5e386068;
+    border-radius: var(--input-radius);
+    width: 40%;
+    display: flex;
+    flex-direction: column;
 }
 
 .btn {
@@ -229,12 +265,14 @@ main {
     text-align: center;
 }
 
+
+
 .play-screen,
 .computer-input {
     display: none;
 }
 
-#field-wrapper>* {
+#field-wrapper > * {
     outline: 1px solid black;
     min-height: 50px;
     text-align: center;
