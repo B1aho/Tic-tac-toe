@@ -16,7 +16,7 @@ export const ui = {
         oInput: document.querySelector("#player-o-input"),
         choosePlayers: document.querySelector(".players-radio"),
         twoPlayersMode: document.querySelector("#two-players"),
-        playBtn: document.querySelector(".play-btn"),
+        playBtn: document.querySelector("#play"),
         resetBtn: document.querySelector('#reset'),
         backBtn: document.querySelector('#back'),
         moveDescription: document.querySelector('#move'),
@@ -53,6 +53,7 @@ export const ui = {
             },
             isExtended: this.getExtended(),
         }
+        document.querySelector(":root").style.setProperty('--field-size', options.size);
         if (playersNumber === 1)
             options.aiLevels = this.elements.aiLevels.value
         // Set options to default 
@@ -112,11 +113,6 @@ export const ui = {
             })
             rows++
         })
-        fieldWrap.style.display = "grid"
-        fieldWrap.style.gridTemplateColumns = `repeat(${field.length}, 1fr)`
-        // fieldWrap.addEventListener("click", this.onCellClick)
-        // this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
-        // this.elements.resetBtn.addEventListener("click", this.onResetClick)
     },
 
     removeListener() {

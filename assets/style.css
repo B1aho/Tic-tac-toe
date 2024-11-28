@@ -72,6 +72,7 @@ h6 {
     --input-radius: 10px;
     --first-switcher-radius: 10px 0 0 10px;
     --second-switcher-radius: 0 10px 10px 0;
+    --cell-size: 100px;
 }
 
 html,
@@ -166,6 +167,7 @@ Make radio-group behave like switcher
 /* Add nice inputs with animation */
 .player-input {
     position: relative;
+    margin-bottom: 10px;
 }
 
 .input-field {
@@ -220,7 +222,14 @@ Make radio-group behave like switcher
 
 /* Add nice button */
 .play-btn {
-    width: 0%; 
+    display: flex;
+    width: 100%; 
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#play {
     font-size: 2rem; 
     margin-left: auto;
     margin-right: auto;
@@ -252,12 +261,13 @@ main {
 
 /* Like card */
 .player-options {
-    padding: 0px 10px;
+    padding: 10px 10px;
     background-color: #5e386068;
     border-radius: var(--input-radius);
     width: 40%;
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 
 .btn {
@@ -276,4 +286,16 @@ main {
     outline: 1px solid black;
     min-height: 50px;
     text-align: center;
+    color: transparent;
+}
+/*
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+}*/
+
+#field-wrapper {
+    display: grid;
+    grid-template-columns: repeat(var(--field-size), 1fr);
+    grid-template-rows: repeat(var(--field-size), 1fr);
 }
