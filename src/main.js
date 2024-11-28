@@ -4,12 +4,15 @@ import { game } from "./game.js";
 import { createGameMode } from "./modes/modesFactory.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+    ui.addPlayerChooseListener()
     const state = getSharedState()
     let gameMode = null
-    ui.addPlayerChooseListener()
+   // ui.addPlayerChooseListener()
   
     ui.elements.playBtn.addEventListener("click", async () => {
         const options = ui.getOptions()
+        if (options === undefined)
+            return
         state.initialize(options)
         
         // В будущем в верстке будет не кол-во игроков, а mode выбирать и у них такие value будут

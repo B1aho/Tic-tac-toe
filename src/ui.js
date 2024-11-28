@@ -10,6 +10,8 @@ export const ui = {
         info: document.querySelector(".decription-screen"),
     },
     elements: {
+        main: document.querySelector("main"),
+        aiLevels: document.querySelector("#ai-levels"),
         xInput: document.querySelector("#player-x-input"),
         oInput: document.querySelector("#player-o-input"),
         choosePlayers: document.querySelector(".players-radio"),
@@ -31,10 +33,16 @@ export const ui = {
     },
 
     getOptions() {
+        // For 1-player mode name is required
+        const playersNumber = this.getPlayersNumber()
+        if (playersNumber === 1) {
+            if (!ui.checkInputRequired())
+                return
+        }
         // Get current options
         const options = {
             size: this.getSize(),
-            playersNumber: this.getPlayersNumber(),
+            playersNumber: playersNumber,
             player1: {
                 name: this.elements.xInput.value || "Player X",
                 token: "X",
@@ -45,11 +53,28 @@ export const ui = {
             },
             isExtended: this.getExtended(),
         }
+        if (playersNumber === 1)
+            options.aiLevels = this.elements.aiLevels.value
         // Set options to default 
-        this.elements.xInput.value = this.elements.oInput.value = "" // Мб оставить имена
         this.elements.xInput.disabled = this.elements.oInput.disabled = false 
-        this.elements.twoPlayersMode.checked = true
+        this.elements.aiLevels.disabled = true
+        setTimeout(() => {
+            this.elements.twoPlayersMode.checked = true
+            this.elements.xInput.value = this.elements.oInput.value = "" // Мб оставить имена
+        }, 800)
         return options
+    },
+
+    checkInputRequired() {
+        const xInput = this.elements.xInput
+        const oInput = this.elements.oInput
+        if (xInput.value !== "" || oInput.value !== "")
+            return true
+        else {
+            xInput.style.outline = "2px red solid"
+            oInput.style.outline = "2px red solid"
+            return false
+        }
     },
 
     getSize: () => {
@@ -172,14 +197,22 @@ export const ui = {
     blockOtherInput(e) {
         if (e.target === this.elements.xInput) {
             if (this.elements.xInput.value !== "") {
+                this.elements.xInput.style.outline = "none"
+                this.elements.oInput.style.outline = "none"
+                this.elements.oInput.value = "AI"
                 this.elements.oInput.disabled = true
             } else {
+                this.elements.oInput.value = ""
                 this.elements.oInput.disabled = false
             }
         } else if (e.target === this.elements.oInput) {
             if (this.elements.oInput.value !== "") {
+                this.elements.xInput.style.outline = "none"
+                this.elements.oInput.style.outline = "none"
+                this.elements.xInput.value = "AI"
                 this.elements.xInput.disabled = true
             } else {
+                this.elements.xInput.value = ""
                 this.elements.xInput.disabled = false
             }
         }
@@ -191,6 +224,8 @@ export const ui = {
     },
 
     resetInputs() {
+        this.elements.xInput.style.outline = "none"
+        this.elements.oInput.style.outline = "none"
         this.elements.xInput.removeEventListener("input", (e) => this.blockOtherInput(e))
         this.elements.oInput.removeEventListener("input", (e) => this.blockOtherInput(e))
         this.elements.oInput.disabled = false
@@ -201,17 +236,20 @@ export const ui = {
     // Arrow function look for the parent scope's context binding - addPlayerChooseListener()
     addPlayerChooseListener() {
         this.elements.choosePlayers.addEventListener("change", (e) => this.handleInputsAvaliability(e))
+        this.elements.main.style.pointerEvents = "auto"
     },
 
     // If 1-player mode checked, then only one input can ba filled at time
     handleInputsAvaliability(e) {
         this.resetInputs()
         if (e.target.checked === true && e.target.value === "1") {
+            this.elements.aiLevels.disabled = false
             this.blockInputListeners.xInput = (e) => this.blockOtherInput(e)
             this.blockInputListeners.oInput = (e) => this.blockOtherInput(e)
             this.elements.xInput.addEventListener("input", this.blockInputListeners.xInput)
             this.elements.oInput.addEventListener("input", this.blockInputListeners.oInput)
         } else {
+            this.elements.aiLevels.disabled = true
             this.removeInputListener()
         }
     },
