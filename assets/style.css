@@ -81,11 +81,6 @@ body {
     overflow: hidden;
 }
 
-input {
-    border-radius: var(--input-radius);
-    border: 1px solid black;
-}
-
 /* Add animation bg */
 body {
     background: linear-gradient(100deg, #402, #006);
@@ -168,7 +163,7 @@ Make radio-group behave like switcher
     border-radius: var(--second-switcher-radius);
 }
 
-/* Add nice inputs */
+/* Add nice inputs with animation */
 .player-input {
     position: relative;
 }
@@ -200,7 +195,6 @@ Make radio-group behave like switcher
     align-items: center;
     padding-left: 10px;
     transition: 300ms all;
-    transition: 0.2s;
     font-size: 1rem;
     color: #9b9b9b;
 }
@@ -213,11 +207,11 @@ Make radio-group behave like switcher
     border-image-slice: 1;
 }
 
-.input-field:focus ~ .input-label{
-    height: 50%;
+.input-field:focus ~ .input-label {
+  height: 50%;
   padding-left: 0;
-  transform: translateY(-100%);
-  font-size: 12px;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
 }
 
 main {
