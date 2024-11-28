@@ -10,6 +10,7 @@ export const ui = {
         info: document.querySelector(".decription-screen"),
     },
     elements: {
+        main: document.querySelector("main"),
         xInput: document.querySelector("#player-x-input"),
         oInput: document.querySelector("#player-o-input"),
         choosePlayers: document.querySelector(".players-radio"),
@@ -31,10 +32,16 @@ export const ui = {
     },
 
     getOptions() {
+        // For 1-player mode name is required
+        const playersNumber = this.getPlayersNumber()
+        if (playersNumber === 1) {
+            if (!ui.checkInputRequired())
+                return
+        }
         // Get current options
         const options = {
             size: this.getSize(),
-            playersNumber: this.getPlayersNumber(),
+            playersNumber: playersNumber,
             player1: {
                 name: this.elements.xInput.value || "Player X",
                 token: "X",
@@ -50,6 +57,18 @@ export const ui = {
         this.elements.xInput.disabled = this.elements.oInput.disabled = false 
         setTimeout(() => this.elements.twoPlayersMode.checked = true, 800)
         return options
+    },
+
+    checkInputRequired() {
+        const xInput = this.elements.xInput
+        const oInput = this.elements.oInput
+        if (xInput.value !== "" || oInput.value !== "")
+            return true
+        else {
+            xInput.style.outline = "2px red solid"
+            oInput.style.outline = "2px red solid"
+            return false
+        }
     },
 
     getSize: () => {
@@ -172,6 +191,8 @@ export const ui = {
     blockOtherInput(e) {
         if (e.target === this.elements.xInput) {
             if (this.elements.xInput.value !== "") {
+                this.elements.xInput.style.outline = "none"
+                this.elements.oInput.style.outline = "none"
                 this.elements.oInput.value = "AI"
                 this.elements.oInput.disabled = true
             } else {
@@ -180,6 +201,8 @@ export const ui = {
             }
         } else if (e.target === this.elements.oInput) {
             if (this.elements.oInput.value !== "") {
+                this.elements.xInput.style.outline = "none"
+                this.elements.oInput.style.outline = "none"
                 this.elements.xInput.value = "AI"
                 this.elements.xInput.disabled = true
             } else {
@@ -205,6 +228,7 @@ export const ui = {
     // Arrow function look for the parent scope's context binding - addPlayerChooseListener()
     addPlayerChooseListener() {
         this.elements.choosePlayers.addEventListener("change", (e) => this.handleInputsAvaliability(e))
+        this.elements.main.style.pointerEvents = "auto"
     },
 
     // If 1-player mode checked, then only one input can ba filled at time
