@@ -172,14 +172,18 @@ export const ui = {
     blockOtherInput(e) {
         if (e.target === this.elements.xInput) {
             if (this.elements.xInput.value !== "") {
+                this.elements.oInput.value = "AI"
                 this.elements.oInput.disabled = true
             } else {
+                this.elements.oInput.value = ""
                 this.elements.oInput.disabled = false
             }
         } else if (e.target === this.elements.oInput) {
             if (this.elements.oInput.value !== "") {
+                this.elements.xInput.value = "AI"
                 this.elements.xInput.disabled = true
             } else {
+                this.elements.xInput.value = ""
                 this.elements.xInput.disabled = false
             }
         }
