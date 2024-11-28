@@ -18,31 +18,31 @@
             <div class="options">
                 <div class="game-options">
                     <div class="game-field-size">
-                        <fieldset>
+                        <fieldset class="switcher">
                             <input type="radio" id="3x3" value="3" name="size" checked>
-                            <label for="3x3">3X3</label>
+                            <label for="3x3">3×3</label>
                             <input type="radio" id="4x4" value="4" name="size">
-                            <label for="4x4">4X4</label>
+                            <label for="4x4">4×4</label>
                             <input type="radio" id="5x5" value="5" name="size">
-                            <label for="5x5">5X5</label>
+                            <label for="5x5">5×5</label>
                             <input type="radio" id="6x6" value="6" name="size">
-                            <label for="6x6">6X6</label>
+                            <label for="6x6">6×6</label>
                         </fieldset>
                     </div>
                     <div class="extended-mode">
-                        <fieldset class="extended-radio">
-                            <label for="not-extended">Classic mode</label>
+                        <fieldset class="extended-radio switcher">
                             <input id="not-extended" type="radio" value="false" name="extended-mode" checked>
-                            <label for="extended">Extended mode</label>
+                            <label for="not-extended">Classic mode</label>
                             <input id="extended" type="radio" value="true" name="extended-mode">
+                            <label for="extended">Extended mode</label>
                         </fieldset>
                     </div>
                     <div class="players-number">
-                        <fieldset class="players-radio">
-                            <label for="one-player">1 Player</label>
+                        <fieldset class="players-radio switcher">
                             <input id="one-player" type="radio" value="1" name="players-number">
-                            <label for="two-players">2 Players</label>
+                            <label for="one-player">1 Player</label>
                             <input id="two-players" type="radio" value="2"name="players-number" checked>
+                            <label for="two-players">2 Players</label>
                         </fieldset>
                     </div>
                     <div class="AI-levels">
