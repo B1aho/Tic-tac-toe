@@ -48,9 +48,16 @@ export const createEngine = (state) => {
         }
     } else {
         makeBestMove = (state) => {
+            const randomFunc = Math.floor(Math.random() * 4)
+            if (randomFunc % 2 === 1) {
+                return iterativeDeepening.runSearch((state, depth, move) => {
+                    return minimax.search(state, depth, !state.isMax, move, -Infinity, Infinity, 0)
+                }, limits)
+            } else {
             const moves = getFreeMoves(state.field)
             const randomMove = Math.floor(Math.random() * moves.length)
             return moves[randomMove]
+            }
         }
     }
 
