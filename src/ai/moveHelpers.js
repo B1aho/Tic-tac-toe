@@ -18,6 +18,20 @@ export function getPossibleMoves(field) {
     return moves;
 }
 
+export function getFreeMoves(field) {
+    let size = field.length - 1
+    const moves = [];
+    for (let row = 0; row <= size; row++) {
+        for (let col = 0; col <= size; col++) {
+            // Звездочку убрать отсюда
+            if (field[row][col].getValue() === "*") {
+                moves.push([row, col])
+            }
+        }
+    }
+    return moves;
+}
+
 // Оценить и отсортировать ходы по их выгодности
 export function sortMovesByHeuristic(moves) {
     return moves.sort((a, b) => b[2] - a[2]);

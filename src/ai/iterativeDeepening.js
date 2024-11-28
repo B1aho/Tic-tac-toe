@@ -6,7 +6,8 @@ import { getPossibleMoves, sortMovesByHeuristic, isBetterMove } from "./moveHelp
 export const createIterativeDeeping = (state) => {
     const runSearch = (search, limits) => {
         state.field = getSharedState().field
-        limits.maxDepth++
+        if (limits.maxDepth !== 3)
+            limits.maxDepth++
         let bestScore = state.isMax ? -Infinity : Infinity
         let bestMove = null
         let breakFlag = false
@@ -18,7 +19,6 @@ export const createIterativeDeeping = (state) => {
             possibleMoves = sortMovesByHeuristic(possibleMoves)
         }
         let startTime = Date.now()
-        //
         for (let currDepth = state.field.length < 4 ? 1 : 3; currDepth <= limits.maxDepth; currDepth++) {
             // possibleMoves = sortMoves(possibleMoves, state.isMax ? "X" : "O", currDepth - 1)
             for (const move of possibleMoves) {

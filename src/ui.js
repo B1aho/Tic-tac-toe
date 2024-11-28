@@ -11,7 +11,7 @@ export const ui = {
     },
     elements: {
         main: document.querySelector("main"),
-        aiLevel: document.querySelector("#ai-levels"),
+        aiLevels: document.querySelector("#ai-levels"),
         xInput: document.querySelector("#player-x-input"),
         oInput: document.querySelector("#player-o-input"),
         choosePlayers: document.querySelector(".players-radio"),
@@ -53,9 +53,11 @@ export const ui = {
             },
             isExtended: this.getExtended(),
         }
+        if (playersNumber === 1)
+            options.aiLevels = this.elements.aiLevels.value
         // Set options to default 
         this.elements.xInput.disabled = this.elements.oInput.disabled = false 
-        this.elements.aiLevel.disabled = true
+        this.elements.aiLevels.disabled = true
         setTimeout(() => {
             this.elements.twoPlayersMode.checked = true
             this.elements.xInput.value = this.elements.oInput.value = "" // Мб оставить имена
@@ -241,13 +243,13 @@ export const ui = {
     handleInputsAvaliability(e) {
         this.resetInputs()
         if (e.target.checked === true && e.target.value === "1") {
-            this.elements.aiLevel.disabled = false
+            this.elements.aiLevels.disabled = false
             this.blockInputListeners.xInput = (e) => this.blockOtherInput(e)
             this.blockInputListeners.oInput = (e) => this.blockOtherInput(e)
             this.elements.xInput.addEventListener("input", this.blockInputListeners.xInput)
             this.elements.oInput.addEventListener("input", this.blockInputListeners.oInput)
         } else {
-            this.elements.aiLevel.disabled = true
+            this.elements.aiLevels.disabled = true
             this.removeInputListener()
         }
     },
