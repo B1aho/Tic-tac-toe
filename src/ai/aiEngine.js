@@ -3,15 +3,10 @@ import { createZobristHash } from "./zobristHashing.js";
 import { createTranspositionTable } from "./transpositionTable.js";
 import { createMinimax } from "./minimax.js";
 import { getFreeMoves } from "./moveHelpers.js";
-
-const aiLevels = {
-    first: "Dumb",
-    second: "Medium",
-    third: "My champ",
-}
+import { aiLevels } from "./aiLevels.js";
 
 const evaluateMaxDepth = (size, ailvl) => {
-    if (ailvl === aiLevels.second) {
+    if (ailvl === aiLevels.mid) {
         return size > 3 ? 3 : 4
     }
     return size > 3 ? 3 : 10
@@ -40,7 +35,7 @@ export const createEngine = (state) => {
     // Здесь создаем функцию makeBestMove в зависимости от уровня ИИ
     let makeBestMove = null
     // Construct function that define AI move. Pass minimax-callback to iterative deepening method
-    if (state.aiLevels === aiLevels.second || state.aiLevels === aiLevels.third) {
+    if (state.aiLevels === aiLevels.mid || state.aiLevels === aiLevels.champ) {
         makeBestMove = (state = state) => {
             return iterativeDeepening.runSearch((state, depth, move) => {
                 return minimax.search(state, depth, !state.isMax, move, -Infinity, Infinity, 0)
