@@ -1,25 +1,14 @@
-import { getSharedState } from "../sharedState.js";
-
 import { createIterativeDeeping } from "./iterativeDeepening.js";
 import { createZobristHash } from "./zobristHashing.js";
 import { createTranspositionTable } from "./transpositionTable.js";
 import { createMinimax } from "./minimax.js";
-
 
 const evaluateMaxDepth = (size) => {
     let maxDepth = size > 3 ? 4 : 10 
     return maxDepth // Math.pow(size, 2)
 }
 
-// Проверяем ходы до алгоритма углубления
-/*
-const hardMove = checkBestMoves(state.movesCounter, state.field)
-if (hardMove)
-    return hardMove
-*/
-
 export const createEngine = (state) => {
-    //const state = getSharedState()
     const tokenTypes = {
         x: "X",
         o: "O",
