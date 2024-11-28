@@ -33,7 +33,6 @@ This project is built with vanilla JavaScript, CSS, and HTML. "A craftsman is on
 ### Heuristic method development: 
 
 ## Future improvements:
-- Add AI levels
 - Add AI vs AI game mode
 - Add multiplayer game mode
 - Add multithreading in minimax
