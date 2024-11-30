@@ -378,6 +378,7 @@ Make radio-group behave like switcher
     box-shadow: inset 0 0 0.5em 0 var(--neon), 0 0 0.5em 0 var(--neon);
   
     position: relative;
+    transition: all 200ms ease-in-out;
   }
   
   .neon-button::before {
