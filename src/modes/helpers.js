@@ -57,6 +57,7 @@ export const modeHelpers = (aiEngineWorker, ui, state, game) => {
             state.gameStatus = game.checkTerminalState(row, col, field)
         if (state.gameStatus) {
             ui.updateMoveDescription()
+            ui.blockPointer()
             return;
         }
         game.nextPlayerMove()

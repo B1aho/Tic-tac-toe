@@ -282,7 +282,13 @@ export const ui = {
         const row = move[0]
         const col = move[1]
         const className = token === "X" ? "cross" : "zero"
-        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).classList.add(className) 
+        const cell = document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`)
+        cell.classList.add(className)
+        cell.style.pointerEvents = "none" 
+    },
+
+    blockPointer() {
+        document.querySelector("#field-wrapper").style.pointerEvents = "none"
     }
 }
 
