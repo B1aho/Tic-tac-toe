@@ -88,6 +88,13 @@ body {
     overflow: hidden;
 }
 
+
+main {
+    pointer-events: none;
+    min-width: 100%;
+    min-height: 100%;
+}
+
 /* Add animation bg */
 @keyframes move {
     100% {
@@ -100,7 +107,7 @@ body {
     top: 0;
     left: 0;
     background: #451386;
-    padding: 10%;
+    padding: 5% 10%;
 }
 
 body span {
@@ -431,11 +438,15 @@ Make radio-group behave like switcher
   }
 
 /* ----------------------------------------------------*/
+/*      OPTION SCREEN        */
+/* ----------------------------------------------------*/
 
-main {
-    pointer-events: none;
+.option-screen {
+    display: flex;
+    flex-direction: column;
+    height: 75vh;
+    justify-content: space-between;
 }
-
 .options {
     display: flex;
     justify-content: space-between;
@@ -501,26 +512,58 @@ main {
     padding: 2%;
 }
 
-
+/* ----------------------------------------------------*/
+/*                  PLAY SCREEN                     */
+/* ----------------------------------------------------*/
 .play-screen,
 .computer-input {
     display: none;
+    flex-direction: column;
+}
+
+.play-screen {
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding-top: 3%;
+    padding-bottom: 5%;
+}
+
+.play-screen > * {
+    flex: 1;
+}
+
+.players {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.field {
+  display: flex;
+  width: auto;
+  height: 100%;
 }
 
 #field-wrapper > * {
     outline: 1px solid black;
-    min-height: 50px;
     text-align: center;
     color: transparent;
+    aspect-ratio: 1;
 }
-/*
+
 .cell {
-    width: var(--cell-size);
-    height: var(--cell-size);
-}*/
+}
 
 #field-wrapper {
+    width: 55vh;
     display: grid;
     grid-template-columns: repeat(var(--field-size), 1fr);
-    grid-template-rows: repeat(var(--field-size), 1fr);
+}
+
+.control-btns {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10%;
 }

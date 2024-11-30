@@ -29,7 +29,7 @@ export const ui = {
         Object.values(this.screens).forEach(screen => {
             screen.style.display = "none"
         });
-        this.screens[screenName].style.display = "block"
+        this.screens[screenName].style.display = "flex"
     },
 
     getOptions() {
