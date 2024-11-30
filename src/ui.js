@@ -101,6 +101,7 @@ export const ui = {
         field.forEach(row => {
             let columns = 0
             row.forEach(cell => {
+                const btnWrap = document.createElement('div')
                 const btnDiv = document.createElement('div')
                 btnDiv.innerText = cell.getValue()
                 btnDiv.role = 'button'
@@ -109,7 +110,8 @@ export const ui = {
                 btnDiv.dataset.row = rows
                 if (columns === field.length)
                     columns = 0
-                fieldWrap.append(btnDiv)
+                fieldWrap.append(btnWrap)
+                btnWrap.append(btnDiv)
             })
             rows++
         })

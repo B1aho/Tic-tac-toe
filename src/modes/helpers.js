@@ -44,6 +44,7 @@ export const modeHelpers = (aiEngineWorker, ui, state, game) => {
             updateMovesQueue([row, col], token)
         // Human make move:
         game.updateFieldValue(row, col, token)
+        ui.renderMove([row, col], token)
         // Update cell rendering
         targetCell.innerText = token
         state.movesCounter++

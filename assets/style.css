@@ -543,27 +543,50 @@ Make radio-group behave like switcher
   display: flex;
   width: auto;
   height: 100%;
+  user-select: none;
 }
 
 #field-wrapper {
     width: 55vh;
     display: grid;
+    gap: 10px;
     grid-template-columns: repeat(var(--field-size), 1fr);
 }
 
 #field-wrapper > * {
-    outline: 1px solid black;
     text-align: center;
     color: transparent;
+}
+
+.cell {
+    background-color: #b11bda5a;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
     aspect-ratio: 1;
+    transition: all 300ms ease-in-out;
+}
+
+.cell:hover {
+    border-radius: 30px;
+    background-color: #46077d8c;
+}
+
+.cell:active {
+    transform: scale(0.5);
 }
 
 .cell.cross {
-    content: url(./images/close.png);
+    background-image: url(./images/icons8-close-384.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+
 }
 
 .cell.zero {
-
+    background-image: url(./images/circle.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
 }
 
 .control-btns {
