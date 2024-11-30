@@ -73,18 +73,12 @@ h6 {
     --first-switcher-radius: 10px 0 0 10px;
     --second-switcher-radius: 0 10px 10px 0;
     --cell-size: 100px;
-    --gradient: linear-gradient(
-        45deg,
-        #743fc9,
-        #da45ad,
-        #fa3b68,
-        #be2974,
-        #ff50d9,
-        #ab4bec
-    );
     --neon: hsl(317 100% 54%);
+    --game-option-input-bg: #6a33bc;
+    --game-option-text-color: #fbb9fe;
     --option-card-width: 35%;
     --game-option-font-size: 1.2rem;
+    --game-option-radius: 2rem;
 }
 
 html,
@@ -300,6 +294,7 @@ Make radio-group behave like switcher
 .player-input {
     position: relative;
     margin-bottom: 10px;
+    font-size: var(--game-option-font-size);
 }
 
 .input-field {
@@ -307,7 +302,6 @@ Make radio-group behave like switcher
     border: 0;
     border-bottom: 2px solid rgb(119, 117, 117);
     outline: 0;
-    font-size: 1.15rem;
     color: white;
     padding: 7px 0;
     background: transparent;
@@ -329,7 +323,7 @@ Make radio-group behave like switcher
     align-items: center;
     padding-left: 10px;
     transition: 400ms all;
-    font-size: 1rem;
+    font-size: var(--game-option-font-size);
     color: #9b9b9b;
 }
 
@@ -344,7 +338,7 @@ Make radio-group behave like switcher
 .input-field:focus ~ .input-label,
 .input-field:valid ~ .input-label,
 .input-field:not(:placeholder-shown) ~ .input-label {
-  transform: translate(-11.7%, -50%) scale(0.8);
+  transform: translate(-13.7%, -50%) scale(0.8);
 }
 
 /*  ----------------------------------------    */
@@ -361,7 +355,8 @@ Make radio-group behave like switcher
 
 .neon-button {
     font-size: 2rem;
-  
+    font-weight: 700;
+
     display: inline-block;
     cursor: pointer;
     text-decoration: none;
@@ -448,7 +443,7 @@ main {
 
 .option-card {
     background-color: #5e386068;
-    border-radius: 2rem;
+    border-radius: var(--game-option-radius);
     width: var(--option-card-width);
     display: flex;
     flex-direction: column;
@@ -491,11 +486,19 @@ main {
 .AI-levels {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
+    color: var(--game-option-text-color);
+    font-weight: 600;
+    margin-top: 3px;
 }
 
-.AI-levels > * {
-
+.AI-levels  select {
+    color: var(--game-option-text-color);
+    background-color: var(--game-option-input-bg);
+    border-radius: var(--game-option-radius);
+    text-align: center;
+    outline: none;
+    padding: 2%;
 }
 
 
