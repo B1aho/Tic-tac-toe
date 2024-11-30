@@ -526,7 +526,7 @@ Make radio-group behave like switcher
     align-items: center;
     justify-content: center;
     padding-top: 3%;
-    padding-bottom: 5%;
+    padding-bottom: 8%;
 }
 
 .play-screen > * {
@@ -545,6 +545,12 @@ Make radio-group behave like switcher
   height: 100%;
 }
 
+#field-wrapper {
+    width: 55vh;
+    display: grid;
+    grid-template-columns: repeat(var(--field-size), 1fr);
+}
+
 #field-wrapper > * {
     outline: 1px solid black;
     text-align: center;
@@ -552,13 +558,12 @@ Make radio-group behave like switcher
     aspect-ratio: 1;
 }
 
-.cell {
+.cell.cross {
+    content: url(./images/close.png);
 }
 
-#field-wrapper {
-    width: 55vh;
-    display: grid;
-    grid-template-columns: repeat(var(--field-size), 1fr);
+.cell.zero {
+
 }
 
 .control-btns {
@@ -566,4 +571,8 @@ Make radio-group behave like switcher
     display: flex;
     justify-content: center;
     gap: 10%;
+}
+
+#reset, #back {
+    font-size: 1.7rem;
 }

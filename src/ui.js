@@ -274,6 +274,13 @@ export const ui = {
         fieldWrapper.style.pointerEvents = "auto"
         this.elements.fieldContainer.style.cursor = "default"
         console.log("ИИ подумал!")
+    },
+
+    renderMove(move, token) {
+        const row = move[0]
+        const col = move[1]
+        const className = token === "X" ? "cross" : "zero"
+        document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).classList.add(className) 
     }
 }
 
