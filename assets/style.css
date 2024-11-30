@@ -83,7 +83,8 @@ h6 {
         #ab4bec
     );
     --neon: hsl(317 100% 54%);
-  --neon-bg: hsl(323 21% 16%);
+    --option-card-width: 35%;
+    --game-option-font-size: 1.2rem;
 }
 
 html,
@@ -105,6 +106,7 @@ body {
     top: 0;
     left: 0;
     background: #451386;
+    padding: 10%;
 }
 
 body span {
@@ -444,36 +446,55 @@ main {
     justify-content: space-between;
 }
 
-/* Like card */
-.game-options {
-    padding: 10px 0;
+.option-card {
     background-color: #5e386068;
-    border-radius: var(--input-radius);
+    border-radius: 2rem;
+    width: var(--option-card-width);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    padding: 30px 10px;
 }
 
+/* Like card */
+.game-options {
+    align-items: center;
+    font-size: var(--game-option-font-size);
+}
+
+.game-options label {
+    font-size: var(--game-option-font-size);
+}
+
+.game-options div {
+    width: 100%;
+}
+
+.switcher {
+    width: 100%;
+}
+
+.switcher label {
+    width: 100%;
+}
+ 
 .switcher {
     padding-bottom: 4px;
 }
 
 /* Like card */
 .player-options {
-    padding: 10px 10px;
-    background-color: #5e386068;
-    border-radius: var(--input-radius);
-    width: 40%;
-    display: flex;
-    flex-direction: column;
     gap: 10px;
 }
 
-.btn {
-    outline: 1px solid black;
-    text-align: center;
+.AI-levels {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.AI-levels > * {
+
+}
 
 
 .play-screen,
