@@ -483,6 +483,8 @@ main {
 
 /* Like card */
 .player-options {
+    align-items: center;
+    justify-content: space-around;
     gap: 10px;
 }
 
