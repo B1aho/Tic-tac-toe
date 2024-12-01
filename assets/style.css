@@ -378,7 +378,7 @@ Make radio-group behave like switcher
     box-shadow: inset 0 0 0.5em 0 var(--neon), 0 0 0.5em 0 var(--neon);
   
     position: relative;
-    transition: all 200ms ease-in-out;
+    transition: all 100ms ease-in-out;
   }
   
   .neon-button::before {
@@ -550,7 +550,7 @@ Make radio-group behave like switcher
 #field-wrapper {
     width: 55vh;
     display: grid;
-    gap: 10px;
+    gap: 8px;
     grid-template-columns: repeat(var(--field-size), 1fr);
 }
 
@@ -563,13 +563,13 @@ Make radio-group behave like switcher
     background-color: #b11bda5a;
     width: 100%;
     height: 100%;
-    border-radius: 10px;
+    border-radius: 0.7rem;
     aspect-ratio: 1;
     transition: all 300ms ease-in-out;
 }
 
 .cell:hover {
-    border-radius: 30px;
+    border-radius: 1.8rem;
     background-color: #46077d8c;
 }
 
@@ -578,14 +578,16 @@ Make radio-group behave like switcher
 }
 
 .cell.cross {
-    background-image: url(./images/icons8-close-384.png);
+    background-image: url(./images/strange_x.png);
     background-size: 100%;
     background-repeat: no-repeat;
+    
 
+   /* filter: brightness(50%);  это в expended mode для той, что последняя*/
 }
 
 .cell.zero {
-    background-image: url(./images/circle.png);
+    background-image: url(./images/strange_o-removebg.png);
     background-size: 100%;
     background-repeat: no-repeat;
 }
