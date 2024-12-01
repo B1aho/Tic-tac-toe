@@ -53,6 +53,7 @@ export const ui = {
             },
             isExtended: this.getExtended(),
         }
+        if (options.playersNumber === 1) state.haveAi = true
         document.querySelector(":root").style.setProperty('--field-size', options.size);
         if (playersNumber === 1)
             options.aiLevels = this.elements.aiLevels.value
@@ -205,7 +206,7 @@ export const ui = {
             if (this.elements.xInput.value !== "") {
                 this.elements.xInput.style.outline = "none"
                 this.elements.oInput.style.outline = "none"
-                this.elements.oInput.value = "AI"
+                this.elements.oInput.value = "AI\u3000"
                 this.elements.oInput.disabled = true
             } else {
                 this.elements.oInput.value = ""
@@ -215,7 +216,7 @@ export const ui = {
             if (this.elements.oInput.value !== "") {
                 this.elements.xInput.style.outline = "none"
                 this.elements.oInput.style.outline = "none"
-                this.elements.xInput.value = "AI"
+                this.elements.xInput.value = "AI\u3000"
                 this.elements.xInput.disabled = true
             } else {
                 this.elements.xInput.value = ""

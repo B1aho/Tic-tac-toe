@@ -10,6 +10,7 @@ const sharedState = {
             token: null,
         },
     },
+
     size: 0,
     currentPlayer: null,
     hash: null,
@@ -21,12 +22,11 @@ const sharedState = {
     gameStatus: null,
     isExtended: false,
     isInMinimax: false,
-    countStoreCash: 0,
-    countGetCash: 0,
+    haveAi: false,
 
     initialize(options) {
         this.size = options.size
-        this.isMax = Number(options.playersNumber) === 1 && options.player1.name === "AI" ? true : false
+        this.isMax = Number(options.playersNumber) === 1 && options.player1.name === "AI\u3000" ? true : false
         this.players.playerX.name = options.player1.name,
         this.players.playerX.token = options.player1.token,
         this.players.playerO.name = options.player2.name,
@@ -44,6 +44,7 @@ const sharedState = {
         this.currentPlayer = null
         this.gameStatus = null
         this.size = 0
+        this.haveAi = false
         if (this.isExtended) {
             delete this.currentMoves
             delete this.updateMovesQueue
