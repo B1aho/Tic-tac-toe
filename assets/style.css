@@ -592,6 +592,10 @@ Make radio-group behave like switcher
     background-repeat: no-repeat;
 }
 
+.cell.win {
+    background-color: #9726869e;
+}
+
 .control-btns {
     width: 100%;
     display: flex;
