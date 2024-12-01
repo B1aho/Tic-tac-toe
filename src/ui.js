@@ -263,6 +263,7 @@ export const ui = {
         const row = coords[0]
         const col = coords[1]
         document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`).innerText = state.currentPlayer.token
+        this.renderMove([row, col], state.currentPlayer.token)
     },
 
     unrenderMove(move) {

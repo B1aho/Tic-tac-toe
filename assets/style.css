@@ -77,10 +77,12 @@ h6 {
     --game-option-input-bg: #6a33bc;
     --game-option-text-color: #fbb9fe;
     --option-card-width: 35%;
-    --game-option-font-size: 1.2rem;
+    --game-option-font-size: 1.45rem;
     --game-option-radius: 2rem;
     --green: rgba(0, 255, 119, 0.856);
     --text-shadow: 0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em currentColor;
+    --muted: 0, 0%, 83.9%;
+    --muted-foreground: 0 0% 45.1%;
 }
 
 html,
@@ -266,8 +268,7 @@ Make radio-group behave like switcher
 }
 
 .switcher label {
-    background-color: #fbb9fe;
-    color: rgba(0, 0, 0, 0.67);
+    color: rgb(134, 125, 125);
     font-size: 14px;
     /* change in root and colors too */
     font-weight: bold;
@@ -285,8 +286,9 @@ Make radio-group behave like switcher
 }
 
 .switcher input:checked+label {
-    background-color: #6a33bc;
-    color: #fbb9fe;
+    background-color: #1cd76da0;
+    color: #ffffff;
+    text-shadow:  0 0 0.1em hsl(0 0% 100% / 0.3), 0 0 0.1em currentColor;
     box-shadow: none;
 }
 
@@ -310,7 +312,8 @@ Make radio-group behave like switcher
     border: 0;
     border-bottom: 2px solid rgb(119, 117, 117);
     outline: 0;
-    color: white;
+    color: var(--green);
+    text-shadow: var(--text-shadow);
     padding: 7px 0;
     background: transparent;
     transition: border-color 0.2s;
@@ -318,6 +321,7 @@ Make radio-group behave like switcher
 
 .input-field::placeholder {
     color: transparent;
+    text-shadow: none;
 }
 
 .input-label {
@@ -339,7 +343,7 @@ Make radio-group behave like switcher
     padding-bottom: 6px;
     font-weight: 700;
     border-width: 3px;
-    border-image: linear-gradient(to right, #ff8797, #ff0cba); /* Поменяц на цвета из root*/
+    border-image: linear-gradient(to right, #b2cdb2, #00db6e); /* Поменяц на цвета из root*/
     border-image-slice: 1;
 }
 
@@ -458,7 +462,6 @@ Make radio-group behave like switcher
 .option-card {
     background-color: #5e386068;
     border-radius: var(--game-option-radius);
-    width: var(--option-card-width);
     display: flex;
     flex-direction: column;
     padding: 30px 10px;
@@ -501,14 +504,14 @@ Make radio-group behave like switcher
     display: flex;
     align-items: center;
     justify-content: space-around;
-    color: var(--game-option-text-color);
+    color: var(--green);
     font-weight: 600;
     margin-top: 3px;
 }
 
 .AI-levels  select {
-    color: var(--game-option-text-color);
-    background-color: var(--game-option-input-bg);
+    color: var(--green);
+    background-color: transparent;
     border-radius: var(--game-option-radius);
     text-align: center;
     outline: none;
@@ -596,8 +599,8 @@ Make radio-group behave like switcher
 
 /* Добавить неоновый блюр. И вообще сделать outline как неон, чтобы мерцал много */
 .cell.win {
-    background-color: #9726869e;
-    outline: 2px solid rgba(245, 245, 245, 0.527);
+    background-color: #08994e9e;
+    outline: 2px solid var(--green);
     animation: pulse 1s infinite;
 }
 
