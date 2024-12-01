@@ -118,7 +118,7 @@ export const ui = {
     },
 
     removeListener() {
-        document.querySelector("#field-wrapper").removeEventListener("click", this.onCellClick)
+        document.querySelector("#field-wrapper").removeEventListener("pointerdown", this.onCellClick)
         this.removeInputListener()
         this.elements.resetBtn.removeEventListener("click", this.onResetClick)
         this.elements.backBtn.removeEventListener("click", this.onBackBtnClick)
@@ -126,7 +126,14 @@ export const ui = {
 
     resetFieldRender() {
         const cells = document.querySelectorAll(".cell")
-        cells.forEach(cell => cell.innerText = state.defaultSymbol)
+        cells.forEach(cell => {
+            cell.innerText = state.defaultSymbol
+            cell.style.pointerEvents = "auto"
+            cell.classList.remove("cross")
+            cell.classList.remove("zero")
+            cell.classList.remove("win")
+        })
+        this.resetPointer()
     },
 
     removeInputListener() {
@@ -135,7 +142,7 @@ export const ui = {
     },
 
     registerListener() {
-        document.querySelector("#field-wrapper").addEventListener("click", this.onCellClick)
+        document.querySelector("#field-wrapper").addEventListener("pointerup", this.onCellClick)
         this.elements.resetBtn.addEventListener("click", this.onResetClick)
         this.elements.backBtn.addEventListener("click", this.onBackBtnClick)
     },
@@ -160,11 +167,11 @@ export const ui = {
         // Create new names
         const nameDivOne = document.createElement("div")
         nameDivOne.id = "player-1-name"
-        nameDivOne.innerText = `First player's name: ${firstPlayerName}`
+        nameDivOne.innerText = `${firstPlayerName}`
 
         const nameDivTwo = document.createElement("div")
         nameDivTwo.id = "player-2-name"
-        nameDivTwo.innerText = `Second player's name: ${secondPlayerName}`
+        nameDivTwo.innerText = `${secondPlayerName}`
 
         this.elements.playerOneDiv.prepend(nameDivOne)
         this.elements.playerTwoDiv.prepend(nameDivTwo)
@@ -291,13 +298,18 @@ export const ui = {
         document.querySelector("#field-wrapper").style.pointerEvents = "none"
     },
 
+    resetPointer() {
+        document.querySelector("#field-wrapper").style.pointerEvents = "auto"
+    },
+
     highlightWinningLine(winMoves) {
         winMoves.forEach(([ row, col ]) => {
             const cell = document.querySelector(`[data-row="${CSS.escape(row)}"][data-column="${CSS.escape(col)}"]`)
             if (cell) {
                 cell.classList.add('win')
             }
-        });
+        })
+        this.blockPointer()
     },
 
      resetHighlight() {

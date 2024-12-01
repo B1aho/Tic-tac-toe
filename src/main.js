@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Initialize events:
         ui.onCellClick = (e) => {
+            e.preventDefault()
             const targetCell = e.target
             const coords = targetCell.dataset
             gameMode.onCellClick(targetCell, coords)

@@ -79,6 +79,8 @@ h6 {
     --option-card-width: 35%;
     --game-option-font-size: 1.2rem;
     --game-option-radius: 2rem;
+    --green: rgba(0, 255, 119, 0.856);
+    --text-shadow: 0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em currentColor;
 }
 
 html,
@@ -107,7 +109,6 @@ body {
     top: 0;
     left: 0;
     background: #451386;
-    padding: 5% 10%;
 }
 
 body span {
@@ -445,8 +446,9 @@ Make radio-group behave like switcher
 .option-screen {
     display: flex;
     flex-direction: column;
-    height: 75vh;
+    height: 100vh;
     justify-content: space-between;
+    padding: 5% 10%;
 }
 .options {
     display: flex;
@@ -520,14 +522,13 @@ Make radio-group behave like switcher
 .computer-input {
     display: none;
     flex-direction: column;
-}
-
-.play-screen {
+    padding-left: 8%;
+    padding-right: 8%;
+    padding-top: 2%;
+    padding-bottom: 2%;
     min-height: 100vh;
     align-items: center;
     justify-content: center;
-    padding-top: 3%;
-    padding-bottom: 8%;
 }
 
 .play-screen > * {
@@ -538,6 +539,7 @@ Make radio-group behave like switcher
     display: flex;
     justify-content: space-between;
     width: 100%;
+    margin-bottom: 30px;
 }
 
 .field {
@@ -548,7 +550,7 @@ Make radio-group behave like switcher
 }
 
 #field-wrapper {
-    width: 55vh;
+    width: 47vh;
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(var(--field-size), 1fr);
@@ -574,7 +576,7 @@ Make radio-group behave like switcher
 }
 
 .cell:active {
-    transform: scale(0.5);
+    transform: scale(0.7);
 }
 
 .cell.cross {
@@ -592,6 +594,7 @@ Make radio-group behave like switcher
     background-repeat: no-repeat;
 }
 
+/* Добавить неоновый блюр. И вообще сделать outline как неон, чтобы мерцал много */
 .cell.win {
     background-color: #9726869e;
     outline: 2px solid rgba(245, 245, 245, 0.527);
@@ -606,6 +609,71 @@ Make radio-group behave like switcher
         filter: brightness(70%);
     }
 }
+/* Player divs */
+#player-1, #player-2 {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#player-1-name, #player-2-name {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--green);
+    text-shadow: var(--text-shadow);
+    text-align: center;
+    max-width: fit-content;
+}
+
+
+#player-1-name::after {
+    content: "";
+    width: 35px;
+    height: 35px;
+    border-radius: 0.5rem;
+    background-color: #fbb9fe5b;
+    background-image: url("./images/strange_x.png");
+    background-size: 35px;
+    position: relative;
+    right: 75px;
+    top: 45px;
+    display: inline-block;
+}
+
+#player-2-name::before {
+    content: "";
+    width: 35px;
+    height: 35px;
+    border-radius: 0.5rem;
+    background-color: #fbb9fe5d;
+    background-image: url(./images/strange_o-removebg.png);
+    background-size: 35px;
+    position: relative;
+    left: 75px;
+    top: 45px;
+    display: inline-block;
+}
+
+/*  Move description  */
+#move-desc {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--green);
+    text-shadow: var(--text-shadow);
+}
+
+.field, #move-desc {
+    position: relative;
+    bottom: 25px;
+}
+
+.field {
+    right: 20px;
+}
+ 
 .control-btns {
     width: 100%;
     display: flex;
@@ -614,5 +682,6 @@ Make radio-group behave like switcher
 }
 
 #reset, #back {
-    font-size: 1.7rem;
+    font-size: 1.3rem;
+    line-height: 0.5;
 }
