@@ -53,6 +53,7 @@ export const createMinimax = (transpositionTable) => {
         // Здесь вместо undefined, отдавать что-то осознанное, "continue" или null
         let terminalState = game.checkTerminalState(lastMove[0], lastMove[1], state.field)
         // Проверяем какой игрок выиграл, максимимзирующий или минимизирующий
+        terminalState = terminalState !== undefined ? "win" : undefined
         if (terminalState === "win") {
             terminalState = !isMax ? "winX" : "winO"
         }
