@@ -4,7 +4,7 @@ import { getSharedState } from "./sharedState.js";
 const state = getSharedState()
 
 export class Cell {
-    constructor (value = "*") {
+    constructor(value = "*") {
         this.value = value
     }
 
@@ -12,7 +12,7 @@ export class Cell {
     getValue() {
         return this.value
     }
-    
+
     setValue(newVal) {
         this.value = newVal
     }
@@ -41,7 +41,7 @@ export const game = {
         field.forEach(el => el.forEach(cell => cell.setValue(state.defaultSymbol)))
     },
 
-    checkWin (rw, cl, field) {
+    checkWin(rw, cl, field) {
         const token = field[rw][cl].getValue();
         let winLine = 0
         switch (field.length) {
@@ -57,82 +57,80 @@ export const game = {
                 winLine = 5
                 break;
 
-        }    
-        // General function to check consecutive tokens
-        const countConsecutive = (getCellValue) => {
-            let count = 0;
-            for (let value of getCellValue()) {
-                if (value === token) {
-                    count++;
-                    if (count >= winLine) return true;
+        }
+        // Общая функция для поиска координат выигрышной линии
+        const findWinningCoordinates = (getCoordinates) => {
+            const coords = getCoordinates()
+            const consecutive = []
+            for (const [row, col] of coords) {
+                if (field[row][col].getValue() === token) {
+                    consecutive.push([row, col])
+                    if (consecutive.length >= winLine) {
+                        return consecutive // Победа
+                    }
                 } else {
-                    count = 0;
+                    consecutive.length = 0 // Сброс при разрыве линии
                 }
             }
-            return false;
+            return null // Нет победы
         };
-    
-        // Check row
-        if (countConsecutive(() => field[rw].map(cell => cell.getValue()))) {
-            return true;
-        }
-    
-        // Check column
-        if (countConsecutive(() => field.map(row => row[cl].getValue()))) {
-            return true;
-        }
-    
-        // Check main diagonal
-        if (
-            countConsecutive(() => {
-                const result = [];
-                let i = rw, j = cl;
-                while (i > 0 && j > 0) {
-                    i--;
-                    j--;
-                }
-                while (i < field.length && j < field.length) {
-                    result.push(field[i][j].getValue());
-                    i++;
-                    j++;
-                }
-                return result;
-            })
-        ) {
-            return true;
-        }
-    
-        // Check secondary diagonal
-        if (
-            countConsecutive(() => {
-                const result = [];
-                let i = rw, j = cl;
-                // Идём к началу побочной диагонали
-                while (i < field.length - 1 && j > 0) {
-                    i++;
-                    j--;
-                }
-                // Собираем значения на диагонали
-                while (i >= 0 && j < field.length) {
-                    result.push(field[i][j].getValue());
-                    i--;
-                    j++;
-                }
-                return result;
-            })
-        ) {
-            return true;
-        }
-    
-        // No win
-        return false;
+
+        // Проверка по строке
+        const rowWin = findWinningCoordinates(() =>
+            field[rw].map((_, col) => [rw, col])
+        )
+        if (rowWin) return rowWin
+
+        // Проверка по колонке
+        const colWin = findWinningCoordinates(() =>
+            field.map((_, row) => [row, cl])
+        )
+        if (colWin) return colWin
+
+        // Проверка основной диагонали
+        const mainDiagWin = findWinningCoordinates(() => {
+            const coords = []
+            let i = rw, j = cl
+            while (i > 0 && j > 0) {
+                i--
+                j--
+            }
+            while (i < field.length && j < field.length) {
+                coords.push([i, j])
+                i++
+                j++
+            }
+            return coords;
+        })
+        if (mainDiagWin) return mainDiagWin
+
+        // Проверка побочной диагонали
+        const secondaryDiagWin = findWinningCoordinates(() => {
+            const coords = [];
+            let i = rw, j = cl;
+            while (i < field.length - 1 && j > 0) {
+                i++;
+                j--;
+            }
+            while (i >= 0 && j < field.length) {
+                coords.push([i, j]);
+                i--;
+                j++;
+            }
+            return coords
+        });
+        if (secondaryDiagWin) return secondaryDiagWin
+
+        // Победы нет
+        return null
     },
 
-    checkTerminalState (row, col, field) {
+    checkTerminalState(row, col, field) {
         const size = state.field.length
         const maxMoves = Math.pow((size), 2)
-        if (this.checkWin(row, col, field))
-            return "win"
+        const resultMoves = this.checkWin(row, col, field)
+        if (resultMoves)
+            return resultMoves
         if (state.movesCounter === maxMoves && !state.isExtended) {
             return "draw"
         }

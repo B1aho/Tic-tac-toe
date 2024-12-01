@@ -57,7 +57,7 @@ export const ui = {
         if (playersNumber === 1)
             options.aiLevels = this.elements.aiLevels.value
         // Set options to default 
-        this.elements.xInput.disabled = this.elements.oInput.disabled = false 
+        this.elements.xInput.disabled = this.elements.oInput.disabled = false
         this.elements.aiLevels.disabled = true
         setTimeout(() => {
             this.elements.twoPlayersMode.checked = true
@@ -148,7 +148,7 @@ export const ui = {
         // It will be filled by main.js
     },
 
-    onResetClick(){
+    onResetClick() {
         // It will be filled by main.js
     },
 
@@ -284,17 +284,32 @@ export const ui = {
         const className = token === "X" ? "cross" : "zero"
         const cell = document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`)
         cell.classList.add(className)
-        cell.style.pointerEvents = "none" 
+        cell.style.pointerEvents = "none"
     },
 
     blockPointer() {
         document.querySelector("#field-wrapper").style.pointerEvents = "none"
-    }
+    },
+
+    highlightWinningLine(winMoves) {
+        winMoves.forEach(([ row, col ]) => {
+            const cell = document.querySelector(`[data-row="${CSS.escape(row)}"][data-column="${CSS.escape(col)}"]`)
+            if (cell) {
+                cell.classList.add('win')
+            }
+        });
+    },
+
+     resetHighlight() {
+        document.querySelectorAll('.win').forEach((cell) => {
+            cell.classList.remove('win')
+        })
+    },
 }
 
- // Validate options before starting game
-        /*   if (!ui.isNamesFilled(options.playersNumber)) {
-               console.log("Fill required options")
-               // ui.highlightEmptyInputs()
-               return
-           }*/
+// Validate options before starting game
+/*   if (!ui.isNamesFilled(options.playersNumber)) {
+       console.log("Fill required options")
+       // ui.highlightEmptyInputs()
+       return
+   }*/

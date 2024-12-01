@@ -53,11 +53,16 @@ export const modeHelpers = (aiEngineWorker, ui, state, game) => {
     }
 
     const checkTerminalState = (row, col, field) => {
-        if (state.movesCounter > 4)
-            state.gameStatus = game.checkTerminalState(row, col, field)
+        let result = null
+        if (state.movesCounter > 4) {
+            result = game.checkTerminalState(row, col, field)
+            state.gameStatus = result === "draw" ? "draw" : result ? "win" : null
+        }
         if (state.gameStatus) {
             ui.updateMoveDescription()
             ui.blockPointer()
+            if (state.gameStatus === "win")
+                ui.highlightWinningLine(result)
             return;
         }
         game.nextPlayerMove()

@@ -594,8 +594,18 @@ Make radio-group behave like switcher
 
 .cell.win {
     background-color: #9726869e;
+    outline: 2px solid rgba(245, 245, 245, 0.527);
+    animation: pulse 1s infinite;
 }
 
+@keyframes pulse {
+    0%, 100% {
+        filter: brightness(110%);
+    }
+    50% {
+        filter: brightness(70%);
+    }
+}
 .control-btns {
     width: 100%;
     display: flex;
