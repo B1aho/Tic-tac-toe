@@ -236,7 +236,7 @@ body span:nth-child(11) {
     box-shadow: 50vmin 0 6.653043507219637vmin currentColor;
 }
 body span:nth-child(12) {
-    color: #8599ff;
+    color: #00ff88bc;
     top: 82%;
     left: 74%;
     animation-duration: 102s;
@@ -602,6 +602,10 @@ Make radio-group behave like switcher
     background-color: #08994e9e;
     outline: 2px solid var(--green);
     animation: pulse 1s infinite;
+}
+
+.cell.last {
+    opacity: 0.5;
 }
 
 @keyframes pulse {

@@ -17,6 +17,7 @@ export function updateMovesQueue(move, token) {
   if (currentMoves[token].length + 1 > winLength) {
     // Перемещаем последний ход
     lastMove = currentMoves[token].shift()
+    ui.unHighlightLast(lastMove)
     // Удаляем предыдущий ход с доски и в интерфейсе
     game.removeMove(lastMove)
     if (!state.isInMinimax) // Добавить флаг

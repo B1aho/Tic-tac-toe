@@ -132,6 +132,7 @@ export const ui = {
             cell.classList.remove("cross")
             cell.classList.remove("zero")
             cell.classList.remove("win")
+            cell.classList.remove("last")
         })
         this.resetPointer()
     },
@@ -293,6 +294,28 @@ export const ui = {
         const cell = document.querySelector(`[data-column=${CSS.escape(col)}][data-row=${CSS.escape(row)}]`)
         cell.classList.add(className)
         cell.style.pointerEvents = "none"
+        if (state.isExtended) {
+            const {currentMoves, winLength} = state
+            if (currentMoves[token].length >= winLength) {
+                this.highlightLastMove(currentMoves[token][0])
+            }
+        }
+    },
+
+    highlightLastMove(move) {
+        const [row, col] = move
+        document.querySelector(`[data-row="${CSS.escape(row)}"][data-column="${CSS.escape(col)}"]`).classList.add("last")
+    },
+
+    unHighlightLast(move) {
+        const [row, col] = move
+        const cell = document.querySelector(`[data-row="${CSS.escape(row)}"][data-column="${CSS.escape(col)}"]`)
+        cell.classList.remove("last")
+        if (cell.className.includes("cross"))
+            cell.classList.remove("cross")
+        else
+            cell.classList.remove("zero")
+        cell.style.pointerEvents = "auto"
     },
 
     blockPointer() {
@@ -307,7 +330,8 @@ export const ui = {
         winMoves.forEach(([ row, col ]) => {
             const cell = document.querySelector(`[data-row="${CSS.escape(row)}"][data-column="${CSS.escape(col)}"]`)
             if (cell) {
-                cell.classList.add('win')
+                cell.classList.add("win")
+                cell.classList.remove("last")
             }
         })
         this.blockPointer()
