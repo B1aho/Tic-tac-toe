@@ -495,7 +495,7 @@ Make radio-group behave like switcher
 }
 #info-btn {
     position: absolute; 
-    bottom: 20vh; 
+    bottom: 16vh !important; 
     right: 10px;
 }
 }
@@ -524,7 +524,7 @@ Make radio-group behave like switcher
 }
 #info-btn {
     position: absolute; 
-    bottom: 20vh; 
+    bottom: 16vh !important; 
     right: 10px;
 }
 }
