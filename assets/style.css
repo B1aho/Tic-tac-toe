@@ -488,7 +488,7 @@ Make radio-group behave like switcher
         font-size: 2rem;
 }
 .background {
-    z-index: -1000;
+    z-index: -1000 !important;
 }
 }
 
