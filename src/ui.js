@@ -198,11 +198,21 @@ export const ui = {
         if (name.includes("AI"))
             name = "AI"
         if (gameStatus === "win") {
-            moveDescDiv.innerText = `${name} is the winner. Congratulation!`
+            if (state.currentPlayer.name === "AI\u3000")
+                moveDescDiv.innerText = `${name} - winner 🏆. AI world domination coming soon..`
+            else {
+                if (state.haveAi)
+                    moveDescDiv.innerText = "You've defeated the AI! Humanity is proud of you"
+                else
+                    moveDescDiv.innerText = `${name} is the winner 🏆`
+            }
         } else if (gameStatus === "draw") {
             moveDescDiv.innerText = "Draw. No one lose.."
         } else {
-            moveDescDiv.innerText = `It is now ${name}'s turn!`
+            if (state.currentPlayer.name === "AI\u3000")
+                moveDescDiv.innerText = "AI is thinking.."  
+            else
+                moveDescDiv.innerText = `It is now ${name}'s turn!`
         }
     },
 
@@ -306,7 +316,7 @@ export const ui = {
     whenAiThinking() {
         const fieldWrapper = document.querySelector("#field-wrapper")
         fieldWrapper.style.pointerEvents = "none"
-        this.elements.fieldContainer.style.cursor = "not-allowed"
+        this.elements.fieldContainer.style.cursor = "wait"
         console.log("ИИ думает..")
     },
 

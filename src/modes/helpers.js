@@ -19,10 +19,12 @@ export const modeHelpers = (aiEngineWorker, ui, state, game) => {
             game.updateFieldValue(aiMove[0], aiMove[1], state.currentPlayer.token)
             if (state.isExtended)
                 updateMovesQueue(aiMove, state.currentPlayer.token)
-            ui.renderAiMove(aiMove)
+            setTimeout(() => {
+                ui.renderAiMove(aiMove)
             state.movesCounter++
             checkTerminalState(aiMove[0], aiMove[1], state.field)
             ui.aiDoneThinking()
+            }, 300)
             // Прячем индикатор
             // hideLoadingIndicator()
         };
