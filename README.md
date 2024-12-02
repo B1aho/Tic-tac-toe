@@ -13,6 +13,11 @@ This project (frontend-heavy) is an advanced Tic-Tac-Toe game featuring both sin
 - The project has been refactored for maximum modularity and scalability. Due to this fact it was not hard to integrate new game modes, rules, or UI features. The extended gameplay mode and AI enhancements were seamlessly added without significant compromising the existing code structure, demonstrating the flexibility of the design.
 
 ## Screenshots:
+<img width="490" alt="Screenshot_2" src="https://github.com/user-attachments/assets/74b4aa15-85ba-4728-a347-93d9c25edfd2">
+<img width="490" alt="Screenshot_3" src="https://github.com/user-attachments/assets/62edb3c5-c785-4a30-b907-313d2a1987f0">
+<img width="490" alt="Screenshot_4" src="https://github.com/user-attachments/assets/794a1323-8cad-4be1-b6cb-36176836f927">
+<img width="490" alt="Screenshot_5" src="https://github.com/user-attachments/assets/c3018a69-a74d-42bf-b0ad-9853e0ffb575">
+
 
 ## Technology stack and performance:
 This project is built with vanilla JavaScript, CSS, and HTML. "A craftsman is only as good as their tools, but a true master knows how to work without them."
