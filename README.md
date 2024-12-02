@@ -1,5 +1,5 @@
 # Tic-tac-toe
-[Game](b1aho.github.io/Tic-tac-toe/) — try it yourself first.
+[Game](https://b1aho.github.io/Tic-tac-toe/) — try it yourself first.
 ## Description:
 This project (frontend-heavy) is an advanced Tic-Tac-Toe game featuring both single-player (against AI) and two-player modes, with customizable board sizes of 3x3, 4x4, 5x5, and 6x6. Two gameplay modes available (classic and extended):
 - Extended gameplay mode introduces unique rules for both single-player and two-player matches. When all pieces have been placed on the board, subsequent moves allow players to shift their oldest pieces to new positions, adding a layer of strategy and unpredictability. This mode challenges players to adapt to dynamic board configurations, making each game unique
