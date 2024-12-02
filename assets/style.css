@@ -493,6 +493,11 @@ Make radio-group behave like switcher
     position: relative !important;
     z-index: -1000 !important;
 }
+#info-btn {
+    position: absolute; 
+    bottom: 20vh; 
+    right: 10px;
+}
 }
 
 @media (max-width: 600px) and (orientation: portrait) {
@@ -516,6 +521,11 @@ Make radio-group behave like switcher
         font-size: 1.5rem;
         position: absolute;
         bottom: 20vh;
+}
+#info-btn {
+    position: absolute; 
+    bottom: 20vh; 
+    right: 10px;
 }
 }
 
