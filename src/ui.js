@@ -73,8 +73,8 @@ export const ui = {
         if (xInput.value !== "" || oInput.value !== "")
             return true
         else {
-            xInput.style.outline = "2px red solid"
-            oInput.style.outline = "2px red solid"
+            xInput.classList.add("warning")
+            oInput.classList.add("warning")
             return false
         }
     },
@@ -204,8 +204,8 @@ export const ui = {
     blockOtherInput(e) {
         if (e.target === this.elements.xInput) {
             if (this.elements.xInput.value !== "") {
-                this.elements.xInput.style.outline = "none"
-                this.elements.oInput.style.outline = "none"
+                this.elements.xInput.classList.remove("warning")
+                this.elements.oInput.classList.remove("warning")
                 this.elements.oInput.value = "AI\u3000"
                 this.elements.oInput.disabled = true
             } else {
@@ -214,8 +214,8 @@ export const ui = {
             }
         } else if (e.target === this.elements.oInput) {
             if (this.elements.oInput.value !== "") {
-                this.elements.xInput.style.outline = "none"
-                this.elements.oInput.style.outline = "none"
+                this.elements.xInput.classList.remove("warning")
+                this.elements.oInput.classList.remove("warning")
                 this.elements.xInput.value = "AI\u3000"
                 this.elements.xInput.disabled = true
             } else {
@@ -231,8 +231,8 @@ export const ui = {
     },
 
     resetInputs() {
-        this.elements.xInput.style.outline = "none"
-        this.elements.oInput.style.outline = "none"
+        this.elements.xInput.classList.remove("warning")
+        this.elements.oInput.classList.remove("warning")
         this.elements.xInput.removeEventListener("input", (e) => this.blockOtherInput(e))
         this.elements.oInput.removeEventListener("input", (e) => this.blockOtherInput(e))
         this.elements.oInput.disabled = false

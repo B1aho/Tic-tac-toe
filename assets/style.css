@@ -691,6 +691,11 @@ Make radio-group behave like switcher
     gap: 10%;
 }
 
+.warning {
+    border-bottom: 2px solid rgba(244, 120, 19, 0.795);
+    offset: 10px;
+}
+
 #reset, #back {
     font-size: 1.3rem;
     line-height: 0.5;
