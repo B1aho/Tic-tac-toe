@@ -457,7 +457,7 @@ Make radio-group behave like switcher
     padding: 5% 10%;
 }
 
-@media (max-width: 844px) {
+@media (max-width: 740px) and (orientation: landscape) {
     .options {
         flex-direction: column;
         gap: 5px;
@@ -474,6 +474,43 @@ Make radio-group behave like switcher
         font-size: 1.5rem;
 }
 }
+
+@media (max-width: 768px) and (orientation: portrait) {
+    .options {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .options {
+        gap: 20px;
+    }
+    .neon-button {
+        font-size: 2rem;
+}
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+    .options {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .option-card, label {
+        
+        font-size: 1.3rem !important;
+    }
+    .game-options {
+        padding: 20px 5px !important;
+    }
+    
+    .options {
+        gap: 20px;
+    }
+    .neon-button {
+        font-size: 1.5rem;
+}
+}
+
 .options {
     display: flex;
     justify-content: space-between;
@@ -491,6 +528,7 @@ Make radio-group behave like switcher
 /* Like card */
 .game-options {
     align-items: center;
+    flex-basis: 40%;
     font-size: var(--game-option-font-size);
 }
 
@@ -517,6 +555,7 @@ Make radio-group behave like switcher
 /* Like card */
 .player-options {
     flex-shrink: 0;
+    flex-basis: 40%;
     align-items: center;
     justify-content: space-around;
     gap: 10px;
@@ -585,13 +624,37 @@ Make radio-group behave like switcher
 @media (max-width: 768px) and (orientation: portrait) {
     #field-wrapper {
         width: 48vw; 
-        aspect-ratio: 2 / 1.5;
+        aspect-ratio: 2 / 2;
+    }
+    #reset, #back {
+       max-height: 10vh;
     }
 }
 
-@media (max-width: 570px) {
+@media (max-width: 560px) and (orientation: portrait) {
     #field-wrapper {
-        width: 40vh; 
+        width: 48vw; 
+        aspect-ratio: 2 / 1.5;
+    }
+    #reset, #back {
+       max-height: 10vh;
+    }
+}
+
+@media (max-width: 431px) and (orientation: portrait) {
+    #field-wrapper {
+        width: 48vw; 
+        aspect-ratio: 2 / 0.5;
+    }
+    #reset, #back {
+       max-height: 10vh;
+    }
+}
+
+@media (max-width: 570px) and (orientation: landscape) {
+    #field-wrapper {
+        width: 43vh; 
+        gap: 5px;
         aspect-ratio: 1 / 1;
     }
 }
@@ -684,18 +747,19 @@ Make radio-group behave like switcher
 
 .field, #move-desc {
     position: relative;
-    bottom: 45px;
+    bottom: 55px;
 }
 
 .field {
-    bottom: 55px;
+    bottom: 65px;
 }
  
 .control-btns {
-    width: 100%;
+    min-width: 50%;
     display: flex;
     justify-content: center;
-    gap: 10%;
+    gap: 7%;
+
 }
 
 .warning {
