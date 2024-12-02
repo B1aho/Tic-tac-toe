@@ -487,6 +487,9 @@ Make radio-group behave like switcher
     .neon-button {
         font-size: 2rem;
 }
+.background {
+    z-index: -1000;
+}
 }
 
 @media (max-width: 600px) and (orientation: portrait) {
