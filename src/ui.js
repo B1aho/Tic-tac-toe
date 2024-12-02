@@ -24,6 +24,8 @@ export const ui = {
         playerTwoDiv: document.querySelector('#player-2'),
         playerXname: document.querySelector("#x-name"),
         playerOname: document.querySelector("#o-name"),
+        xAvatar: document.querySelector("#x-avatar"),
+        oAvatar: document.querySelector("#o-avatar"),
         fieldContainer: document.querySelector('.field'),
     },
 
@@ -171,9 +173,19 @@ export const ui = {
         // Clear previous content
         xName.innerText = ""
         oName.innerText = ""
+        this.elements.xAvatar.setAttribute("src", "./assets/images/man-user-svgrepo-com.svg")
+        this.elements.oAvatar.setAttribute("src", "./assets/images/man-user-svgrepo-com.svg")
         // Create new names
         xName.innerText = `${firstPlayerName}`
         oName.innerText = `${secondPlayerName}`
+
+        if (state.haveAi) {
+            if (firstPlayerName === "AI\u3000") {
+                this.elements.xAvatar.setAttribute("src", "./assets/images/robot.svg")
+            } else {
+                this.elements.oAvatar.setAttribute("src", "./assets/images/robot.svg")
+            }
+        }
     },
 
     updateMoveDescription() {

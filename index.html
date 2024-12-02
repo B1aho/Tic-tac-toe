@@ -91,11 +91,11 @@
             <div class="players">
                 <div id="player-1">
                     <div id="x-name"></div>
-                    <img class="avatar" width="80px" src="./assets/images/man-user-svgrepo-com.svg">
+                    <img class="avatar" fetchpriority="high" id="x-avatar" width="80px" src="./assets/images/man-user-svgrepo-com.svg">
                 </div>
                 <div id="player-2">
                     <div id="o-name"></div>
-                    <img class="avatar" width="80px" src="./assets/images/man-user-svgrepo-com.svg">
+                    <img class="avatar" fetchpriority="high" id="o-avatar" width="80px" src="./assets/images/man-user-svgrepo-com.svg">
                 </div>
             </div>
             <div class="field"></div>
@@ -111,7 +111,12 @@
         </div>
     </main>
     <footer>
-        <div>Copyright © Viktor Kolesnik <a href="https://github.com/B1aho"><img src="./assets/images/github_icon.svg" alt="github icon"></a></div>
+        <div>Copyright © Viktor Kolesnik
+            <a href="https://github.com/B1aho">
+                <img src="./assets/images/github_icon.svg" alt="github icon">
+            </a>
+            <button>INFO</button>
+        </div>
     </footer>
 </body>
 

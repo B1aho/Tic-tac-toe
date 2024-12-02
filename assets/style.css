@@ -344,7 +344,7 @@ Make radio-group behave like switcher
     padding-bottom: 6px;
     font-weight: 700;
     border-width: 3px;
-    border-image: linear-gradient(to right, #b2cdb2, #00db6e); /* Поменяц на цвета из root*/
+    border-image: linear-gradient(to right, #78f8a1, #00ff51); /* Поменяц на цвета из root*/
     border-image-slice: 1;
 }
 
@@ -498,6 +498,7 @@ Make radio-group behave like switcher
 
 /* Like card */
 .player-options {
+    flex-shrink: 0;
     align-items: center;
     justify-content: space-around;
     gap: 10px;
