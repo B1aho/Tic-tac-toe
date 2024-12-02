@@ -530,7 +530,7 @@ Make radio-group behave like switcher
     padding-left: 8%;
     padding-right: 8%;
     padding-top: 2%;
-    padding-bottom: 2%;
+    padding-bottom: 6%;
     min-height: 100vh;
     align-items: center;
     justify-content: center;
@@ -555,7 +555,7 @@ Make radio-group behave like switcher
 }
 
 #field-wrapper {
-    width: 50vh;
+    width: 52vh;
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(var(--field-size), 1fr);
@@ -648,11 +648,11 @@ Make radio-group behave like switcher
 
 .field, #move-desc {
     position: relative;
-    bottom: 35px;
+    bottom: 25px;
 }
 
 .field {
-    right: 20px;
+    bottom: 35px;
 }
  
 .control-btns {
@@ -668,6 +668,40 @@ Make radio-group behave like switcher
 }
 
 #reset, #back {
-    font-size: 1.3rem;
-    line-height: 0.5;
+    font-size: 1.4rem;
+    line-height: 0.8;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+#reset::before, #back::before {
+    display: none;
+  }
+
+footer {
+    display: flex;
+    min-width: 100%;
+    position: fixed;
+    bottom: 0px;
+    align-items: center;
+    justify-content: center;
+}
+
+footer div {
+    display: flex;
+    margin-bottom: 5px;
+    color: rgba(0, 254, 131, 0.854);
+    font-weight: 700;
+}
+
+footer img {
+    width: 20px;
+    height: 20px;
+    margin-left: 4px;
+    filter: brightness(0) saturate(100%) invert(58%) sepia(100%) saturate(353%) hue-rotate(93deg) brightness(111%) contrast(104%);
+    transition: transform 1s  ease-in-out;
+}
+
+a img:hover {
+    transform: rotate(360deg);
 }

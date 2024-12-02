@@ -179,12 +179,15 @@ export const ui = {
     updateMoveDescription() {
         const moveDescDiv = this.elements.moveDescription
         const gameStatus = state.gameStatus
+        let name = state.currentPlayer.name
+        if (name.includes("AI"))
+            name = "AI"
         if (gameStatus === "win") {
-            moveDescDiv.innerText = `${state.currentPlayer.name} is the winner. Congratulation!`
+            moveDescDiv.innerText = `${name} is the winner. Congratulation!`
         } else if (gameStatus === "draw") {
             moveDescDiv.innerText = "Draw. No one lose.."
         } else {
-            moveDescDiv.innerText = `It is now ${state.currentPlayer.name}'s turn!`
+            moveDescDiv.innerText = `It is now ${name}'s turn!`
         }
     },
 
