@@ -278,6 +278,8 @@ Make radio-group behave like switcher
     margin-right: -1px;
     border: 1px solid rgba(0, 0, 0, 0.2);
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.177), 0 1px rgba(255, 255, 255, 0.105);
+    will-change: box-shadow;
+    will-change: background-color;
     transition: all 0.2s ease-in-out;
 }
 
@@ -288,7 +290,6 @@ Make radio-group behave like switcher
 .switcher input:checked+label {
     background-color: #1cd76da0;
     color: #ffffff;
-    text-shadow:  0 0 0.1em hsl(0 0% 100% / 0.3), 0 0 0.1em currentColor;
     box-shadow: none;
 }
 
@@ -465,6 +466,8 @@ Make radio-group behave like switcher
     display: flex;
     flex-direction: column;
     padding: 30px 10px;
+    outline: 6px solid rgba(0, 255, 98, 0.543);
+    box-shadow: 1px 0px 20px 3px rgba(0, 0, 0, 0.696);
 }
 
 /* Like card */
