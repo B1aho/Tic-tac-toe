@@ -22,6 +22,8 @@ export const ui = {
         moveDescription: document.querySelector('#move'),
         playerOneDiv: document.querySelector('#player-1'),
         playerTwoDiv: document.querySelector('#player-2'),
+        playerXname: document.querySelector("#x-name"),
+        playerOname: document.querySelector("#o-name"),
         fieldContainer: document.querySelector('.field'),
     },
 
@@ -164,19 +166,14 @@ export const ui = {
     renderPlayers() {
         const firstPlayerName = state.players.playerX.name
         const secondPlayerName = state.players.playerO.name
+        const xName = this.elements.playerXname
+        const oName = this.elements.playerOname
         // Clear previous content
-        this.elements.playerOneDiv.innerHTML = this.elements.playerTwoDiv.innerHTML = ""
+        xName.innerText = ""
+        oName.innerText = ""
         // Create new names
-        const nameDivOne = document.createElement("div")
-        nameDivOne.id = "player-1-name"
-        nameDivOne.innerText = `${firstPlayerName}`
-
-        const nameDivTwo = document.createElement("div")
-        nameDivTwo.id = "player-2-name"
-        nameDivTwo.innerText = `${secondPlayerName}`
-
-        this.elements.playerOneDiv.prepend(nameDivOne)
-        this.elements.playerTwoDiv.prepend(nameDivTwo)
+        xName.innerText = `${firstPlayerName}`
+        oName.innerText = `${secondPlayerName}`
     },
 
     updateMoveDescription() {

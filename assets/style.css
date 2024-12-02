@@ -466,8 +466,7 @@ Make radio-group behave like switcher
     display: flex;
     flex-direction: column;
     padding: 30px 10px;
-    outline: 6px solid rgba(0, 255, 98, 0.543);
-    box-shadow: 1px 0px 20px 3px rgba(0, 0, 0, 0.696);
+    box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.482);
 }
 
 /* Like card */
@@ -556,7 +555,7 @@ Make radio-group behave like switcher
 }
 
 #field-wrapper {
-    width: 47vh;
+    width: 50vh;
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(var(--field-size), 1fr);
@@ -622,46 +621,18 @@ Make radio-group behave like switcher
 /* Player divs */
 #player-1, #player-2 {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
 }
 
-#player-1-name, #player-2-name {
-    font-size: 2rem;
+#x-name, #o-name {
+    font-size: 2.2rem;
     font-weight: 800;
     color: var(--green);
     text-shadow: var(--text-shadow);
     text-align: center;
     max-width: fit-content;
-}
-
-
-#player-1-name::after {
-    content: "";
-    width: 35px;
-    height: 35px;
-    border-radius: 0.5rem;
-    background-color: #fbb9fe5b;
-    background-image: url("./images/strange_x.png");
-    background-size: 35px;
-    position: relative;
-    right: 75px;
-    top: 45px;
-    display: inline-block;
-}
-
-#player-2-name::before {
-    content: "";
-    width: 35px;
-    height: 35px;
-    border-radius: 0.5rem;
-    background-color: #fbb9fe5d;
-    background-image: url(./images/strange_o-removebg.png);
-    background-size: 35px;
-    position: relative;
-    left: 75px;
-    top: 45px;
-    display: inline-block;
 }
 
 /*  Move description  */
@@ -677,7 +648,7 @@ Make radio-group behave like switcher
 
 .field, #move-desc {
     position: relative;
-    bottom: 25px;
+    bottom: 35px;
 }
 
 .field {
@@ -692,7 +663,7 @@ Make radio-group behave like switcher
 }
 
 .warning {
-    border-bottom: 2px solid rgba(244, 120, 19, 0.795);
+    border-bottom: 2px solid rgba(255, 43, 43, 0.84);
     offset: 10px;
 }
 
