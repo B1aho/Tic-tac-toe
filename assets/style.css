@@ -454,7 +454,7 @@ Make radio-group behave like switcher
     flex-direction: column;
     height: 100vh;
     justify-content: space-between;
-    padding: 5% 10%;
+    padding: 6% 10%;
 }
 
 @media (max-width: 740px) and (orientation: landscape) {
@@ -582,8 +582,7 @@ Make radio-group behave like switcher
 /* ----------------------------------------------------*/
 /*                  PLAY SCREEN                     */
 /* ----------------------------------------------------*/
-.play-screen,
-.computer-input {
+.play-screen {
     display: none;
     flex-direction: column;
     padding-left: 8%;
