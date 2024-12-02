@@ -449,13 +449,30 @@ Make radio-group behave like switcher
 /* ----------------------------------------------------*/
 /*      OPTION SCREEN        */
 /* ----------------------------------------------------*/
-
 .option-screen {
     display: flex;
     flex-direction: column;
     height: 100vh;
     justify-content: space-between;
     padding: 5% 10%;
+}
+
+@media (max-width: 844px) {
+    .options {
+        flex-direction: column;
+        gap: 5px;
+    }
+    .option-card, label {
+        
+        font-size: 1.3rem !important;
+    }
+    .game-options {
+        padding: 20px 5px !important;
+    }
+
+    .neon-button {
+        font-size: 1.5rem;
+}
 }
 .options {
     display: flex;
@@ -558,11 +575,25 @@ Make radio-group behave like switcher
 }
 
 #field-wrapper {
-    width: 52vh; /* for mobile vw*/
+    width: 52vh; 
     display: grid;
     gap: 8px;
     aspect-ratio: 1 / 1; /* 2 / 1 - mobile  */ 
     grid-template-columns: repeat(var(--field-size), minmax(0, 1fr));
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    #field-wrapper {
+        width: 48vw; 
+        aspect-ratio: 2 / 1.5;
+    }
+}
+
+@media (max-width: 570px) {
+    #field-wrapper {
+        width: 40vh; 
+        aspect-ratio: 1 / 1;
+    }
 }
 
 #field-wrapper > * {
