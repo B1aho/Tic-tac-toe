@@ -13,6 +13,7 @@ const sharedState = {
 
     size: 0,
     currentPlayer: null,
+    currentScreen: null,
     hash: null,
     isMax: true,
     field: [],

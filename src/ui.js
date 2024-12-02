@@ -18,7 +18,9 @@ export const ui = {
         twoPlayersMode: document.querySelector("#two-players"),
         playBtn: document.querySelector("#play"),
         resetBtn: document.querySelector('#reset'),
+        infoBtn: document.querySelector('#info-btn'),
         backBtn: document.querySelector('#back'),
+        cancelInfoBtn: document.querySelector('#cancel-info-btn'),
         moveDescription: document.querySelector('#move'),
         playerOneDiv: document.querySelector('#player-1'),
         playerTwoDiv: document.querySelector('#player-2'),
@@ -34,6 +36,7 @@ export const ui = {
             screen.style.display = "none"
         });
         this.screens[screenName].style.display = "flex"
+        state.currentScreen = this.screens[screenName]
     },
 
     getOptions() {
@@ -253,9 +256,23 @@ export const ui = {
     },
 
     // Arrow function look for the parent scope's context binding - addPlayerChooseListener()
-    addPlayerChooseListener() {
+    initMainUi() {
         this.elements.choosePlayers.addEventListener("change", (e) => this.handleInputsAvaliability(e))
         this.elements.main.style.pointerEvents = "auto"
+        this.elements.infoBtn.addEventListener("click", () => this.showInfo())
+        this.elements.cancelInfoBtn.addEventListener("click", () => this.closeInfoScreen())
+        state.currentScreen = this.screens.options
+    },
+
+    closeInfoScreen() {
+        state.currentScreen.style.display = "flex"
+        this.screens.info.style.display = "none"
+    },
+
+    showInfo() {
+        this.screens.options.style.display = "none"
+        this.screens.play.style.display = "none"
+        this.screens.info.style.display = "flex"
     },
 
     // If 1-player mode checked, then only one input can ba filled at time

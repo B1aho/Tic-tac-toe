@@ -4,7 +4,7 @@ import { game } from "./game.js";
 import { createGameMode } from "./modes/modesFactory.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    ui.addPlayerChooseListener()
+    ui.initMainUi()
     const state = getSharedState()
     let gameMode = null
    // ui.addPlayerChooseListener()
