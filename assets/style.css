@@ -486,6 +486,8 @@ Make radio-group behave like switcher
     }
     .neon-button {
         font-size: 2rem;
+        position: relative;
+        bottom: 20vh;
 }
 .background {
     position: relative !important;
@@ -512,6 +514,8 @@ Make radio-group behave like switcher
     }
     .neon-button {
         font-size: 1.5rem;
+        position: relative;
+        bottom: 20vh;
 }
 }
 
